@@ -1,6 +1,6 @@
 package JavaStudy;
 
-public class VariableExam {
+public class ex02_VariableExam {
 	
 	public static void main(String[] args) {
 //		자바는 강형 언어(컴파일 시 데이터 타입이 결정되는 언어)이다.

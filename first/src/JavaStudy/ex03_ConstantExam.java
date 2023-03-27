@@ -1,6 +1,6 @@
 package JavaStudy;
 
-public class ConstantExam {
+public class ex03_ConstantExam {
 
 	public static void main(String[] args) {
 //		상수는 한번 저장한 데이터 값을 바꿀 수 없다. (재할당 불)

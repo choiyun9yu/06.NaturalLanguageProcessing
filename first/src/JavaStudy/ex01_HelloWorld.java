@@ -1,6 +1,6 @@
 package JavaStudy;
 
-public class HelloWorld {
+public class ex01_HelloWorld {
 //	프로그램의 시작점.
 	/** 문서화 주석 
 	 * 
