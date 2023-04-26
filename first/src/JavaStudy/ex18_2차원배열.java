@@ -3,8 +3,18 @@ package JavaStudy;
 public class ex18_2차원배열 {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		int[][] array4 = new int[3][4];		// 2차원 배열은 자료형[][]로 선언, [행][열]로 선
+//		array4[0] = 10;  2차원 배열에서 이렇게 선언 된 것에는 변수를 못 담는다. array4[0]은 첫번째 행을 의미하기 때문
+		array4[0][0] = 10; 					// 이렇게 표시해줘야 변수 대입 가능
+		
+		int[][] array5 = new int[3][];		// 이렇게 선언하면 열값이 정해지지 않아 행만 생성되어 있을 뿐이다.
+//		array5[0][0] = 10;					// 따라서 이렇게 선언하면 값이 입력되지 않는다.
+		array5[0] = new int[1];
+		array5[1] = new int[2];				// 대신 이렇게 해당 행에 몇개의 열을 만들지는 입력 가능하다.
+		array5[2] = new int[3];				// 또한 행마다 열의 크기를 다르게 설정할 수 있다. 
+		
+		// 2차원 배열 선언과 동시에 초기
+		int[][] array6 = {{1,}, {1,2}, {1,2,3}};	// 2차원으로 보이더라도 컴퓨터는 일렬로 순서대로 저장하고 있다.
 	}
 
 }
