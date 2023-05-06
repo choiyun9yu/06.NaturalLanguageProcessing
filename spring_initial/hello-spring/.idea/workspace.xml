@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d37c02c3-7b14-4031-8e36-86eb34bf8629" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../../first/.classpath" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/.project" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/.settings/org.eclipse.core.resources.prefs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/.settings/org.eclipse.jdt.core.prefs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/Car.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/MyClass.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex01_주석문.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex02_변수.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex03_상수.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex04_기본형타입.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex05_기본형타입변환.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex06_산술연산자.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex07_비교연산자.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex08_연산자우선순위.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex09_if문.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex10_논리연산자.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex11_삼항연산자.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex12_switch문.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex13_while문.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex14_dowhile문.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex15_for문.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex16_배열만들기.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex17_배열사용하기.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex18_2차원배열.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex19_foreach.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex20_클래스선언.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex21_참조타입.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex22_String클래스.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex23_필드선언.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex24_메소드선언.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex25_메소드사용하기.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex26_String클래스의메소드.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex27_변수의scope와static.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex28_열거형enum.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex29_생성자.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex30_this.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex31_메소드오버로딩.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex32_생성자오버로딩과this.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex33_패키지.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex34_상속.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex35_접근제한자.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex36_추상클래스.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex37_super와부모생성자.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex38_오버라이딩.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex39_클래스형변환.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex40_인터페이스만들기.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex41_인터페이스사용하기.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex42_인터페이스의default메소드.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex43_내부클래스.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex44_익명클래스.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex45_Exception.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex46_Throws.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex47_Exception발생시키기.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/bin/JavaStudy/ex48_사용자정의Exception.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/Action.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/Bird.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/BizException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/BizService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/Bus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/Calculator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/Car.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/CasioCal.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/Duck.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/JavaStudy.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/LedTV.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/MyAction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/MyClass.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/MyClass2.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/TV.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/Truck.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex01_주석문.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex02_변수.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex03_상수.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex04_기본형타입.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex05_기본형타입변환.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex06_산술연산자.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex07_비교연산자.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex08_연산자우선순위.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex09_if문.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex10_논리연산자.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex11_삼항연산자.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex12_switch문.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex13_while문.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex14_dowhile문.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex15_for문.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex16_배열만들기.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex17_배열사용하기.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex18_2차원배열.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex19_foreach.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex20_클래스선언.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex21_참조타입.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex22_String클래스.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex23_필드선언.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex24_메소드선언.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex25_메소드사용하기.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex26_String클래스의메소드.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex27_변수의scope와static.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex28_열거형enum.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex29_생성자.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex30_this.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex31_메소드오버로딩.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex32_생성자오버로딩과this.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex33_패키지.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex34_상속.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex35_접근제한자.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex36_추상클래스.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex37_super와부모생성자.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex38_오버라이딩.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex39_클래스형변환.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex40_인터페이스만들기.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex41_인터페이스사용하기.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex42_인터페이스의default메소드.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex43_내부클래스.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex44_익명클래스.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex45_Exception.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex46_Throws.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex47_Exception발생시키기.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/JavaStudy/ex48_사용자정의Exception.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../first/src/com/eightcruz/javastudy/Hello.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hello/hellospring/HelloSpringApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hello/hellospring/controller/HelloController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hello/hellospring/controller/HomeController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hello/hellospring/controller/MemberController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hello/hellospring/controller/MemberForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hello/hellospring/domain/Member.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hello/hellospring/repository/MemberRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hello/hellospring/repository/MemoryMemberRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hello/hellospring/service/MemberService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/hello/hellospring/service/SpringConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/hell-static.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/hello-template.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/hello.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/home.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/members/createMemberForm.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/members/memberList.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/hello/hellospring/HelloSpringApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/hello/hellospring/repository/MemoryMemberRepositoryTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/hello/hellospring/service/MemberServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../스프링 입문 - 코드로 배우는 스프링 부트, 웹 MVC, DB 접근 기술 v2022-11-28.pdf" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="hello-spring" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="hello-spring" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="hello-spring" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="compileClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="hello-spring" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="compileClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
+                <item name="org.springframework.boot:spring-boot-starter-thymeleaf:3.0.6" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="hello-spring" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="compileClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
+                <item name="org.springframework.boot:spring-boot-starter-web:3.0.6" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="JUnit5 Test Class" />
+        <option value="Class" />
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectId" id="2P5IxjnsZn6NjGHa9ps2pd1fHTE" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/yun9yuchoi/Documents/Git-Hub/Java/spring_initial/hello-spring/build.gradle&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources/templates" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="hello.hellospring.service" />
+    </key>
+  </component>
+  <component name="RunManager" selected="애플리케이션.HelloSpringApplication">
+    <configuration name="HelloSpringApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="hello.hellospring.HelloSpringApplication" />
+      <module name="hello-spring.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="hello.hellospring.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MemberServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="hello-spring.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="hello.hellospring.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="hello.hellospring.service" />
+      <option name="MAIN_CLASS_NAME" value="hello.hellospring.service.MemberServiceTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MemberServiceTest.중복_회원_예외" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="hello-spring.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="hello.hellospring.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="hello.hellospring.service" />
+      <option name="MAIN_CLASS_NAME" value="hello.hellospring.service.MemberServiceTest" />
+      <option name="METHOD_NAME" value="중복_회원_예외" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="hello-spring.test의 hello.hellospring" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="hello-spring.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="hello.hellospring.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="hello.hellospring" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="애플리케이션.HelloSpringApplication" />
+        <item itemvalue="JUnit.MemberServiceTest" />
+        <item itemvalue="JUnit.MemberServiceTest.중복_회원_예외" />
+        <item itemvalue="JUnit.hello-spring.test의 hello.hellospring" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d37c02c3-7b14-4031-8e36-86eb34bf8629" name="Changes" comment="" />
+      <created>1682740763431</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1682740763431</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
