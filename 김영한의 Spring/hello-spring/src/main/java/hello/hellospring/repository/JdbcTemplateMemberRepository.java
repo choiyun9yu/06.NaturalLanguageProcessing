@@ -38,7 +38,7 @@ public class JdbcTemplateMemberRepository implements MemberRepository {
         return member;
     }
 
-        @Override
+    @Override
     public Optional<Member> findById(Long id) {
         List<Member> result = jdbcTemplate.query("select * from member where id = ?", memberRowMapper(), id);
         return result.stream().findAny();
