@@ -5,7 +5,7 @@
 ## JDK
 - JDK 설치
 - [터미널 창] open ~/.zshrc
-- [환경변수 추가]  
+- 환경변수 추가
   export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home.   
   export PATH=${PATH}:$JAVA_HOME/bin. 
 - java --version
