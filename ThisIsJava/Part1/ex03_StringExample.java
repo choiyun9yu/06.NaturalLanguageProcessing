@@ -1,7 +1,7 @@
 package Part1;
 
-public class StringExample {
-    public static void main(String[] args) {
+public class ex03_StringExample {
+    public static void main(String args) {
 //      char var1 = "A";    큰따옴표로 감싸면 char 컴파일 에러
 //      char var2 = 'abc';
         char var1 = 'A';

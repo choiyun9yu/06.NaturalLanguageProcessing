@@ -1,6 +1,6 @@
 package Part1;   // 패키지 선언
 
-public class Hello {    // 클래스 선언, 클래스명은 숫자로 시작할 수 없고, 공백 포함할 수 없다.
+public class ex01_Hello {    // 클래스 선언, 클래스명은 숫자로 시작할 수 없고, 공백 포함할 수 없다.
 
     /**
      * 도큐먼트 주석 : Javadoc 명령어로 API 도큐먼트를 생성하는데 사용

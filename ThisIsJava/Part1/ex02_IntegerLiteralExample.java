@@ -1,6 +1,6 @@
 package Part1;
 
-public class IntegerLiteralExample {
+public class ex02_IntegerLiteralExample {
     public static void main(String[] args) {
         int var2 = 0b1101;  // 2진법
         int var8 = 015;     // 8진법
