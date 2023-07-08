@@ -1,3 +1,5 @@
+package fc.java.part1;
+
 // 자바는 객체지향 언어이기 때문에 클래스 단위로 코딩을 한다.
 // 시작, 메인 클래스
 public class Calculator {
