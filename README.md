@@ -40,12 +40,9 @@
   [터미널 창] codesign --force --deep --sign - /Applications/Eclipse.app/Contents/MacOS/eclipse
 
 ## STS
-- Spring Framework Home Page Download
-- Git으로 이동한 뒤 운영체젱 맞는 것 다운로드
-- STS.ini 파일 찾아서 JDK 경로 설정
-  - -vm  
-    openFrile 아래 자바 경로 입력
+- M1 mac 가이드 : https://codechobo.tistory.com/28
 
-- git : castello/spring_basic repository에서 확인(m1은 IntelliJ로 하는데 pro버전만 나와있음)
-
-## 
+## IntenliJ
+- M1 mac 가이드 : moonong.tistory.com/41
+- 얼티메이트버전은 스프링을 제공하여 maven으로 프로젝트 생성 후 add framework 옵션에서 스프링을 선택하면 된다.
+- 커뮤니티버전은 스프링을 제공하지 않아서 손수 한땀 한땀 환경 구축을 해주어야 한다. 
