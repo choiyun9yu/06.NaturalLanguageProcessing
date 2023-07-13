@@ -32,8 +32,8 @@
 ## JDK(for Win)
 
 [아직 윈도우에서 sdk 사용법 확실하지 않]
-- Git bash를 통해 SDK 설치 : 
-- IntelliJ와 Git bash 연동 : File - Setting - Terminal - Shell path - "C:\Program Files\Git\bin\sh.exe 설치경)" -login -i
+- Git bash를 통해 SDKMAN 설치 : git bash 설치(git 설치하면 자동으로 설치됨) - 7zip 다운 - 7z.exe파일 복사해서 zip파일 같은 경로에 생성 - 환경변수 Path에 경로설정 - where zip으로 경로뜨면 제대로된 것 - [터미널 창] $ curl -s "https://get.sdkman.io" | bash - $ source "$HOME/.sdkman/bin/sdkman-init.sh" - 설치확인 $ sdk version
+- IntelliJ와 Git bash 연동 : File - Setting - Terminal - Shell path - "C:\Program Files\Git\bin\sh.exe 설치경로)" -login -i
 
 - JDK 설치
 - [터미널 창] path <- 환경변수 경로 확인
