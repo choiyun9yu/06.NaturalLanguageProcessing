@@ -1,6 +1,7 @@
 # Java
 - 컴파일 : (해당 경로에서) javac 파일명.java / javac -d [바이트코드파일저장위치] [소스경로/*.java]	
 - 실행 : (해당 경로에서) java 파일명.java / java -cp [바이트코드파일위치] [패키지…클래스명]
+- 자바 클래스 생성도 안되고, 실행도 안될 때 -> 디렉토리 우클릭 -> Mark directory as -> Source root 지정하면 된다.
 
 ## JDK(for Mac)
 - sdkman 설치 // 자바 뿐만아니라 프로그래밍 언어 버전관리 도와줌
