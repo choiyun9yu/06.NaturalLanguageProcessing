@@ -12,7 +12,7 @@ public class ex02_IntegerLiteralExample {
 //      long var1 = 1000000000000;    컴파일러는 in로 간주하기 때문에 l을 붙여서 long type 임을 컴파일러에게 알려줘야 한다.
         long var11 = 1000000000000L;
 
-        float f1 = 3.14;   //  컴파일러가 double로 인식
+        float f1 = (float) 3.14;   //  컴파일러가 double로 인식
         float f2 = 3.14f;  // 컴파일러가 fㅣoat으로 인식
     }
 }
