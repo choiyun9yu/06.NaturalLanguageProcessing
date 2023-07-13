@@ -29,6 +29,11 @@
   - ./sutdown.sh <- 톰캣 종료
 
 ## JDK(for Win)
+
+[아직 윈도우에서 sdk 사용법 확실하지 않]
+- Git bash를 통해 SDK 설치 : 
+- IntelliJ와 Git bash 연동 : File - Setting - Terminal - Shell path - "C:\Program Files\Git\bin\sh.exe 설치경)" -login -i
+
 - JDK 설치
 - [터미널 창] path <- 환경변수 경로 확인
 - [터미널 창] setx path "%path%'경로"
