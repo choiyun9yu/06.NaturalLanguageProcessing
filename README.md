@@ -3,6 +3,25 @@
 - 실행 : (해당 경로에서) java 파일명.java / java -cp [바이트코드파일위치] [패키지…클래스명]
 - 자바 클래스 생성도 안되고, 실행도 안될 때 -> 디렉토리 우클릭 -> Mark directory as -> Source root 지정하면 된다.
 
+## JAVA(for Ubuntu)
+
+    % sudo apt-get install openjdk-11-jdk
+    % java -verison
+    % javac -version
+    
+    # 환경변수 설정
+    % sudo vi ~/.bashrc
+    % export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
+    % source ~/.bashrc
+    % echo $JAVA_HOME
+    
+    # 버전 관리
+    % update-alternatives --list java    # 설치된 자바 버전 확인
+    % sudo update-alternatives --config java
+    % sudo update-alternatives --config javac
+    
+    % sudo apt-get purge poenjdk*    $ 자바 삭제
+
 ## JDK(for Mac)
 #### sdkman 설치 // 자바 뿐만아니라 프로그래밍 언어 버전관리 도와줌
 
