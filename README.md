@@ -42,13 +42,6 @@
     % export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home.   
     % export PATH=${PATH}:$JAVA_HOME/bin. 
 
-## Tomcat 설치
-- 다운 받고 압축 풀고 홈 디렉토리로 옮기면 끝
-- Mac home 디렉토리 이동 방법:  파일열고 [command + shifht + H]
-  - cd ~/톰켓디렉토리경로/bin
-  - ./startup.sh <- 톰캣 실행
-  - ./sutdown.sh <- 톰캣 종료
-
 ## 빌드 도구
 ### Gradle
 - Groovy 기반의 오픈 소스 빌드 도구로서 Maven의 장황한 설정과 파일 에러가 쉽게 나는 문제를 해결하기 위해 등장했다.
@@ -56,7 +49,7 @@
 
       // 자바를 컴파일하기 위해 java plugin을 설정한다.
       apply plugin: 'java'
-  
+
       // application으로 컴파일하기 위해 설정한다.
       apply plugin: 'application'
 
@@ -64,19 +57,28 @@
       repositories {
           mavenCentral()
         }
-  
+
       //종속성을 입력하는 섹션이다. 기존에는 compile이 있었으나 3.0버전부터 deprecated 되었다.
       dependencies {
           //'group:name:version' 순으로 적는다. group: 'junit', name: 'junit', version: '4.12'식으로도 가능하다.
           api 'com.google.guava:guava:22.0' //간접 의존, 직접 의존하는 모든 모듈을 rebuild 한다
           implementation 'junit:junit:4.12' //직접 의존하는 모듈만 rebuild 한다.
       }
-  
+
       application {
           // 메인 class의 위치와 이름을 적는다.
           mainClass = 'package.name.AppClass'
       }
 
 ### Maven
+
+## Tomcat
+- 다운 받고 압축 풀고 홈 디렉토리로 옮기면 끝
+- Mac home 디렉토리 이동 방법:  파일열고 [command + shifht + H]
+  - cd ~/톰켓디렉토리경로/bin
+  - ./startup.sh <- 톰캣 실행
+  - ./sutdown.sh <- 톰캣 종료
+
+
 
 
