@@ -61,7 +61,7 @@
     % export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home.
     % export PATH=${PATH}:$JAVA_HOME/bin.
 
-## 2. 빌드 도구
+## 2. 의존성 관리 및 빌드 도구
 빌드 도구(Build Tool)란 소프트웨어 개발에 있어서 소스 코드를 실행 가능한 애플리케이션으로 만들어 주는 도구이다. 빌드 과정을 자동화하여 관리하는 기능을 하기 때문에 빌드 관리 도구(Build Management Tool) 또는 빌드 자동화 도구(Build Automation Tool)로 불린다.
 
 빌드 도구의 특징은 개발자가 스크립트를 작성하여 다양한 작업을 수행할 수 있게 한다는 것이다. 예를 들어 소스 코드를 컴파일하거나 패키징할 수 있으며, 테스트를 자동으로 수행하거나 의존성 주입 및 배포 작업을 할 수 있다. 또 빌드 도구 종류에 따라 스크립트 작성 시 사용하는 문법이 다를 수 있는데 일반적으로 XML이나 특정 도메인 언어(ex. Groovy)를 사용한다.
