@@ -493,4 +493,4 @@ Vector와 Hashtable은 동기화(synchronized) 메소드로 구성되어 있기 
 <br>
 <br>
 
-## 3. 자료구
+## 3. 자료구조
