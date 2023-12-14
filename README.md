@@ -173,7 +173,7 @@ Apache 소프트웨어 재단의 오픈소스 웹 서버이다. 클라이언트 
 동적인 페이지를 만들기 위한 웹 컨테이너이다. 서블릿 컨테이너라고 불리며, 웹서버에서 정적으로 처리해야할 데이터를 제외한 JSP, ASP, PHP 등은 웹 컨테이너로 전달된다. (WAS; Web Application Server)
 
 Tomcat이 Apache의 기능 일부를 가져와서 제공해주는 형태이기 때문에 Apache Tomcat이라고 같이 부른다. 
-![img.png](img/img.png)
+![img.png](_img/img.png)
 
 #### Installation
 다운 받고 압축 풀고 홈 디렉토리로 옮기면 끝  
