@@ -91,96 +91,33 @@ long 타입으로 쓰고 싶은 경우 L을 붙여서 long type 임을 컴파일
 > byte < short, char < int < long < float < double
 
 ### 2-1. 자동 타입 변환
-
 자동 타입 변환은 값의 허용 범위가 작은 타입이 큰 타입으로 대입될 때 자동으로 발생한다.
 
-#### int ➡️ float
-
-    // 정수 타입이 실수 타입으로 대입되는 경우 무조건 자동 타입 변환된다.
-
-    long longValue = 5000000000L;
-    float floatValue = longValue;	// 5.0e9f로 저장됨
-    double doubleValue = longValue;	// 5.0e9로 저장됨
-
-#### char ➡️ int
-
-    // char 타입의 경우 int 타입으로 자동 변환되면 유니코드 값이 int타입에 대입된다.
-    char charValue = 'A';
-    int intValue = charValue;       // 65가 저장됨
-
-    // char 타입의 문자를 정수로 반환하려면 ASCII 코드 값을 반환 받은 다음 거기에 - '0'을 해줘야 한다.
-    char charValue = 'A';
-    int intValue = Integer.valueOf(charValue - '0')
+    변환후타입  변수명  =  변환할변수명;
 
 ### 2-2. 강제 타입 변환
 
-허용 범위가 큰 타입은 더 작은 타입으로 자동 타입 변환될 수 없다. 하지만 강제 타입 변환은 가능하다.
+허용 범위가 큰 타입이 더 작은 타입으로 변환하기 위해서는 캐스팅 연산자(데이터타입)로 강제 타입 변환해야 한다.
 
-#### int ➡️ byte
-
-    int intValue = 10
-    byte byteValue = (byte) intValue;   // 캐스팅으로 강제 변환
-
-    // 이때 int의 리터럴이 byte의 할당값을 초과하면 오버플로우가 발생할 수 있음
-
-#### long ➡️ int
-
-    long longValue = 300;
-    int intValue = (int) longValue;	    // 강제타입 변환후 300 그대로 유지
-
-#### int ➡️ char
-
-    int int Value = 65;
-    char charValue = (char) intValue;   // 'A'
-
-#### double ➡️ int
-
-    double doubleValue = 3.14;
-    int intValue = (int) doubleValue;   // 정수 부분인 3만 저장우
+    변환후타입  변수명  =  (변환할타입)  변환할변수명;
+        *int ➡️ byte: int의 리터럴이 byte의 할당값을 초과하면 오버플로우 발생
+        **double/float ➡️ int: 정수 부분만 저장
 
 ### 2-3. 문자열을 기본 타입으로 변환
 
-참조 타입인 문자열을 기본 타입으로 바꾸기 위해서는 parse를 사용해야한다.  
-(다만, 기본타입을 문자열로 바꾸려면 String.valueOf(기본타입)을 사용한다.)
+참조 타입인 문자열을 기본 타입으로 바꾸기 위해서는 parse를 사용해야 한다.  
+(다만, 기본 타입을 문자열로 바꾸려면 String.valueOf(기본타입)을 사용한다.)
 
-#### String ➡️ byte
+    // String ➡️ 기본 타입
+    변환후타입  변수명  =  변환후타입.parse변환후타입(변환할문자열);
 
+    // 예시
     String str = "10";
     byte value = Byte.parseByte(str);
 
-#### String ➡️ short
-
-    String str = "200";
-    short value = Short.parseShort(str);
-
-#### String ➡️ int
-
-    String str = "300000";
-    int value = Integer.parseInt(str);
-
-#### String ➡️ long
-
-    String str = "40000000000";
-    long value = Long.parseLong(str);
-
-#### String ➡️ float
-
-    String str = "12.345";
-    float value = Float.parseFloat(str);
-
-#### String ➡️ double
-
-    String str = "12.345";
-    double value = Double.parseDouble(str);
-
-#### String ➡️ boolean
-
-    String str = "true";
-    boolean value = Boolean.parseBoolean(str);
-
-#### 기본 타입 값 ➡️ String
-
-    String str = String.valueOf(기본 타입 값);
+######
+    // 기본 타입 값 ➡️ String
+    String str = String.valueOf(기본타입);
 
 ### 2-4. 오버플로우와 언더플로우
 

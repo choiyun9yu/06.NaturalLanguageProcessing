@@ -36,7 +36,8 @@
     % curl -s "https://get.sdkman.io" | bash    // SDKMAN 설치
     % echo 'source "$HOME/.sdkman/bin/sdkman-init.sh"' >> ~/.zshrc
     % sdk version
-    % sdk list java                       // 설치 가능 버전 조회 (방향키로 움직여서 선택)
+    % sdk list java                      // 설치 가능 버전 조회 (방향키로 움직여서 선택)
+    % sdk uninstall java {지우려는 버전}    // Java 버전 설치 
     % sdk uninstall java {지우려는 버전}    // Java 버전 지우기 
     % sdk use java {사용하려는 버전}        // Java 버전 변경  
     % sdk current                        // 현재 사용 버전 확인
@@ -162,6 +163,20 @@ Gradle의 task는 Gradle 프로젝트의 작업 단위이다. task는 다른 tas
 ### 2-3. Maven
 메이븐은 ANT 이후에 나온 자바 빌드 도구로 자동으로 라이브러리와 의존성을 관리하는 기능이 있다. Ant와 마찬가지로 XML 스크립트를 기반으로 하며, pom.xml 파일로 의존성을 관리한다. Maven에서는 라이프 사이클 개념이 도입되어 빌드 순서 등을 정의할 수 있다.
 
+
+### 2-4. JAR(Java ARchive)
+Java 패키징 JAR는 Java 애플리케이션을 배포하고 실행하기 위한 표준 아카이브 파일 형식이다. JAR 파일은 여러 Java 클래스 파일, 리소스 및 메타데이터를 하나의 압축된 파일로 묶어서 제공한다.
+- 압축된 형식: ZIP 형식으로 압축되어 있어, 효율적인 파일 전송과 저장 가능하다.
+- 클래스 파일 포함: Java 클래스 파일을 포함하며, 이는 Java 가상 머신(JVM)에서 실행되는 bytecode로 변환된 Java 소스 코드이다.
+- 리소스 및 설정 파일 포함: 클래스 파일 외에도 애플리케이션에서 사용하는 리소스 파일, 설정 파일, 이미지 등을 포함할 수 있다.
+- 메타데이터 및 매니페스트 파일: JAR 파일에는 MAINFEST.MF라는 메타 데이터 파일이 포함된다. 매니페스트 파일은 JAR 파일에 대한 정보와 실행에 필요한 설정을 기술한다.
+- 실행 가능한 JAR 파일: 실행 가능한 JAR 파일은 매니페스트 파일에 Main-Class 속성이 설정되어 있어, 명령줄에서 'java -jar'명령어로 직접 실행할 수 있다.
+
+JAR 파일은 Java 개발 및 배포에서 표준적으로 사용되며, 다양한 라이브러리, 프레임워크, 도구 등이 JAR 파일 형식으로 제공된다.
+
+
+<br>
+<br>
 
 ## 3. Web Server
 
