@@ -196,13 +196,13 @@ long 타입으로 쓰고 싶은 경우 L을 붙여서 long type 임을 컴파일
 
     short var1 = 1;
     int var2 = 2;
-    int var3 = var1 + var2; // 더 큰 그릇으로
+    int var3 = var1 + var2;   // 더 큰 그릇으로
 
-    int var4 = 12 / 0;     // 예외 에러 (ArithmeticException)
-    int var5 = 12 % 0;     // 예외 에러 (ArithmeticException)
+    int var4 = 12 / 0;        // 예외 에러 (ArithmeticException)
+    int var5 = 12 % 0;        // 예외 에러 (ArithmeticException)
 
     float var6 = 12 / 0.0f;   // Infinity
-    float var7 = 12 % 0.0f;    // NaN
+    float var7 = 12 % 0.0f;   // NaN
 
 -   피연산자 중 더 큰 그릇을 가진 자료형을 따라간다.
 -   정확한 연산을 위해서는 정수를 사용하는 것이 좋다.  
