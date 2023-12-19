@@ -494,3 +494,109 @@ Vector와 Hashtable은 동기화(synchronized) 메소드로 구성되어 있기 
 <br>
 
 ## 3. 자료구조
+
+<br>
+<br>
+
+## 4. Java에서 파라미터 전달 방법
+Java는 오로지 Call by Value로만 동작한다.
+
+### 4-1. JVM 메모리에 변수가 저장되는 위치
+Java에서 변수를 선언하면 Stack 영역에 할당된다. 기본형은 Stack 영역에 변수와 함께 저장된다.  
+참조형은 객체는 Heap 영역에 저장되고, Stack 영역에 있는 변수는 Heap의 주소를 저장한다.
+![img.png](.img/img_0.png)
+
+### 4-2. 기본 타입 전달
+기본 타입은 Stack 영역에 위치한다. 메서드 호출 시 넘겨받는 파라미터들도 기본 타입이라면 Stack 영역에 생성된다.
+
+    public calss PrimitiveTypeTest {
+        @Test
+        @DisplayName("Primitive Type 은 Stack 메모리에 저장되어서 변경해도 원본 변수에 영향이 없다.")
+        void test() {
+            int a = 1;
+            int b = 2;
+
+            // Befroe
+            assertEquals(a, 1);
+            assertEquals(b, 2);
+
+            modify(a, b);
+
+            // After: modify(a, b) 호출 후에도 값이 변하지 않음
+            assertEquals(a, 1);
+            assertEquals(b, 2);
+        }
+
+        private void modify(int a, int b) {
+            // 여기 있는 파라미터 a, b는 이름만 같을 뿐 test() 에 있는 a, b와 다른 변수
+            a = 5;
+            b = 10;
+        }
+    }
+
+![img_1.png](.img/img_1.png)
+
+Stack 내부에 test()와 modify()라는 영역이 나뉘어져 있고 거기에 동일한 이름을 가진 변수 a, b가 존재한다.
+
+그래서 modify() 영역의 값을 바꿔도 test() 영역의 변수는 변화가 없다.
+
+**즉, 기본 타입의 전달은 값만 전달하는 Call by Value로 동작한다.**
+
+### 4-3. 참조 타입 전달
+참조 타입은 기본 타입과 조금 다르다. 변수 자체는 Stack 영역에 생성되지만 실제 객체는 Heap 영역에 위치한다.
+
+그리고 Stack에 있는 변수가 Heap 영역에 있는 객체의 주소값을 가지고 있는 형태다.
+
+    class User {
+        public int age;
+
+        public User(int age) {
+            this.age = age;
+        }
+    }
+
+    public class ReferenceTypeTest {
+        
+        @Test
+        @DisplayName("Reference Type 은 주소값을 넘겨 받아서 같은 객체를 바라본다" +
+                     "그래서 변경하려면 원본 변수에도 영향이 있다.)
+        void test() {
+            User a = new User (10);
+            User b = new User (20);
+
+            // Before
+            assertEquals(a.age, 10);
+            assertEqulas(b.age, 20);
+
+            modify(a, b);
+
+            // After
+            assertEquals(a.age, 11);
+            assertEquals(b.age, 20);
+        }
+        
+        private void modify(User a, User b) {
+            // a, b와 이름이 같고 같은 객체를 바라본다.
+            // 하지만 test 에 있는 변수와 확실히 다른 변수다.
+        
+            // modify 의 a와 test의 a는 같은 객체를 바라봐서 영향이 있다.
+            a.age++;
+
+            // b에 새로운 객체를 할당하면 가리키는 객체가 달라지고 원본에는 영향이 없다.
+            b = new User(30);
+            b.age++;
+        }
+    }
+
+![img_2.png](.img/img_2.png)  
+![img_3.png](.img/img_3.png)  
+![img_4.png](.img/img_4.png)   
+![img_5.png](.img/img_5.png)
+
+### Conclusion
+
+주소값을 넘기는 게 결국 Call by Reference 같지만
+
+Call by Reference 는 참조 자체를 넘기기 때문에 새로운 객체를 할당하면 원본 변수도 영향을 받는다.
+
+가장 큰 핵심은 호출자 변수와 수산지 파라미터는 Stack 영역 내에서 각각 존재하는 다른 변수라는 점이다.

@@ -1,5 +1,13 @@
 # JAVA BASIC
 
+- psvm: public static void main(String args) 단축어
+- sout: System.out.println 단축어
+- iter: 향상된 for문 단축어
+
+- Shift + F6: 아래 같은 변수명 같이 선택
+- Ctrl + Shift + 10F: 실행
+- Ctrl + Alt + V: 변수명 추천
+
 ## 1. 클래스와 데이터
 
 ### 1-1. 클래스가 필요한 이유
@@ -35,12 +43,13 @@
 - 클래스 배열을 사용하면 특정 타입을 연속한 데이터 구조로 묶어서 편리하게 관리할 수 있다.
 - Student 타입을 보관할 수 있는 Students 배열을 만들면 배열은 Student 타입의 참조값을 보관하는 배열로 생성된다.   
   (배열에는 아직 참조값을 대입하지 않았기 때문에 참조값이 없다는 의미의 null 값으로 초기화 된다.)
-- **!자바에서 대입은 항상 변수에 들어 있는 값을 복사한다!**
+- **대원칙: 자바는 항상 변수의 값을 복사해서 대입한다!**
 - **!변수에는 인스턴스 자체가 들어 있는 것이 아니라 인스턴스의 위치를 가르키는 참조 값이 들어있을 뿐이다!**
 - 따라서 인스턴스가 복사되는 것이 아니라 인스턴스에 접근할 수 있는 참조값만 복사된다. (인스턴스가 아니라 접근하는 방법이 늘어나는 것)
 - 이런경우 반복문을 향상된 for문을 사용해서 최적화하면 좋다. (iter 입력하면 자동 생성)
 
 ### 1-6. 배열 도입 - 리펙토링
+- iter를 치면 향상된 for문을 사용할 수 있음 (forEach)
 
 ### 1-7. 문제와 풀이
 
@@ -49,18 +58,101 @@
 ## 2. 기본형과 참조형
 
 ### 2-1. 기본형 vs 참조형1 -시작
+- 변수의 데이터 타입을 가장 크게 두가지로 나누면 기본형과 참조형으로 나눌 수 있다.
+  - 기본형(Primitive Type): int, long, double, boolean 처럼 변수에 사용할 값을 직접 넣을 수 있는 타입
+  - 참조형(Reference Type): 객체, 배열 처럼 데이터에 접근하기 위한 참조(주소)값을 넣는 타입  
+    (객체는 .을 이용해서 요소에 접근하고, 배열은 [ ]를 이용해서 소요에 접근한다.)
+- 기본형은 들어있는 값을 그대로 계산에 사용할 수 있고, 참조형은 들어 있는 참조값 그대로 사용할 수 없다.  
+  (참조값에서 안의 기본형 멤버에 접근해서 계산해야 한다.)
 
 ### 2-2. 기본형 vs 참조형2 -변수 대입
+- **대원칙: 자바는 항상 변수의 값을 복사해서 대입한다!**
+- 기본형, 참조형 모두 항상 각각의 변수에 있는 실제값, 참조값을 복사해서 대입한다.
+####
+    // 기본형
+    int a = 10;
+    int b = a;    // a에 있는 10을 복사해서 b에 대입
+
+    // 참조형
+    Student s1 = new Student();
+    Student s2 = s1;  // s1이 가지고 있는 인스턴스의 주소를 복사해서 s2에 대입
+                      // 인스턴스가 복사되는 것이 아니라 주소만 복사하는 것이다.
 
 ### 2-3. 기본형 vs 참조형3 -메서드 호출
+- **대원칙: 자바는 항상 변수의 값을 복사해서 대입한다!**
+- (call by value) 메서드 호출도 마찬가지이다. 메서드를 호출할 때 사용하는 매개변수(파라미터)도 결국 변수일 뿐이다.  
+  따라서 메서드를 호출할 때 매개변수에 값을 전달하는 것도 앞서 설명한 내용과 같이 값을 복사해서 전달한다.  
+- call by value 가 call by reference 와 다른 점은 매개 변수에 다른 값을 대입하는 경우 드러난다.  
+  call by value로 주소 값을 복사 받은 경우 외부 객체는 변하지 않지만,  
+  만약 call by reference 였다면 외부 객체도 같이 변한다.
 
 ### 2-4. 참조형과 메서드 호출 -활용
+- 아래 코드의 중복을 메서드를 통해 손쉽게 제거할 수 있다.
+####
+    Student student1;
+        
+    student1 = new Student();
+    student1.name = "학생1";
+    student1.age = 15;
+    student1.grade = 90;
+
+    Student student2 = new Student();
+    student2.name = "학생2";
+    student2.age = 16;
+    student2.grade = 80;
+
+    System.out.println("이름:" + student1.name + " 나이:" + student1.age + " 성적:" + student1.grade);
+    System.out.println("이름:" + student2.name + " 나이:" + student2.age + " 성적:" + student2.grade);
+
+- 메서드로 손쉽게 제거
+####
+    public static void main(String[] args) {
+        Student student1 = creatStudent("학생1", 15, 90);
+        Student student2 = creatStudent("학생2", 16, 80);
+
+        printStudent(student1);
+        printStudent(student2);
+    }
+
+    static Student creatStudent(String name, int age, int grade) {
+        Student student = new Student();
+        student.name = name;
+        student.age = age;
+        student.grade = grade;
+        return student;
+    }
+
+    static void printStudent(Student student) {
+        System.out.println("이름:" + student.name + " 나이:" + student.age + " 성적:" + student.grade);
+    }
+- 메서드 안에서 객체를 생성한 경우 객체를 메서드 밖에서 사용할 수 있게 return 해줘야 한다.
 
 ### 2-5. 변수와 초기화
+#### 변수의 종류
+- 멤버 변수(필드): 클래스에 선언
+- 지역 변수: 메서드에 선언, (매개 변수도 지역변수의 한 종류이다.)
+
+#### 변수의 값 초기화
+- 멤버 변수: 자동 초기화
+  - 인스턴스의 멤버 변수는 인스턴스를 생성할 때 자동으로 초기화 된다.
+  - 숫자(int)=0, boolean=false, 참조형=null (**null 값은 참조할 대상이 없다는 의미이다.**)
+  - 개발자가 초기값을 직접 지정할 수 있다.
+- 지역 변수: 수동 초기화
+  - 지역 변수는 학상 직접 초기화 해야 한다.
 
 ### 2-6. null
+- **null 값은 참조할 대상이 없다는 의미이다.**
+- 참조형 변수에는 항상 객체가 있는 위치를 가리키는 참조값이 들어간다.  
+  그런데 아직 가리키는 대상이 없거나 가리키는 대상ㅇ르 나중에 입력하고 싶을 때 null을 넣어 둔다.
+- GC(가비지 컬렉션): 인스턴스를 아무도 참조하기 않게되면 해당 인스턴스에 다시 접근할 방법이 없다.  
+  이렇게 아무도 참조하지 않는 인스턴스는 사용되지 않고 메모리 용량만 차지할 뿐이다.  
+  자바는 이런 인스턴스를 JVM이 가비지 컬렉션을 사용해서 자동으로 메모리에서 제거한다.
 
 ### 2-7. NullPointerException
+- 참조(주소)값이 없는 참조형 변수를 point(.)로 사용하려고 할 때 발생한다.
+- 지역 변수의 경우에는 null 문제를 파악하는 것이 어렵지 않다.  
+  그러나 멤버 변수가 null 인 경우에는 주의가 필요하다.
+- 참조형 변수가 null을 가리키는 것이 문제니까 인스턴스를 할당해서 참조값을 넣어주면 해결된다.
 
 ### 2-8. 문제와 풀이
 
