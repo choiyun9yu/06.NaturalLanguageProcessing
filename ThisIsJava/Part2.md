@@ -504,7 +504,7 @@ Java는 오로지 Call by Value로만 동작한다.
 ### 4-1. JVM 메모리에 변수가 저장되는 위치
 Java에서 변수를 선언하면 Stack 영역에 할당된다. 기본형은 Stack 영역에 변수와 함께 저장된다.  
 참조형은 객체는 Heap 영역에 저장되고, Stack 영역에 있는 변수는 Heap의 주소를 저장한다.
-![img.png](.img/img_0.png)
+![img.png](../.img/img_0.png)
 
 ### 4-2. 기본 타입 전달
 기본 타입은 Stack 영역에 위치한다. 메서드 호출 시 넘겨받는 파라미터들도 기본 타입이라면 Stack 영역에 생성된다.
@@ -534,7 +534,7 @@ Java에서 변수를 선언하면 Stack 영역에 할당된다. 기본형은 Sta
         }
     }
 
-![img_1.png](.img/img_1.png)
+![img_1.png](../.img/img_1.png)
 
 Stack 내부에 test()와 modify()라는 영역이 나뉘어져 있고 거기에 동일한 이름을 가진 변수 a, b가 존재한다.
 
@@ -588,10 +588,10 @@ Stack 내부에 test()와 modify()라는 영역이 나뉘어져 있고 거기에
         }
     }
 
-![img_2.png](.img/img_2.png)  
-![img_3.png](.img/img_3.png)  
-![img_4.png](.img/img_4.png)   
-![img_5.png](.img/img_5.png)
+![img_2.png](../.img/img_2.png)  
+![img_3.png](../.img/img_3.png)  
+![img_4.png](../.img/img_4.png)   
+![img_5.png](../.img/img_5.png)
 
 ### Conclusion
 
