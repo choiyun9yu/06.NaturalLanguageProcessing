@@ -1,4 +1,4 @@
-package class1;
+package class01;
 
 public class ClassStart5 {
     public static void main(String[] args) {

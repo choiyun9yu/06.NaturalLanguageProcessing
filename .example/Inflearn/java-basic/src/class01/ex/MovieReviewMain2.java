@@ -1,4 +1,4 @@
-package class1.ex;
+package class01.ex;
 
 /*
 * 기존 문제에 배열을 도입하고, 영화 리뷰를 배열로 관리하자.

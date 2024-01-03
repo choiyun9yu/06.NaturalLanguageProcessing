@@ -1,4 +1,4 @@
-package class1.ex;
+package class01.ex;
 
 /*
  * 문제 설명
