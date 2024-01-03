@@ -183,10 +183,6 @@ JAR 파일은 Java 개발 및 배포에서 표준적으로 사용되며, 다양�
 
     % gradle init --type java-application
         Select build script DSL : Kotlin / Groovy
-    
-    
-
-
 
 <br>
 <br>
