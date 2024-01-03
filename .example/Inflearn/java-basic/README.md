@@ -1,13 +1,16 @@
 # JAVA BASIC
-
 - psvm: public static void main(String args) 단축어
 - sout: System.out.println 단축어
 - iter: 향상된 for문 단축어
-
+####
 - Shift + F6 : 아래 같은 변수명 같이 선택
 - Ctrl + Shift + 10F : 실행
-- Ctrl + Alt + V : 변수명 추천
+- Ctrl + Alt + V: introduce variable 로 변수 이름 자동 추천
 - F2 : Next Highlighted Error
+- Ctrl + W: 커서가 있는 단어 블록 지정
+#### for mac
+- cmd + N - Generator: 기본 생성자 자동 생성 
+- ctrl + 위 화살표: 커서가 있는 단어 블록 지정 
 
 ## 1. 클래스와 데이터
 
@@ -306,7 +309,7 @@
 - 패키지 덕분에 클래스 이름이 같아도 패키지 이름으로 구분해서 같은 이름의 클래스를 사용할 수 있다.
 - pack.a.User 와 pack.b.User 둘 다 사용하고 싶으면 어떻게할까?  
   어쩔 수 없이 둘 중 하나는 풀네임으로 써야함
-####
+######
         User userA = new User();                // 다른 위치(import)
         pack.b.User userB = new pack.b.User();  // 다른위치(풀네임)
 
@@ -342,39 +345,327 @@
 - 좋은 프로그램은 무한한 자유도가 있는 프로그램이 아니라 적젏한 제약이 있는 프로그램이다. 
 
 ### 6-3. 접근 제어자 종류
+- private: 모든 외부 호출 금지
+- default: 같은 패키지 내부 허용  
+- protected: 패키지 + 상속 관계 허용 
+- public: 모든 외부 호출 허용 
 
+#### package-private
+- 접근 제어자를 명시하지 않으면 같은 패키지 안에서 허용을 호출하는 default 접근 제어자가 적용된다.
+- default라는 용어는 해당 접근 제어자가 기본값으로 사용되기 때문에 붙여진 이름이지만,
+  실제로는 pacakge-pricate이 더 정확한 표현이다. 
+
+#### 접근 제어자 사용 위치
+- 접근 제어자는 필드와 메서드, 생성자에 사용된다. 
+- 클래스 레벨에도 일부 접근 제어자를 사용할 수 있다.
+- 지역 변수 안에서는 접근 제어자가 의미가 없다.
+
+#### 접근 제어자의 핵심은 속성과 기능을 외부로부터 숨기는 것이다. 
+- private 은 나의 클래스 안으로 속성과 기능을 숨길 때 사용한다.
+- default 는 나의 패키지 안으로 속성과 기능을 숨길 때 사용한다.
+- protected 는 상속 관계로 속성과 기능을 숨실 때 사용한다.
+- public 은 기능을 숨기지 않고 어디서든 호출할 수 공개한다.
 
 ### 6-4. 접근 제어자 사용 -필드, 메서드
+- 위에서 정의한 것과 같다.
 
 ### 6-5. 접근 제어자 사용 -클래스 레벨
+- 클래스 레벨의 접근 제어자는 public, default만 사용할 수 있다.
+- public 클래스는 반드시 파일명과 클래스명이 같아야 한다. 
+  - 하나의 자바 파일에 public 클래스는 하나만 만들 수 있다.
+  - 하나의 자바 파일에 default 클래스는 여러개 만들 수 있다.
 
-### 6-6. 캡슐화
+### 6-6. 캡슐화(Encapsulation)
+- 캡슐화는 데이터와 해당 데이터를 처리하는 메서드를 하나로 묶어서 외부에서 접근을 제한하는 것을 말한다.
+- 캡슐화를 통해 데이터의 직접적인 변경을 방지하거나 제한할 수 있다.
+- 캡슐화는 쉽게 이야기해서 속성과 기능을 하나로 묶고, 외부에서 꼭 필요한 기능만 노출하고 나머지는 모두 내부로 숨기는 것이다.
+
+#### 데이터를 숨겨라 (속성)
+- 캡슐화에서 가장 필수로 숨겨야하는 것은 속성이다. 
+- 객체 내부의 데이터를 외부에서 접근하게 두면, 클래스 안에서 데이터를 다루는 모든 로직을 무시하고,  
+  데이터를 변경할 수 있게된다. 결국 모든 안전망을 다 빠져 나가 캡슐화가 깨진다.
+- 객체의 데이터는 객체가 제공하는 기능인 메서드를 통해 접근해야 한다.
+- 특별한 이유가 없는 한 속성은 대부분 private 으로 막아 둔다.
+
+#### 기능을 숨겨라 (메서드)
+- 객체 기능 중 외부에서 사용하지 않고 내부에서만 사용하는 기능들은 감추는 것이 좋다.
+
+#### 캡슐화 예시 BanckAccount
 
 ### 6-7. 문제와 풀이
 
 <br>
 
 ## 7. 자바 메모리 구조와 static
+- 메서드 영역: 클래스 정보를 보관한다. 이 클래스 정보가 붕어빵 틀이다.
+- 스택 영역: 실제 프로그램이 실행되는 영역이다. 메서드를 실행할 때마다 하나씩 쌓인다.
+- 힙 영역: 객체(인스턴스)가 생성되는 영역이다. new 명령어를 사용하면 이 영역을 사용한다.   
+  쉽게 이야기해서 붕어빵 틀로 부터 생성된 붕어빵이 존재하는 공간이다. (배열도 이 영역에 생성된다.)
 
 ### 7-1. 자바 메모리 구조
+![img.png](img.png)
+
+#### 메서드 영역 (Method Area)
+- 메서드 영역은 프로그램을 실행하는데 필요한 공통 데이터를 관리한다. 
+- 이 영역은 프로그램의 모든 영역에서 공유한다.
+  - 클래스 정보: 클래스의 실행 코드(바이트 코드), 필드, 메서드와 생성자 코드 등 모든 실행 코드가 존재한다.
+  - static 영역: static 변수들을 보관한다.
+  - 런타임 상수 풀: 프로그램이 실행하는데 필요한 공통 리터럴 상수를 보관한다.   
+    (예를 들어 프로그램에 "hello"라는 리터럴 문자가 있으면 이런 문자를 공통으로 묶어서 관리한다.)
+
+#### 스택 영역 (Stack Area)
+- 자바 실행 시, 하나의 실행 스택이 생성 된다. 
+- 각 스택 프레임은 지역 변수, 중간 연산 결과, 메서드 호출 정보 등을 포함 한다.
+  - 스택 프레임: 스택 영역에 쌓이는 네모 박스가 하나의 스택 프레임이다.
+  - 메서드를 호출할 때 마다 하나의 스택 프레임이 쌓이고, 메서드가 종료되면 해당 스택 프레임이 제거 된다.
+*스택 영역은 더 정확히는 각 쓰레드별로 하나의 실행 스택이 생성된다. 따라서 쓰레드 수 만큼 스택 영역이 생성된다. 
+
+#### 힙 영역 (Heap Area)
+- 객체(인스턴스)와 배열이 생성되는 영역이다.
+- 가비지 컬렉션이 이뤄어지는 주요 영역이다. 
+
+#### 메서드 코드는 메서드 영역에 
+![img_1.png](img_1.png)
+
+- 자바에서 특정 클래스로 100개의 인스턴스를 생성하면, 힙 메모리에 100개의 인스턴스가 생기고 각각의 인스턴스는 내부에 변수와 메서드를 가진다.
+- 같은 클래스로 부터 생성된 객체는 인스턴스 내부의 변수 값은 서로 다를 수 있지만, 메서드는 공통된 코드를 공유한다.
+- 따라서 객체가 생성될 때, 인스턴스 변수에는 메모리가 할당되지만, 메서드에 대한 새로운 메모리 할당은 없다. 
+- 메서드는 메서드 영역에서 공통으로 관리되고 실행되기 때문이다. 
 
 ### 7-2. 스택과 큐 자료 구조
 
+#### 스택 구조 (LIFO)
+
+#### 큐 구조 (FIFO)
+
 ### 7-3. 스택 영역
+- 자바는 스택 영역을 사용해서 메서드 호출과 지역 변수 (매개변수 포함)를 관리한다.
+- 메서드를 계속 호출하면 스택 프레임이 계속 쌓인다.
+- 지역 변수(매개변수 포함)는 스택 영역에서 관리한다.
+- 스택 프레임이 종료되면 지역 변수도 함께 제거된다.
+- 스택 프레임이 모두 제거되면 프로그램도 종료된다.
 
 ### 7-4. 스택 영역과 힙 영역
+- 스택 영역에서 동작하는 메소드는 힙 영역에 생성된 인스턴스를 참조한다.
+- 외부 영역에서 힙 영역 안의 인스턴스를 더이상 참조하지 않을 때 GC가 제거한다.
+- **힙 영역 안에서 힙 영역 안을 참조하더라도 외부에서 참조할 방법이 없기 때문에 GC가 제거한다.**
+####
+- 지역 변수는 스택 영역에서 관리 된다.
+- 객체(인스턴스)는 힙 영역에서 관리 된다.
+- 정적 변수는 메서드 여역에서 관리 된다.
 
 ### 7-5. static 변수1
+- static 키워드는 주로 멤버 변수와 메서드에 사용된다.
+######
+    // 객체가 생성될 때마다 count를 증가시켜 객체가 몇 개 생성되어 있는지 확인
+
+    public class Data1 {
+        public String name;
+        public int count;
+    
+        public Data1(String name) {
+            this.name = name;
+            count++;
+        }
+    }
+######
+    public class DataCountMain1 {
+        public static void main(String[] args) {
+            Data1 data1 = new Data1("A");
+            System.out.println("data1 count = " + data1.count);   // Data1 count = 1
+    
+            Data1 data2 = new Data1("A");
+            System.out.println("data2 count = " + data2.count);   // Data1 count = 1
+    
+            Data1 data3 = new Data1("A");
+            System.out.println("data3 count = " + data3.count);   // Data1 count = 1
+        }
+    }
+- 1, 1, 1 이 나오는 이유는 Data1의 멤버 변수인 count는 Heap 영역에 data1, data2, data3 각각 생성 되기 때문이다.
+- 객체를 생성할 때마다 Data1 인스턴스는 새로 만들어지고 그 인스턴스에 포함된 count 변수도 새로 만들어지기 때문이다.
+- **인스턴에 사용되는 멤버 변수 count 값은 인스턴스 끼리 서로 공유되지 않는다.**
+######
+![img_2.png](img_2.png)
+######
+- 이 문제를 해결하기 위해서는 변수를 서로 공유해야 한다. 
+######
+    public class Counter {
+        public int count;
+    }
+######
+    public class Data2 {
+        public String name;
+        
+            public Data2(String name, Counter counter) {
+                this.name = name;
+                counter.count++;
+            }
+    }
+######
+    public class DataCountMain2 {
+        public static void main(String[] args) {
+            Counter counter = new Counter();
+            Data2 data1 = new Data2("A", counter);
+            System.out.println("data1 count = " + counter.count);
+    
+            Data2 data2 = new Data2("B", counter);
+            System.out.println("data2 count = " + counter.count);
+    
+            Data2 data3 = new Data2("C", counter);
+            System.out.println("data3 count = " + counter.count);
+        }
+    }
+######
+![img_6.png](img_6.png)
+![img_7.png](img_7.png)
+######
+- 그런데 이렇게하면 Data2에 대한 속성이 밖에 정의 되어 있어서 불편하다.
 
 ### 7-6. static 변수2
+- 특정 클래스에서 공용으로 함께 사용할 수 있는 변수를 만들 수 있다면 편리할 것이다.
+- static 키워드를 사용하면 공용으로 함께 사용하는 변수를 만들 수 있다.
+- static 키워드를 붙이면 정적 변수 혹은 클래스 변수라고 한다. 
+- 위 문제를 해결하기 위해 count 속성에 static 키워드를 명시해서 메소드 영역에 counter를 두고 공유하면 된다.
+######
+    public class Data3 {
+        public String name;
+        public static int count;
+    
+        public Data3(String name) {
+            this.name = name;
+            count++;
+        }
+    }
+######
+    public class DataCountMain3 {
+        public static void main(String[] args) {
+            Data3 data1 = new Data3("A");
+            System.out.println("Data3 count = " + data1.count);
+    
+            Data3 data2 = new Data3("B");
+            System.out.println("Data3 count = " + data2.count);
+    
+            Data3 data3 = new Data3("C");
+            System.out.println("Data3 count = " + data3.count);
+        }
+    }
+- static 키워드가 붙은 변수는 힙 영역에서 관리하는 것이 아니라 메서드 영역에서 관리한다.
+- 쉽게 말해, 붕어빵에서 관리하는 변수가 아니라 붕어빵 틀에서 관리하는 변수이다.  
+  붕어빵 틀은 1개 이므로 클래스 변수도 하나만 존재한다. 
+- 클래스 안에서 공용으로 쓴다고 생각하면 편하다. 그래서 클래스 변수라고도 한다. 
 
 ### 7-7. static 변수3
+#### 멤버 변수(필드)
+- 인스턴스 변수: static이 붙지 않은 멤버 변수, 인스턴스를 생성해야 사용 가능하다.
+- 클래스 변수: static이 붙은 멤버 변수, 인스턴스와 무관하게 클래스에 바로 접근해서 사용 가능하다.
+
+#### 변수와 생명주기
+- 지역 변수(스택 영역): 메소드 호출과 함께 생성되고 메서드가 종료되면 지역 변수도 함께 제거된다.  
+- 인스턴스 변수(힙 영역): 생성자에 의해 성성되고 스택 영역에서 더이상 참조하는 메서드가 없을 때 GC에 의해 제거된다.
+- 클래스 변수(메서드 영역): JVM에 로딩 되는 순간 생성되고 JVM이 종료될 때 제거된다. 
+
+#### 정적 변수 접근 법 
+- static 변수는 클래스를 통해 바로 접근할 수도 있고, 인스턴스를 통해서도 접근할 수 있다.
+- 그러나 인스턴스를 통한 접근은 권장되지 않는다. (인스턴스 변수인지 클래스 변수인지 헷갈려서)
+######
+    // 인스턴스를 통한 접근
+    Data3 data4 = new Data3("D");
+    System.out.println(data4.count);
+
+    // 클래스를 통한 접근
+    System.out.println(Data3.count);
 
 ### 7-8. static 메서드1
+- 멤버 변수도 없고 대입 받은 인자로 기능만 제공하는 경우 인스턴스를 생성하는데 의미가 없다.
+######
+    public class DecoUtil1 {
+    
+        public String deco(String str) {
+            return "*" + str + "*";
+        }
+    }
+######
+    public class DecoMain1 {
+    
+        public static void main(String[] args) {
+            String s = "hello java";
+            DecoUtil1 utils = new DecoUtil1();
+            String deco = utils.deco(s);
+    
+            System.out.println("before: " + s);
+            System.out.println("after: " + deco);
+        }
+    }
+- 이렇게 인스턴스 생성이 큰 의미가 없는 경우 static 메서드로 사용한다.
+- 인스턴스를 생성하지 않고 클래스를 통해 바로 접근이 가능하다.
+######
+    public class DecoUtil2 {
+    
+        public static String deco(String str) {
+            return "*" + str + "*";
+        }
+    }
+######
+    public class DecoMain2 {
+    
+        public static void main(String[] args) {
+            String s = "hello java";
+            String deco = DecoUtil2.deco(s);
+    
+            System.out.println("before: " + s);
+            System.out.println("after: " + deco);
+        }
+    }
 
 ### 7-9. static 메서드2
+#### 정적 메소드 사용시 주의 사항 
+- static 메서드는 static 만 사용할 수 있다.
+  - 클래스 내부의 기능을 사용할 때, 정적 메서드는 static이 붙ㅌ은 정적 메서드나 정적 변수만 사용할 수 있다.
+  - 클래스 내부의 기능을 사용할 때, 정적 메서드는 인스턴스 변수나, 인스턴스 메서드를 사용할 수 없다.
+    (인스턴스 변수나 메서드는 생성이 전제되어야 하는데 static 메서드는 생성 절차가 필요 없기 때문에 생성 전에 참조하는 문제가 발생할 수 있다.)
+- 반대로 모든 곳에서 static 을 호출할 수 있다.
+  - 정적 메서드 역시 정적 변수 처럼 공용으로 사용할 수 있다.
+  - 아무리 static 이라고 해도 접근 제한자 영향은 받는다.
+
+***물론 객체의 참조 값을 직접 매개 변수로 전달하면 정적 메서드도 인스턴스의 변수나 메서드를 호출할 수 있다.** 
 
 ### 7-10. static 메서드3
+#### 멤버 메서드
+- 클래스 메서드: 인스턴스 생성 없이 클래스를 통해 바로 호출 가능
+- 인스턴스 메서드: 인스턴스를 생성하고 그 인스턴스를 통해 호출 가능
+
+#### 정적 메서드 활용
+- 정적 메서드는 객체 생성 없이 메서드의 호출만으로 필요한 기능을 수행할 때 주로 사용한다.  
+  (예를 들어 간단한 메서드 하나로 끝나는 유틸성 메서드에 자주 사용한다.)
+
+#### 정적 메서드 접근 법
+- static 메서드는 static 변수와 마찬가지로 클래스를 통해 바로 접근할 수 있고 인스턴스를 통해 접근할 수 있다. 
+- 역시 인스턴스를 통한 접근은 추천하지 않는다.
+######
+    // 인스턴스를 통한 접근 
+    DecoData data3 = new DecoData();
+    data3.staticCall();
+
+    // 클래스를 통한 접근 
+    DecoData.staticCall();
+
+#### static import 
+- 클래스를 통해 접근하는데 클래스를 쓰는게 번거롭다면 class의 static을 import 해서 사용할 수 있다.
+- 정적 메소드와 정적 변수 모두에게 쓸 수 있다.
+######
+    import static static2.DecoData.staticCall;
+
+    public class DecoDataMain {
+    
+        public static void main(String[] args) {
+            System.out.println("1. 정적 호출");
+            staticCall();
+    }
+
+#### main() 메서드는 정적 메서드 이다.
+- main가 정적 메서드이기 때문에 메소드나 변수를 사용하고자 하면 static으로 사용 했다.
+- 더 정확하게는 정작 메서드는 같은 클래스의 내부에서 정적 변수와 정적 메서드만 호출할 수 있다.
+- 다른 클래스의 정적 메서드나 정적 변수를 사용하고자 한다면 참조 값을 매개 변수로 입력 받아야 한다.
 
 ### 7-11. 문제와 풀이
 
