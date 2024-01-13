@@ -35,9 +35,11 @@
     # SDKMAN으로 Gradle 설치
     % curl -s "https://get.sdkman.io" | bash    // SDKMAN 설치
     % echo 'source "$HOME/.sdkman/bin/sdkman-init.sh"' >> ~/.zshrc
+    // 터미널 재시작
+    
     % sdk version
     % sdk list java                      // 설치 가능 버전 조회 (방향키로 움직여서 선택)
-    % sdk uninstall java {지우려는 버전}    // Java 버전 설치 
+    % sdk install java {지우려는 버전}    // Java 버전 설치 
     % sdk uninstall java {지우려는 버전}    // Java 버전 지우기 
     % sdk use java {사용하려는 버전}        // Java 버전 변경  
     % sdk current                        // 현재 사용 버전 확인
