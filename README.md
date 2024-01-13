@@ -39,11 +39,13 @@
     
     % sdk version
     % sdk list java                      // 설치 가능 버전 조회 (방향키로 움직여서 선택)
-    % sdk install java {지우려는 버전}    // Java 버전 설치 
+    % sdk install java {설치 버전}      // Java 버전 설치 
     % sdk uninstall java {지우려는 버전}    // Java 버전 지우기 
     % sdk use java {사용하려는 버전}        // Java 버전 변경  
-    % sdk current                        // 현재 사용 버전 확인
+    % sdk current                       // 현재 사용 버전 확인
     % sdk default java {사용하려는 버전}    // Java 디폴터 버전 설정
+
+    % echo $JAVA_HOME                   // 터미널 재시작하면 환경 변수 설정되어 있음
 
     # SDKMAN 지우기
     % rm -rf ~/.sdkman
