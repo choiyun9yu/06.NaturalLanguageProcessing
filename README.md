@@ -98,7 +98,7 @@ Gradle은 Maven의 XML을 사용하여 프로젝트가 커지는 경우 장황�
     % sudo apt install gradle       // Gradle 설치
     % gradle --version              // 설치 확인
 
-    % sdk install grade {버전}       // SDK로 Gradle 설치
+    % sdk install gradle {버전}      // SDK로 Gradle 설치
 
 #### Gradle 시작하기
 
