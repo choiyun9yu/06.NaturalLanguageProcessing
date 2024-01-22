@@ -1,4 +1,4 @@
-package a;
+package pack05.a;
 
 public class User {
     public User() {

@@ -810,20 +810,162 @@
 
 <br>
 
-## 10. 다형성1
+## 10. 다형성1(Ploymorphism)
+- 객체지향 프로그래밍의 대표적인 특징으로는 캡슐화, 상속, 다형성이 있다. 
+- 다형성은 다양한 형태 or 여러 형태를 의미한다.
+- 프로그래밍에서 다형성은 한 객체가 여러 타입의 객체로 취급될 수 있는 능력을 뜻한다.
+- 보통 하나의 객체는 하나의 타입으로 고정되어 있다. 그러나 다형성을 사용하면 하나의 객체가 다른 타입으로 사용될 수 있다.
 
-### 10-1. 다형성 시작
+### 10-1. 다형적 참조
+- 부모 타입의 변수가 자식 인스턴스를 참조할 수 있다.  
+![img_1.png](img_1.png)
+  - Parent 타입의 변수에 Child 클래스의 생성자로 Child 인스턴스를 만든다.
+  - Child 인스턴스는 Parent를 상속 받고 있기 때문에 자신과 부모 인스턴스를 모두 생성한다.
+  - 생성된 참조값을 Parent 타입의 변수인 ploy에 저장한다.
+######
+- **JAVA 에서 부모는 자식을 담을 수 있다.** 
+  - 자식 타입의 자식 타입인 자손도 다 담을 수 있다.
+  - 이렇게 부모 타입이 자손 타입들을 다양하게 참조할 수 있어서 다형적 참조라고 부른다.
+  - 그러나 자식 타입은 부모 타입을 담을 수 없다.
+######
+- 다형적 참조의 한계   
+![img_3.png](img_3.png)
+  - Parent 타입으로 선언된 변수가 Child 인스턴스를 생성하더라도 childMothod는 호출할 수 없다.
+  - Parent에는 상속 받은 객체에 대한 어떠한 정보도 없다.
+  - 따라서 상속 관계에서 부모 방향으로 찾아 올라갈 순 있지만, 자식 방향으로 찾아 내려갈 순 없다.
+  - 이런 경우 캐스팅을 통해 자식 타입 변수로 바꿔야 한다.
 
 ### 10-2. 다형성과 캐스팅
+- 다운 캐스팅(부모 타입 -> 자식 타입): 부모 타입을 자식 타입으로 캐스팅 하는 것이다.
+  - 참고로 캐스팅 한다고 해서 Parent poly 의 타입이 변하는 것은 아니다.  
+  해당 참조값을 꺼내고, 꺼낸 참조값이 Child 타입이 되는 것이다.   
+  따라서 poly 타입은 Parent 로 기존과 같이 유지된다. 
+![img.png](img.png)
+#### 실행 순서 
+    Child child = (Child) poly  // 다운 캐스팅을 통해 부모 타입을 자식 타입으로 변환한 다음에 대입 시도 
+    Child child = (Child) x001  // 참조값을 읽은 다음 자식 타입으로 지정 
+    Child child = x001          // 최종 결과
+
+- 업 캐스팅(자식 타입 -> 부모 타입)
 
 ### 10-3. 캐스팅의 종류
 
+#### 일시적 다운 캐스팅
+- 다운 캐스팅 결과를 변수에 담아지 않고 자식 타입의 인스턴스에 접근하는 방법이다.
+- 자식 인스턴스의 기능을 호출하는 순간만 잠깐 다운 캐스팅 된다.  
+- 괄호를 이용해서 연산자 우선순위를 바꾸기 때문에 가능하다.
+  ![img_2.png](img_2.png)
+######
+    ((Child) ploy).childMethod()  // 다운 캐스팅을 통해 부모 타입을 자식 타입으로 변환 후 기능 호출
+    ((Child) x001).childMethod()  // 참조 값을 읽은 다음 자식 타입으로 다운 캐스팅 
+  - Java 는 변수에 새로운 값을 대입하지 않는 이상 절대로 변수 값이 바뀌지 않는다.
+  - 변수에 있는 값을 꺼내와서 작업을 한다. 따라서 기존값은 그대로 유지된다.
+
+#### 업 캐스팅
+- 다운 캐스팅과 반대로 현재 타입을 부모 타입으로 변경하는 것이다.
+- 업 캐스팅은 생략 할 수 있다. (생략 권장) 그래서 부모는 자식을 담을 수 있다고 표현 하기도 한다.
+######
+    Child child = new Child();
+    Parent parent1 = (Parent) child;    // 업 캐스팅
+    Parent parent2 = child;             // 업 캐스팅 생략 가능 (생략 권장)
+
+    parent1.parentMethod();
+    parent2.parentMethod();
+
 ### 10-4. 다운캐스팅과 주의점
+- 업 캐스팅은 문제가 되지 않아서 생략해도 되고, 다운 캐스팅은 문제가 될 수 있기 때문에 명시적으로 표시 해야한다.
+- 다운 캐스팅을 잘못하면 심각한 런타임 오류가 발생할 수 있다. 
+######
+![img_4.png](img_4.png)
+- 원래 Child로 만들었기 때문에 Child와 Parent 인스턴스가 생성되어 가능하다.
+######
+![img_5.png](img_5.png)
+- 처음에 Parent로 만들었기 때문에 Parent 인스턴스만 생성되어 있어서 불가능하다.
+
+#### 업 캐스팅이 안전하고 다운 캐스팅이 위험한 이유
+![img_7.png](img_7.png)
+- 업캐스팅은 문제가 발생하지 않는다. 객체를 생성하면 상위 부모 타입은 모두 함께 생성되기 때문이다.
+######
+![img_6.png](img_6.png)
+- 반면 다운 캐스팅의 경우 인스턴스에 존재하지 않는 하위 타입으로 캐스팅하는 문제가 발생할 수 있다.    
+  객체를 생성하면 부모 타입은 함께 생성되지만 자식 타입은 함께 생성되지 않기 때문이다.
+- 따라서 개발자가 이런 문제를 인지하고 사용해야 한다는 의미로 명시적으로 캐스팅을 하도록 하고 있다.
 
 ### 10-5. instanceof
+- 다형성에서 참조형 변수는 이름 그대로 다양한 자식을 대상으로 참조할 수 있다. 
+- 그러나 참조하는 대상이 다양하기 때문에 어떤 인스턴스를 참조하고 있는지 확인하는 방법이 필요하다.
+- 이렇게 변수가 참조하는 인스턴스 타입을 확인하고 싶을 때 **instanceof 키워드**를 사용한다.
+######
+    public static void main(String[] args) {
+        Parent parent1 = new Parent();
+        System.out.println("parent1 호출");
+        call(parent1);
+
+        Parent parent2 = new Child();
+        System.out.println("parent2 호출");
+        call(parent2);
+    }
+
+    // 이 매서드는 인스턴스로 넘어온 parent가 참조하는 타입에 따라 다른 명령을 수행한다.
+    private static void call(Parent parent) {
+        parent.parentMethod();
+        if (parent instanceof Child) {
+            System.out.println("Child 인스턴스 맞음");
+            ((Child) parent).childMethod();
+        }
+    }
+
+#### instanceof 키워드
+- 같은 타입인 경우 true를 반환한다.
+- 다른 타입이더라도 **왼쪽의 인스턴스 타입이 오른쪽에 있는 타입에 자동으로 들어갈 수 있으면 true, 없으면 false를 반환**한다.
+######
+    new Parent() instanceof Parent
+    Parent p = new Parent() // 같은 타입 true
+
+    new Child() instanceof Child
+    Child c = new Child()   // 같은 타입 true
+
+    new Child() instanceof Parent (업 캐스팅 가능)
+    Parent p = new Child()  // 부모는 자식을 담을 수 있다. true
+
+    new Parent() instnaceof Child (다운 캐스팅 불가)
+    Child c = new Parent()  // 자식은 부모를 담을 수 없다. false
+
+#### JAVA 16의 Patttern Matching for instanveof
+- JAVA 16 부터는 instanceof를 사용하면서 동시에 변수를 선언할 수 있다.
+######
+    // Child 인스턴스인 경우 childMethod() 실행
+    if (parent instanceof Child child) {    // 이게 참이면 변수 child 생성, 사실상 다운 캐스팅
+        System.out.println("Child 인스턴스 맞음");
+        (child).childMethod();
+    }
 
 ### 10-6. 다형성과 메서드 오버라이딩
+- 다형성을 이루는 또하나의 중요한 핵심 이론은 메서드 오버 라이딩이다.
+- 메서드 오버라이딩에서 반드시 기억할 점은 **오버 라이딩 된 메서드가 항상 우선권을 가진다**는 것이다.
+- **멤버 변수는 오버라이딩 되지 않는다.** 
+######
+![img_8.png](img_8.png)
+![img_9.png](img_9.png)
+![img_10.png](img_10.png)
 
+    // 부모 변수가 자식 인스턴스 참조 (다형적 참조)
+    Parent ploy = new Child();
+    System.out.println("Parent -> Child");
+    System.out.println("value = " + ploy.value);    >> paren (변수는 오버 라이딩 X)
+    ploy.method();                                  >> child.method (메서드는 오버 라이딩 O)
+- poly 변수는 Parent 타입이다. 따라서 poly.value, poly.method()를 호출하면 인스턴스의 Parent 타입에서 기능을 찾아서 실행한다.
+  - ploy.value: Parent 타입에 있는 value 값을 읽는다.
+  - ploy.method(): Parent 타입에 있는 method()를 실행하려고 한다.   
+    그러나 하위 타입인 Child.method()가 오버라이딩 되어 있다.  
+    **오버 라이딩된 메서드는 항상 우선권을 가진다.** 따라서 Child.method()가 실행된다.
+- 오버라이딩 된 메서드는 항상 우선권을 가진다. 오버 라이딩은 부모 타입에서 정의한 기능을 자식 타입에서 재정의하는 것이다. 
+- 만약 자식에서도 오버라이딩 하고, 손자에서도 같은 메서드를 오버 라이딩 하면 손자의 오버 라이딩 메서드가 우선권을 가진다.  
+  (더 하위 자식의 오버라이딩 된 메서드가 우선권을 가지는 것이다.)
+
+#### 다형성 이론
+- 다형적 참조: 하나의 변수 타입으로 다양한 자식 인스턴스를 참조할 수 있는 기능이다.
+- 메서드 오버라이딩: 기존 기능을 하위 타입에서 새로운 기능으로 재정의하는 것이다.
 <br>
 
 ## 11. 다형성2

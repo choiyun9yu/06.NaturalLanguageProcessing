@@ -1,4 +1,4 @@
-package com.helloshap.order;
+package pack05.com.helloshap.order;
 
 public class OrderHistory {
 }

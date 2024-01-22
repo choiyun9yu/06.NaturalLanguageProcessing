@@ -1,4 +1,7 @@
-import a.*; // *를 사용하면 패키지 안에 모든 것을 다 가져온다.
+package pack05;
+
+import pack05.a.*; // *를 사용하면 패키지 안에 모든 것을 다 가져온다.
+import pack05.com.helloshap.Data;
 
 public class PackageMain2 {
 
