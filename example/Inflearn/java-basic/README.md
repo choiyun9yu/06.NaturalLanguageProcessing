@@ -2,15 +2,21 @@
 - psvm: public static void main(String args) 단축어
 - sout: System.out.println 단축어
 - iter: 향상된 for문 단축어
-####
+
+#### for Win/Linux
 - Shift + F6 : 아래 같은 변수명 같이 선택
 - Ctrl + Shift + 10F : 실행
 - Ctrl + Alt + V: introduce variable 로 변수 이름 자동 추천
+- Ctrl + Alt + M: introduce extract method 로 블록 영역 메소드로 추출
 - F2 : Next Highlighted Error
 - Ctrl + W: 커서가 있는 단어 블록 지정
+- Ctrl + O: 상속 받은 자식 클래스에서 누르면 간편한 오버라이딩 생성
+
 #### for mac
 - cmd + N - Generator: 기본 생성자 자동 생성 
 - ctrl + 위 화살표: 커서가 있는 단어 블록 지정 
+- option + cmd + V: introduce variable
+- option + cmd + M: introduce extract Method 
 
 ## 1. 클래스와 데이터
 
@@ -969,9 +975,9 @@
 
 <br>
 
-## 11. 다형성2
+## 11. 다형성 활용
 
-### 11-1. 다형성 활용1
+### 11-1. 다형성 활용1 - 다형성을 사용하지 않고는 중복 제거 불가 
 - Dog, Cat, Caw 처럼 비슷한 객체들이 비슷한 기능을 할 때 중복 코드를 줄이려는 시도를 할 수 있다.
 - 메서드를 활용해 보고 싶지만 Dog, Cat, Caw 타입이 달라서 입력되는 객체마다 메소드를 따로 만들어야 해서 중복을 줄일 수 없다.
 - 배열과 반복문을 활용해 보고 싶지만 역시 타입이 다 달라서 하나의 배열에 담을 수 없다.
@@ -979,14 +985,160 @@
 - Dog, Cat, Caw 가 모두 같은 타입을 사용할 수 있다면 메서드나 배열을 활용해서 코드의 중복을 제거할 수 있다.
 - 다른 타입을 하나의 타입처럼 보이게 할 수 있는게 다형성의 다형적 참조이다.
 - 다형성의 핵심은 다형적 참조와 메서드 오버라이딩이다. 이 둘을 활용하면 Dog, Cat, Caw 가 모두 같은 타입을 사용하고, 각자 자신의 메서드를 호출할 수 있다.
+###### 
+    public static void main(String[] args) {
+        Dog dog = new Dog();
+        Cat cat = new Cat();
+        Caw caw = new Caw();
 
-### 11-2. 다형성 활용2
+        // 2. 배열과 for 문을 통한 중복 제거 시도 -> 배열에 들어갈 요소의 타입이 달라서 안된다.
+        // Caw[] cawArr = {dog, cat, caw};
 
-### 11-3. 다형성 활용3
+        /* 
+         * 생성하는 부분은 당연히 필요하니 크게 상관 없지만,
+         * Dog, Cat, Caw를 사용해서 출력하는 부분은 객체가 늘어날 수록 중복이 증가한다.
+         */
+        System.out.println("동물 소리 테스트 시작");
+        dog.sound();
+        System.out.println("동물 소리 테스트 종료");
+
+        System.out.println("동물 소리 테스트 시작");
+        cat.sound();
+        System.out.println("동물 소리 테스트 종료");
+
+        // System.out.println("동물 소리 테스트 시작");
+        // caw.sound();
+        // System.out.println("동물 소리 테스트 종료");
+        soundCaw(caw);
+
+    }
+
+    // 1. 메서드로 증복 제거 시도 -> 하지만 caw 는 caw 에만 쓸 수 있고 cat 에는 쓸 수 없어서 의미가 없다. 동물이 추가될 때마다 메소드를 만들 수 없다.
+    private static void soundCaw(Caw caw) {
+        System.out.println("동물 소리 테스트 시작");
+        caw.sound();
+        System.out.println("동물 소리 테스트 종료");
+    }
+
+    // 문제 해결이 안되는 이유는 타입이 다르기 때문이다.
+
+
+### 11-2. 다형성 활용2 - 메서드를 이용한 중복 제거
+![img_11.png](img_11.png)
+- 다형성을 사용하기 위해 상속 관계를 사용한다.
+- 부모 클래스의 메서드는 자식 클래스에서 오버라이딩 한다.
+######
+    public static void main(String[] args) {
+        Dog dog = new Dog();
+        Cat cat = new Cat();
+        Caw caw = new Caw();
+
+        soundAnimal(dog);
+        soundAnimal(cat);
+        soundAnimal(caw);
+    }
+
+    private static void soundAnimal(Animal animal){
+        System.out.println("동물 소리 테스트 시작");
+        animal.sound(); // 메서드 오버라이드 때문에 각자의 소리가 나온다.
+        System.out.println("동물 소리 테스트 종료");
+    }
+
+![img_12.png](img_12.png)
+
+- **다형적 참조** 덕분에 animal 변수는 자식인 Dog, Cat, Caw의 인스턴스를 참조할 수 있다. (부모는 자식을 담을 수 있다.)
+- **메서드 오버라이딩** 덕분에 animal.sound() 를 호출해도 자식의 Dog.sound(), Cat.sound, Caw.sound() 가 호출된다.  
+  (오버라이딩 된 메서드가 항상 우선권을 가진다!)
+- 다형성 덕분에 이후에 새로운 동물을 추가해도 다음 코드를 그대로 재사용 할 수 있다.  
+  (물론 다형성을 사용하기 위해 새로운 동물은 Animal 을 상속 받아야 한다.)
+
+### 11-3. 다형성 활용3 - 배열과 for 문을 사용한 중복 제거
+- 역시 새로운 동물이 추가되어도 반복문이나 조금 더 개선에서 사용한 메서드는 코드 변경 없이 유지될 수 있다.
+- 반복문이나 메서드가 구체적인 클래스를 참조하는 것이 아니라 Animal 이라는 추상적인 부모를 참조하기 때문이다.
+#### 
+    public static void main(String[] args) {
+        Dog dog = new Dog();
+        Cat cat = new Cat();
+        Caw caw = new Caw();
+
+        // 배열은 같ㅇ느 타입의 데이터를 나열할 수 있다. 부모는 자식을 담을 수 있으니까 요소로 받을 수 있다.
+        Animal[] animalArr = {dog, cat, caw};
+
+        // 변하지 않는 부분
+        for (Animal animal : animalArr) {
+            System.out.println("동물 소리 테스트 시작");
+            animal.sound();
+            System.out.println("동물 소리 테스트 종료");
+        }
+    }
+
+#### 조금 더 개선
+    public static void main(String[] args) {
+        Animal[] animalArr = {new Dog(), new Cat(), new Caw()};
+
+        for (Animal animal : animalArr) {
+            soundAnimal(animal);
+        }
+    }
+
+    private static void soundAnimal(Animal animal) {
+        System.out.println("동물 소리 테스트 시작");
+        animal.sound();
+        System.out.println("동물 소리 테스트 종료");
+    }
+
+- **새로운 기능이 추가되었을 때 변하는 부분을 최소화하는 것이 잘 작성된 코드이다.**
+- **이렇게 하기 위해서는 코드에서 변하는 부분과 변하지 않는 부분을 명확하게 구분하는 것이 중요하다.**
+
+#### [남은 문제1] Animal 클래스를 생성할 수 있는 문제
+- 추상적인 개념의 부모 클래스가 실제로 존재하는 것은 이상하다. 
+- 사실 부모 클래스는 다형성을 위해 필요한 것이지 직접 인스턴스를 생성해서 사용할 일이 없다.  
+
+#### [남은 문제2]  Anamal 클래스를 상속 받는 곳에서 sound() 메서드 오버라이딩을 하지 않을 가능성
+- 예를 들어 부모 클래스를 상속 받은 자식 클래스에서 메서드 오버라이딩을 깜빡할 수 있다.
+- 이렇게 되면 부모의 기능을 상속 받는다. 따라서 코드상 문제는 없지만 우리가 의도한 결과를 얻을 수 없다.
+
+좋은 프로그램은 제약이 있는 프로그램이다. 추상 클래스와 추상 메서드를 사용하면 이런 문제를 한 번에 해결할 수 있다.
 
 ### 11-4. 추상 클래스1
+#### 추상 클래스
+- 동물(Animal)과 같이 부모 클래스는 제공하지만, 실제 생성되면 안되는 클래스를 추상 클래스라고 한다.  
+- 추상 클래스는 이름 그대로 추상적인 개념을 제공하는 클래스이다. 따라서 실체인 인스턴스가 존재하지 않는다.
+- 대신에 상속을 목적으로 사용되고, 부모 클래스 역할을 담당한다.
+- 추상 클래스는 선언할 때 앞에 추상이라는 의미의 abstract 키워드를 붙여주면 된다.  
+
+      abstract class AbstractAnimal {
+        ...
+      }
+- 추상 클래스는 기존 클래스와 완전히 같다. 다만 new AbstractAnimal() 과 같이 직접 인스턴스를 생성하지 못하는 제약이 추가된 것이다.
+
+#### 추상 메서드
+- 부모 클래스를 상속 받는 자식 클래스가 반드시 오버라이딩 해야 하는 메서드를 부모 클래스에 정의한 것을 추상 메서드라고 한다.
+- 추상 메서드는 이름 그대로 추상적인 개념을 제공하는 메서드이다. 따라서 실체가 존재하지 않고, 메서드 바디가 없다.  
+- 추상 메서드는 선언할 때 메서드 앞에 추상이라는 의미의 abstract 키워드를 붙여주면 된다.
+
+          public abstract void sound();           
+- **추상 메서드가 하나라도 있는 클래스는 추상 클래스로 선언해야 한다.**
+  - 그렇지 않으면 컴파일 오류가 발생한다.
+  - 추상 메서드는 메서드 바디가 없다. 따라서 작동하지 않는 메서드를 가진 불완전한 클래스로 볼 수 있다.
+  - 따라서 직접 생성하지 못하도록 추상 클래스로 선언해야 한다.
+- **추상 메서드는 상속 받는 자식 클래스가 반드시 오버라이딩 해서 사용해야 한다.**
+  - 그렇지 않으면 컴파일 오류가 발생한다.
+  - 추상 메서드는 자식 클래스가 반드시 오버라이딩 해야 하기 때문에 메서드 바디 부분이 없다.
+  - 메서드 바디 부분을 만들면 컴파일 오류가 발생한다.
+  - 오버라이딩 하지 않으면 자식도 추상 클래스가 되어야 한다.
+- 추상 메서드는 기존 메서드와 완전히 같다. 다만 메서드 바디가 없고, 자식 클래스가 해당 메서드를 반드시 오버라이딩 해야하는 제약이 추가된 것이다.
+
+#### 정리 
+- 추상 클래스는 일반 클래스에서 제약이 추가된 클래스이다. 그 제약 덕분에 실수를 근본적으로 방지할 수 있다.
+- 추상 클래스 덕분에 실수로 Animal 인스턴스를 생성할 문제를 근본적으로 방지할 수 있다.
+- 추상 메서드 덕분에 새로운 동물의 자식 클래스를 만들 때 실수로 sound() 를 오버라이딩 하지 않을 문제를 근본적으로 방지할 수 있다.
 
 ### 11-5. 추상 클래스2
+#### 순수 추상 클래스
+- 모든 메서드가 추상 메서드인 추상 클래스 
+
+#### 
 
 ### 11-6. 인터페이스
 
