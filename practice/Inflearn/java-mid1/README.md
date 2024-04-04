@@ -1,15 +1,132 @@
 # JAVA MIDDLE 1
 
+#### 단축어
+- soutm: 클래스명을 출력하는 코드
+
+#### Java 버전 선택 
+- 애플 실리콘칩의 경우 java 버전 뒤에 aarch4 가 붙어 있는 버전을 선택하면 된다.
+
+#### 다운로드 받은 소스코드 사용법 
+> [File] - [New] - [Project from Existing Source...] - 프로젝트 루트 디렉토리 선택
+
 ## 1. Object 클래스
-### 1-1. java-lang 패키지 소개
+### 1-1. java-lang(Language) 패키지 소개
+- 자바가 기본으로 제공하는 라이브러리(클래스 모음) 중에 가장 기본이 되는 패키지
+- 쉽게 말해 자바 언어를 이루는 가장 기본이 되는 클래스들을 보관하는 패키지 
+- java.lang 패키지는 모든 자바 애플리케이션에서 자동으로 임포트 되기 때문에 생략 가능하다.
+
+#### java.lang 패키지의 대표적인 클래스들 
+- Object: 모든 자바 객체의 부모 클래스
+- String: 문자열 
+- Integer, Long, Double: 래퍼 타입, 기본형 데이터 타입을 객체로 만드는 것  
+- Class: 클래스 메타 정보 
+- System: 시스템과 관련된 기보 기능들을 제공 
 
 ### 1-2. Object 클래스 
+- 클래스를 만들 때 부모 클래스를 지정하지 않으면 묵시적으로 Object 클래스를 상속 받는다.
+- **toString()** 메서드는 Object 클래스의 메서드이다.  
+  클래스.toString() 을 입력하면 객체에 대한 정보를 출력해준다.
+
+#### 자바에서 Object 클래스가 최상위 부모 클래스인 이유
+1. 공통 기능 제공
+   - 모든 객체에 필요한 기본적인 기능들을 객체를 만들 때마다 항상 새로 메서드를 만들어 정의하는 번거로움을 줄여준다.
+   - 또한 막상 만든다고 해도 개발자마다 서로 다른 이름의 메서드를 만들어서 일관성이 없을 것이다. 
+   
+   **Object가 제공하는 기능은 다음과 같다.**
+    - toString(): 객체의 정보 제공
+    - equals(): 객체가 같은지 비교 
+    - getClass(): 객체의 클래스 정보를 제공 
+    - 기타 여러가지 기능 
+
+
+2. 다형성의 기본 구현
+   - 부모는 자식을 담을 수 있다. Object 는 모든 클래스의 부모 클래스이다. 따라서 모든 객체를 참조할 수 있다.
+   - Object 클래스는 다형성을 지원하는 기본적인 매커니즘을 제공한다.
+   - 모든 자바 객체는 Object 타입으로 처리될 수 있으며 이는 다양한 타입의 객체를 통합적으로 처리할 수 있게 해준다.
+   - 쉽게 말해 Object 는 모든 객체를 다 담을 수 있다. 타입이 다른 객체들을 같이 보관해야할 때 Object 에 보관하면 된다.
 
 ### 1-3. Object 다형성 
+- Object 는 모든 클래스의 부모 클래스이다. 따라서 Object 는 모든 객체를 참조할 수 있다.
+######
+    public class ObjectPolyExample1 {
+   
+        public static void main(String[] args) {
+            Dog dog = new Dog();
+            Car car = new Car();
+    
+            action(dog);
+            action(car);
+        }
+    
+        private static void action(Object obj) {
+            // obj.sound();     // 컴파일 오류, Object 는  sound() 가 없다.
+            // obj.move();      // 컴파일 오류, Object 는 move() 가 없다.
+    
+            // 객체에 맞는 다운 캐스팅이 필요
+            if (obj instanceof Dog dog) {   // 이렇게 하면 자동으로 다운 캐스팅이 된다.
+                dog.sound();
+            } else if (obj instanceof Car car) {
+                car.move();
+            }
+        } 
+    }
+- Object 는 모든 타입의 부모이다. 부모는 자식을 담을 수 있으므로 위 코드를 아래와 같이 변경할 수 있다.
+######
+    Object dog = new Dog();   // Dob -> Object
+    Object car = new Car();   // Car -> Object
+
+- Object 다형성의 장점: Object 는 모든 객체의 부모이기 때문에 어떤 객체든지 인자로 전달할 수 있다. 
+- Object 다형성의 한계: Object 인자로 받은 후 함수에서 자식이 새로 정의한 메소드를 호출하면 컴파일 오류가 발생한다. 
+![img.png](img.png)
+- 따라서 Object를 통해 전달받은 객체를 호출하려면 다운 캐스팅을 해야한다. 
+![img_1.png](img_1.png)
 
 ### 1-4. Object 배열
+- Object 는 모든 타입의 객체를 담을 수 있기 때문에 Object[ ] 는  모든 객체를 담을 수 있는 배열이다.
+![img_2.png](img_2.png)
+
+       public static void main(String[] args) {
+           Dog dog = new Dog();
+           Car car = new Car();
+           Object object = new Object();   // Object 인스턴스도 만들 수 있다.
+   
+           Object[] objects = {dog, car, object};
+   
+           size(objects);
+       }
+
+       private static void size(Object[] objects) {
+           System.out.println("전달된 객체의 수는: " + objects.length);
+       }
+- size() 메서드는 메서드 배열에 담긴 객체의 수를 세는 역할을 한다.
+- 이 메서드는 Object 타입만 사용한다. Object 타입의 배열은 세상의 모든 객체를 담을 수 있기 때문에  
+  새로운 클래스가 추가되거나 변경되더라도 이 메서드를 수정하지 않아도 된다.  
+  size() 는 자바를 사용하는 곳이라면 어디서든지 다 사용할 수 있다.
+
+#### Object 가 없다면?
+- void action(Object obj) 와 같이 모든 객체를 받을 수 있는 메서드를 만들 수 없다.
+- Object[ ] objects 처럼 모든 객체를 젖아할 수 있는 배열을 만들 수 없다.
 
 ### 1-5. toString()
+- Object.toSting() 메서드는 객체의 정보를 문자열 형태로 제공한다. 그래서 디버깅과 로깅에 유용하게 사용된다.
+- 이 메서드는 Object 클래스에 정의되므로 모든 클래스에서 상속받아 사용할 수 있다.
+
+      public static void main(String[] args) {
+          Object object = new Object();
+          String string = object.toString();
+    
+          // toString() 반환값 출력
+          System.out.println(string);     // java.lang.Object@8efb846
+    
+          // object 직접 출력
+          System.out.println(object);     // java.lang.Object@8efb846
+      }
+
+- Object 가 제공하는 toString() 메서드는 기본적으로 패키지를 포함한 객체의 이름과 객체의 참조값(해시코드)을 16진수로 제공한다.
+
+#### println() 과 toString() 
+- 그런데 toString() 의 결과를 출력한 코드와 object 를 println() 에 직저 출력한 코드의 결과가 완전히 같다.
+- System.out.println() 메서드는 사실 내부에서 toString() 을 호출한다.
 
 ### 1-6. Object 와 OCP
 
