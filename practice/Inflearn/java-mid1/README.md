@@ -558,6 +558,62 @@
 
 ## 3. String 클래스
 ### 3-1. String 클래스 -기본
+    public class CharArrayMain {
+    
+        public static void main(String[] args) {
+            // char 는 문자 하나만 다룰 수 있다.
+            char a = '가';
+            System.out.println(a);
+    
+            // 문자 여러개를 다루기 위해서는 char[] 배열을 사용해야 한다.
+            char[] charArr = new char[]{'h', 'e', 'l', 'l', 'o'};
+            System.out.println(charArr);
+    
+            // String 을 사용하면 편하다.
+            String str = "hello";
+            System.out.println(str);
+        }
+    }
+#### String 을 사용해서 문자열 만드는 2가지 방법 
+    public class StringBasicMain {
+        // 데이터 타입  int, double, boolean 등은 소문자로 시작하며 기본형 데이터 타입이다.
+        // 그러나 대문자로 시작하는 데이터 타입들은 객체 즉, 참조형 데이터 타입이다.
+        
+        public static void main(String[] args) {
+            // 방법1. 쌍따옴표 사용 
+            String str1 = "hello";
+            // 방법2. 객체 생성 
+            String str2 = new String("hello");
+    
+            System.out.println("str1: " + str1);
+            System.out.println("str2: " + str2);
+        }
+    }
+
+#### String 클래스 구조 
+
+    public final class String {
+      
+      // 문자열 보관 
+      private final char[] value; // 자바 9 이전 
+      private final byte[] value; // 자바 9 이후 
+
+      // 여러 메서드
+      public String contact(String str) {...}
+      public int length() {...}
+      ...
+
+    }
+
+#### String 클래스와 참조형
+
+
+- String은 클래스이다. 따라서 기본형이 아니라 참조형이다. 
+- 참조형은 변수에 계산할 수 있는 값이 들어있는 것이 아니라 x001 과 같이 계산할 수 없는 주소 값이 들어있다.
+- 따라서 원칙적으로 + 와 같은 연산을 사용할 수 없다.
+- 원래 자바에서 문자열을 더할 때는 String 이 제공하는 concat( ) 과 같은 메서드를 사용해야 한다.
+- 하지만 문자열은 너무 자주 다루어지기 때문에 자바 언어에서 편의사 특별히 + 연산을 제공한다.
+
 
 
 ### 3-2. String 클래스 - 비교
