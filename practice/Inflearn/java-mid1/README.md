@@ -606,8 +606,6 @@
     }
 
 #### String 클래스와 참조형
-
-
 - String은 클래스이다. 따라서 기본형이 아니라 참조형이다. 
 - 참조형은 변수에 계산할 수 있는 값이 들어있는 것이 아니라 x001 과 같이 계산할 수 없는 주소 값이 들어있다.
 - 따라서 원칙적으로 + 와 같은 연산을 사용할 수 없다.
@@ -615,17 +613,144 @@
 - 하지만 문자열은 너무 자주 다루어지기 때문에 자바 언어에서 편의사 특별히 + 연산을 제공한다.
 
 
-
 ### 3-2. String 클래스 - 비교
+- String 클래스 비교를 비교할 때는 == 비교가 아니라 항상 equals( ) 비교를 해야한다.
+  - 동일성(Identity): == 연산자를 사용해서 두 객체의 참조가 동일한 객체를 가리키고 있는지 확인 
+  - 동등성(Equality): equals( ) 메서드를 사용하여 두 객체가 논리적으로 같은지 확인
+- Object 의 equals( ) 비교는 == 비교가 default 이지만, String 객체에서 오버라이딩을 해두었다.
+
+
+    public class StringEqualsMain1 {
+    
+        public static void main(String[] args) {
+            String str1 = new String("hello");
+            String str2 = new String("hello");
+            System.out.println("str1 == str2: " + (str1 == str2));            // false
+            System.out.println("str1.equals(str2): " + str1.equals(str2));    // true
+    
+            String str3 = "hello";
+            String str4 = "hello";
+            System.out.println("리터럴 == 비교: " + str3 == str4);               // true
+            System.out.println("리터럴 equals( ) 비교: " + str3.equals(str4));   // true
+    
+        }
+    }
+
+![img_4.png](img_4.png)  
+- str1 과 str2 는 new String( ) 을 사용해서 각각 인스턴스를 생성했다. 서로 다른 인스턴스이므로 동일성비교(==)는 실패한다.
+- 그러나 둘은 내부에 같은 "hello" 값을 가지고 있기 때문에 논리적으로 같다 따라서 동등성 비교(equals( )) 비교는 성공한다.  
+
+![img_5.png](img_5.png)
+- str3 과 str4 는 문자열 리터럴을 사용하여 생성하였다. 이런 경우 자바에서 자동으로 new String("hello"); 로 String 객체를 생성한다.
+- 또한 문자열 리터럴을 사용하여 생성하는 경우 자바는 메모리 효율성과 성능 최적화를 위해 문자열 풀을 사용한다.
+- 자바가 실행되는 시점에 클래스에 문자열 리터럴이 있으면 문자열 풀에 String 인스턴스를 미리 만들어 둔다. 이때 같은 문자열이 있으면 만들지 않는다.
+- 문자열 풀 덕분에 같은 문자를 사용하는 경우 메모리 사용량을 줄이고 문자를 만드는 시간도 줄어들기 때문에 성능 최적화 할 수 있다.
+- 따라서 str3 과 str4 는 같은 객체를 참조하고 있기 때문에 동일성(==) 비교에서 true 를 반환한다.
+- 그럼에도 String 객체를 비교할 때는 항상 equals( ) 비교를 해야한다. 
+  
+
+    public class StringEqualsMain2 {
+  
+        public static void main(String[] args) {
+            String str1 = new String("hello");
+            String str2 = new String("hello");
+            System.out.println("메서드 호출 비교1: " + isSame(str1, str2));    // false
+  
+            String str3 = "hello";
+            String str4 = "hello";
+            System.out.println("메서드 호출 비교1: " + isSame(str3, str4));    // true
+  
+        }
+  
+        private static boolean isSame(String x, String y) {
+            return x == y;
+        }
+    }
+- isSame 메서드를 만드는 개발자 입장에서는 x, y 값으로 리터럴 문자열이 들어올지, new 로 생성한 문자열이 들어올지 알 수 없기 때문이다.
+
+    
+#### Pool 이란?
+- 프로그래밍에서 풀은 공용 자원을 모아둔 곳을 의미한다. 여러곳에서 함께 사용할 수 있는 객체를 필요할 때 마다 생성하고, 제거하는 것은 비효율 적이다.
+- 대신에 이렇게 풀에 필요한 인스턴스를 미리 만들어 두고 여러곳에서 재사용할 수 있다면 성능과 메모리를더 최적화 할 수 있따.
+- 참고로 문자열 풀은 힙 영역을 사용한다. 그리고 문자열 풀에서 문자를 찾을 때는 해시 알고리즘을 사용하기 때문에 매운 빠른 속도로 원하는 String 인스턴스를 찾을 수 있다.
 
 
 ### 3-3. String 클래스 - 불변 객체
+- String 은 불변 객체이다. 따라서 생성 이후에 절대로 내부의 문자열 값을 변경할 수 없다.
+- 따라서 수정 변경을 가한 결과를 return 으로 받아야 한다.
+
+  
+    public class StringImmutable1 {
+    
+        public static void main(String[] args) {
+            String str1 = "hello";
+            str.concat(" java");
+            System.out.println(str);    // hello 출력 
+
+            String str2 = "hello";
+            String result = str.concat(" java");
+            System.out.println(result);    // hello java 출력 
+        }
+    }
+
+#### String 이 불변으로 설계된 이유
+- 문자열 풀에 있는 String 인스턴스의 값이 중간에 변경되면 같은 문자열을 참고하는 다른 변수도 함께 변경되기 때문이다.
 
 
-### 3-4. String 클래스 - 주요 메서드1
+### 3-4. String 클래스 - 주요 메서드
+- String 클래스는 문자열을 편리하게 다루기 위한 다양한 메서드를 제공한다. 여기서는 자주 사용되는 기능 위주로 나열한다.  
+  (기능이 너무 많기 때문에 메서드를 외우기 보다는 주로 사용하는 메서드가 이런 것이구나 대략 알아두고 필요할 때 검색하거나 API 문서를 통해 원하는 기능을 찾는 것이 좋다.)
 
+#### 문자열 정보 조회
+- length(): 문자열의 길이를 반환한다.
+- isEmpty(): 문자열이 비어있는지 확인한다. (길이가 0)
+- isBlank(): 문자열이 비어있는지 확인한다. (길이가 0이거나 공백(Whitespace)만 있는 경우), Java 11
+- charAt(int index): 지정된 인덱스에 있는 문자를 반환한다.
 
-### 3-5. String 클래스 - 주요 메서드 2
+#### 문자열 비교
+- equals(Object anObject): 두 문자열이 동등한지 비교한다.
+- equalsIgnoreCase(String anotherString): 두 문자열을 대소문자 구분 없이 비교한다.
+- compareTo(String anotherSTring): 두 문자열을 사전 순으로 비교한다.
+- compareToIgnoreCase(String str): 두 문자열을 대소문자 구분 없이 사전적으로 비교한다.
+- startsWith(String prefix): 문자열이 특정 접두사로 시작하는지 확인한다.
+- endsWith(String suffix): 문자열이 특정 접미사로 끝나는지 확인한다.
+
+#### 문자열 검색 
+- contains(CharSequence s): 문자열이 특정 문자열을 포함하고 있는지 확인한다.
+- indexOf(String ch) / indexOf(String ch, int fromIndex): 문자열이 처음 등장하는 위치를 반환한다.
+- lastIndexOf(String ch): 문자열이 마지막으로 등장하는 위치를 반환한다. 
+
+#### 문자열 조작 및 변환 -> 모두 반환 값을 받아서 사용해야 한다.
+- substring(int beginIndex) / substring(int beginIndex, int endIndex): 문자열의 부분 문자열을 반환한다.
+- concat(String str): 문자열의 끝에 다른 문자열을 붙인다.
+- replace(CharSequence target, CharSequence replacement): 특정 문자열을 새 문자열로 대체한다.
+- replaceAll(String regex, String replacement): 문자열에서 정규 표현식과 일치하는 부분을 새 문자열로 대체한다.
+- replaceFist(String regex, String replacement): 문자열에서 정규 표현식과 일치하는 첫 번째 부분을 새 문자열로 대체한다.
+- toLowerCase() / toUpperCase(): 문자열을 소문자나 대문자로 변환한다.
+- trim(): 문자열 양쪽 끝의 공백을 제거한다. 단순 Whitespace 만 제거할 수 있다.
+- strip(): Whitespace 와 유니코드 공백을 포함해서 제거한다. Java 11
+
+#### 문자열 분할 및 조합
+- split(String regex): 문자열을 정규 표현식 기준으로 분할한다.
+- join(CharSequence delimiter, CharSequence... elements): 주어진 구분자로 여러 문자열을 결합한다.
+
+#### 기타 유틸리티 
+- valueOf(Object obj): 다양한 타입을 문자열로 변환한다.
+- toCharArray(): 문자열을 문자 배열로 변환한다.
+- format(String format, Object ... args): 형식 문자열과 인자를 사용하여 새로운 문자열을 생성한다.
+- matches(String regex): 문자열이 주어진 정규 표현식과 일치하는지 확인한다.
+
+    
+    // format 메서드 
+    int num = 100;
+    boolean = bool = true;
+    String str = "Hello, Java!";
+    str.format("num: %d, bool: %b, str: %s", num, bool, str)
+
+    >> num: 100, bool: true, str: Hello, Java!
+
+#### 문자 + x 
+- Java 에서 문자열에 다른 데이터 타입을 더하면 문자열이 된다.
 
 
 ### 3-6. String 클래스 - 가변 String 
