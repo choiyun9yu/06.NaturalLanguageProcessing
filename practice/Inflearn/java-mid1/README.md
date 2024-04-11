@@ -754,9 +754,128 @@
 
 
 ### 3-6. String 클래스 - 가변 String 
+#### 불변인 String 클래스의 단점 
+- 불변인 String 의 내부 값은 변경할 수 없다. 따라서 변경된 값을 기반으로 새로운 String 객체를 생성한다.
+- 예를 들어 "A" + "B" + "C" + "D" 라는 작업을 한다고 가정해보자. "ABCD" 라는 String 객체를 얻기 위해 "AB", "ABC" 를 거쳐서 "ABCD" 를 얻게 된다.
+- 문제는 중간에 만들어진 "AB" 와 "ABC" 는  사용되지 않고 GC 의 대상이 된다.
+- 즉, 불변인 String 클래스의 단점은 문자를 더하거나 변경할 때마다 계속 새로운 객체를 생성해야 한다는 것이다.
+- 결과적으로 컴퓨터의 CPU, 메모리 자원을 더 많이 사용하게 되고 문자열의 크기가 크고 더 자주 변경될 수록 시스템의 자원을 더 많이 소모한다. 
+> !참고 실제로는 문자열을 다룰 때 자바가 내부에서 최적화를 적용하는데, 이 부분은 뒤에서 다룬다.
+
+#### StringBuilder
+- 위의 문제를 해결하는 방법은 단순하다. 가변 String이 존재하면 된다. 이를 위해 Java 는 StringBuilder 라는 가변 String 을 제공한다.   
+  (물론 가변의 경우 사이드 이펙트에 주의해서 사용해야 한다.)
+- StringBuilder 는 내부에 final 이 아닌 변경할 수 있는 byte[ ] 를 가지고 있다.
+
+      public final class StringBuilder {
+          byte[] value;
+
+          // 여러 메서드
+          public StringBuilder append(String str) {...}
+          public int length() {...}
+          ...
+      }
+######
+- StringBuilder 사용 예: 문자열 변경이 있을 때 사용하다가 변경이 끝나면 다시 String 으로 바꿔준다.
+
+      public class StringBuilderMain1_1{
+
+          public static void main(String[] args) {
+              StringBuilder sb = new StringBuilder();
+
+              // append: 맨 뒤에 추가
+              sb.append("A");
+              sb.append("B");
+              sb.append("C");
+              sb.append("D");
+              System.out.println("sb.append = " + sb);
+
+              // insert: 특정 인덱스 위치에 추가
+              sb.insert(4, "Java");
+              System.out.println("sb.insert = " + sb);
+
+              // delete: 부분 삭제
+              sb.delete(4, 8);
+              System.out.println("sb.delete = " + sb);
+
+              // reverse: 역순 정렬
+              sb.reverse();
+              System.out.println("sb.reverse = " + sb);
+
+              // StringBuilder -> String
+              String string = sb.toString();
+              System.out.println("sb.toString = " + string.getClass());
+          }
+      }
 
 
 ### 3-7. String 최적화
+- Java 컴파일러는 문자열 리터럴을 더하는 부분을 자동으로 합쳐준다.
+#### 문자열 리터럴 최적화 - 컴파일 전
+    String hellowWorld = "Hello, " + "World!"; 
+
+#### 문자열 리터럴 최적화 - 컴파일 후
+    String helloWorld = "Hello, World!";
+- 따라서 런타임에 별도의 문자열 결합 연산을 수행하지 않기 때문에 성능이 향상된다.
+
+#### String 변수 최적화
+    String result = str1 + str2;
+- 문자열 변수의 경우 그 안에 어떤 값이 들어 있는지 컴파일 시점에서는 알 수 없기 때문에 단순하게 합칠 수 없다.
+- 이런 경우 다음과 같이 최적화를 수행한다. (최적화 방식은 자바 버전에 따라 달라진다.)
+######
+    String result = new StringBuilder().append(str1).append(str2).toString();
+> !참고 - Java 9 부터는 StringConcatFactory 를 사용해서 최적화를 수행한다.
+- 이렇듯 Java 가 최적화 처리를 해주기 때문에 지금처럼 간단한 경우에는 StringBuilder 를 사용하지 않아도 된다.
+- 대신에 문자열 더하기 연산(+)을 사용하면 충분하다.
+
+#### String 최적화가 어려운 경우 
+    public class LoopStringMain {
+
+        public static void main(String[] args) {
+            long startTime = System.currentTimeMillis();
+    
+            String result = "";
+            for (int i = 0; i < 100000; i++) {
+                result += "Hello Java";
+            }
+    
+            long endTime = System.currentTimeMillis();
+    
+            System.out.println("time = " + (endTime - startTime) + "ms");   // 2.5초
+        }
+    }
+- 문자열을 루프안에서 더하는 경우에는 최적화가 이루어지지지 않는다. 반복문의 루프 내부에서는 최적화가 되는 것 처럼 보이지만, 반복 횟수만큼 객체를 생성해야한다.
+- 반복문 내에서의 문자열 연결은, 런타임에 연결할 문자열의 개수와 내용이 결정된다. 이런 경우, 컴파일러는 얼마나 많은 반복이 일어날지, 각 반복에서 문자열이 어떻게 변할지 예측할 수 없다. 
+- 따라서 이런 상황에서는 최적화가 어렵다.
+######
+    public class LoopStringBuilderMain {
+
+        public static void main(String[] args) {
+            long startTime = System.currentTimeMillis();
+    
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < 100000; i++) {
+                sb.append("Hello Java");
+            }
+    
+            long endTime = System.currentTimeMillis();
+    
+            System.out.println("time = " + (endTime - startTime) + "ms");   // 0.003초
+        }
+    }
+
+#### StringBuilder 정리
+- 문자열을 합칠 때 대부분의 경우 최적화가 되므로 + 연산을 사용하면 된다.
+- 그럼에도 StringBuilder 를 직접 사용하면 더 좋은 경우
+  - 반복문에서 반복해서 문자를 연결할 때 (몇 십번은 그냥 써도 되는데 몇 백번 돌면 builder 사용)
+  - 조건문을 통해 동적으로 문자열을 조합할 때
+  - 복잡한 문자열의 특정 부분을 변경해야 할 때
+  - 매우 긴 대용량 문자열을 다룰 때
+
+> ! 참고 - StringBuilder vs StringBuffer
+> - StringBuilder 와 똑같은 기능을 수행하는 StringBuffer 클래스도 있다.
+> - StringBuffer 는 내부에 동기화가 되어 있어서, 멀티 스레드 상황에 안전하지만 동기화 오버헤드로 인해 성능이 느리다.
+> - StringBuilder 는 멀티 쓰레드 상황에서 안전하지 않지만 동기화 오버헤드가 없으므로 속도가 빠르다.
 
 
 ### 3-8. 메서드 체인닝 - Method Chaining 
