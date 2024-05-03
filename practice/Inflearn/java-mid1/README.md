@@ -610,7 +610,7 @@
 - 참조형은 변수에 계산할 수 있는 값이 들어있는 것이 아니라 x001 과 같이 계산할 수 없는 주소 값이 들어있다.
 - 따라서 원칙적으로 + 와 같은 연산을 사용할 수 없다.
 - 원래 자바에서 문자열을 더할 때는 String 이 제공하는 concat( ) 과 같은 메서드를 사용해야 한다.
-- 하지만 문자열은 너무 자주 다루어지기 때문에 자바 언어에서 편의사 특별히 + 연산을 제공한다.
+- 하지만 문자열은 너무 자주 다루어지기 때문에 자바 언어에서 편의상 특별히 + 연산을 제공한다.
 
 
 ### 3-2. String 클래스 - 비교
@@ -671,7 +671,7 @@
     
 #### Pool 이란?
 - 프로그래밍에서 풀은 공용 자원을 모아둔 곳을 의미한다. 여러곳에서 함께 사용할 수 있는 객체를 필요할 때 마다 생성하고, 제거하는 것은 비효율 적이다.
-- 대신에 이렇게 풀에 필요한 인스턴스를 미리 만들어 두고 여러곳에서 재사용할 수 있다면 성능과 메모리를더 최적화 할 수 있따.
+- 대신에 이렇게 풀에 필요한 인스턴스를 미리 만들어 두고 여러곳에서 재사용할 수 있다면 성능과 메모리를더 최적화 할 수 있다.
 - 참고로 문자열 풀은 힙 영역을 사용한다. 그리고 문자열 풀에서 문자를 찾을 때는 해시 알고리즘을 사용하기 때문에 매운 빠른 속도로 원하는 String 인스턴스를 찾을 수 있다.
 
 
@@ -810,59 +810,79 @@
 
 
 ### 3-7. String 최적화
+#### 문자열 리터럴 최적화 
 - Java 컴파일러는 문자열 리터럴을 더하는 부분을 자동으로 합쳐준다.
-#### 문자열 리터럴 최적화 - 컴파일 전
-    String hellowWorld = "Hello, " + "World!"; 
-
-#### 문자열 리터럴 최적화 - 컴파일 후
-    String helloWorld = "Hello, World!";
 - 따라서 런타임에 별도의 문자열 결합 연산을 수행하지 않기 때문에 성능이 향상된다.
 
+      // 컴파일 전
+      String hellowWorld = "Hello, " + "World!"; 
+  
+      // 컴파일 후
+      String helloWorld = "Hello, World!";
+
 #### String 변수 최적화
-    String result = str1 + str2;
 - 문자열 변수의 경우 그 안에 어떤 값이 들어 있는지 컴파일 시점에서는 알 수 없기 때문에 단순하게 합칠 수 없다.
 - 이런 경우 다음과 같이 최적화를 수행한다. (최적화 방식은 자바 버전에 따라 달라진다.)
-######
-    String result = new StringBuilder().append(str1).append(str2).toString();
-> !참고 - Java 9 부터는 StringConcatFactory 를 사용해서 최적화를 수행한다.
+  
+      String result = str1 + str2;
+
+      String result = new StringBuilder().append(str1).append(str2).toString();
+  > !참고 - Java 9 부터는 StringConcatFactory 를 사용해서 최적화를 수행한다.
+
 - 이렇듯 Java 가 최적화 처리를 해주기 때문에 지금처럼 간단한 경우에는 StringBuilder 를 사용하지 않아도 된다.
 - 대신에 문자열 더하기 연산(+)을 사용하면 충분하다.
 
 #### String 최적화가 어려운 경우 
-    public class LoopStringMain {
+- 문자열을 루프안에서 더하는 경우에는 최적화가 이루어지지지 않는다.   
+  반복문의 루프 내부에서는 최적화가 되는 것 처럼 보이지만 반복 횟수만큼 객체를 생성해야한다. 
+- 반복문 내에서의 문자열 연결은 런타임에 연결할 문자열의 개수와 내용이 결정된다.  
+  이런 경우, 컴파일러는 얼마나 많은 반복이 일어날지, 각 반복에서 문자열이 어떻게 변할지 예측할 수 없다. 
+- StringBuilder 는 물론이고 반복횟수 만큼의 String 객체를 생성했을 것이다. 이런 상황에서는 컴파일러가 최적화하기 어렵다.
+    
+      // 컴파일 전 
+      public class LoopStringMain {
+  
+          public static void main(String[] args) {
+              long startTime = System.currentTimeMillis();
+      
+              String result = "";
+              for (int i = 0; i < 100000; i++) {
+                  result += "Hello Java";
+              }
+      
+              long endTime = System.currentTimeMillis();
+      
+              System.out.println("time = " + (endTime - startTime) + "ms");   // 2.5초
+          }
+      }
+  
+      // 컴파일 후 
+            ...
+              String result = "";
+              for (int i = 0; i < 100000; i++) {
+                result = new StringBuilder().append(result).append("Hello Java ").toString();
+              }
 
-        public static void main(String[] args) {
-            long startTime = System.currentTimeMillis();
-    
-            String result = "";
-            for (int i = 0; i < 100000; i++) {
-                result += "Hello Java";
-            }
-    
-            long endTime = System.currentTimeMillis();
-    
-            System.out.println("time = " + (endTime - startTime) + "ms");   // 2.5초
-        }
-    }
-- 문자열을 루프안에서 더하는 경우에는 최적화가 이루어지지지 않는다. 반복문의 루프 내부에서는 최적화가 되는 것 처럼 보이지만, 반복 횟수만큼 객체를 생성해야한다.
-- 반복문 내에서의 문자열 연결은, 런타임에 연결할 문자열의 개수와 내용이 결정된다. 이런 경우, 컴파일러는 얼마나 많은 반복이 일어날지, 각 반복에서 문자열이 어떻게 변할지 예측할 수 없다. 
-- 따라서 이런 상황에서는 최적화가 어렵다.
 ######
-    public class LoopStringBuilderMain {
+- 이런 경우 우리가 직접 StringBuilder 사용하여 최적화하는 것이 좋다.  
+  아래와 같이 Builder 를 반복문 밖에 정의 함으로 어느정도 해결할 수 있다.  
+  (성능 700 ~ 800배 개선)
 
-        public static void main(String[] args) {
-            long startTime = System.currentTimeMillis();
-    
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < 100000; i++) {
-                sb.append("Hello Java");
-            }
-    
-            long endTime = System.currentTimeMillis();
-    
-            System.out.println("time = " + (endTime - startTime) + "ms");   // 0.003초
-        }
-    }
+      public class LoopStringBuilderMain {
+  
+          public static void main(String[] args) {
+              long startTime = System.currentTimeMillis();
+      
+              StringBuilder sb = new StringBuilder();
+              for (int i = 0; i < 100000; i++) {
+                  sb.append("Hello Java");
+              }
+      
+              long endTime = System.currentTimeMillis();
+      
+              System.out.println("time = " + (endTime - startTime) + "ms");   // 0.003초
+          }
+      }
 
 #### StringBuilder 정리
 - 문자열을 합칠 때 대부분의 경우 최적화가 되므로 + 연산을 사용하면 된다.
@@ -878,7 +898,104 @@
 > - StringBuilder 는 멀티 쓰레드 상황에서 안전하지 않지만 동기화 오버헤드가 없으므로 속도가 빠르다.
 
 
-### 3-8. 메서드 체인닝 - Method Chaining 
+### 3-8. 메서드 체인닝 - Method Chaining
+    public class ValueAdder {
+    
+        private int value;
+    
+        public ValueAdder add(int addValue) {
+            value += addValue;
+            return this;    // 자기 자신을 반환
+        }
+    
+        public int getValue() {
+            return value;
+        }
+    
+    }
+- 단순히 값을 누적해서 더하는 기능을 제공하는 클래스다.
+- add( ) 메서드를 호출할 때 마다 내부의 value 에 값을 누적한다.
+- add( ) 메서드를 보면 자기자신(this)의 참조값을 반환한다. 이 부분에 유의하자!
+######
+    public class MethodChainingMain1 {
+    
+        public static void main(String[] args) {
+            ValueAdder adder = new ValueAdder();
+            adder.add(1);
+            adder.add(2);
+            adder.add(3);
+    
+            int result = adder.getValue();
+            System.out.println("result = " + result);
+        }
+    }
+- add() 메서드를 여러번 호출해서 누적합을 구한다. 여기서는 add() 메서드의 반환값은 사용하지 않았다. 
+- 그럼 add() 메서드의 반환 값을 사용하면 어떻게 될까?
+######
+    public class MethodChainingMain2 {
+    
+        public static void main(String[] args) {
+            ValueAdder adder = new ValueAdder();
+            ValueAdder adder1 = adder.add(1);
+            ValueAdder adder2 = adder1.add(2);
+            ValueAdder adder3 = adder2.add(3);
+    
+            int result = adder3.getValue();
+            System.out.println("result = " + result);
+    
+            System.out.println("adder1 = " + adder1);
+            System.out.println("adder2 = " + adder2);
+            System.out.println("adder3 = " + adder3);
+        }
+    }
+
+    /* 출력 결과
+     * result = 6
+     * adder1 = lang.immutable.string.chaining.ValueAdder@23fc625e
+     * adder2 = lang.immutable.string.chaining.ValueAdder@23fc625e
+     * adder3 = lang.immutable.string.chaining.ValueAdder@23fc625e
+     */
+- 실행 결과는 기존과 같지만, 자기 자신을 반환하기 때문에 같은 참조값을 가지고 있다.
+![img_6.png](img_6.png)  
+![img_7.png](img_7.png)  
+- add( ) 메서드는 자기 자신(this)의 참조값을 반환한다. 이 반환 값을 adder1, adder2, adder3에 보관 했다.
+- 따라서 adder, adder1, adder2, adder3 는 모두 같은 참조값을 사용한다.
+- 그런데 이 방식은 처음 방식보다 더 불편하고 코드도 잘 읽히지 않는다.
+######
+    public class MethodChainingMain3 {
+    
+        public static void main(String[] args) {
+            ValueAdder adder = new ValueAdder();
+            int result = adder.add(1).add(2).add(3).getValue();
+            System.out.println("result = " + result);
+        }
+    }
+- add( ) 메서드가 자기 자신을 반환하기 때문에 체인 처럼 메서드를 연결해서 호출할 수 있다.
+- 반환된 참조값을 변수에 담아두지 않아도 된다. 
+- 대신 반환된 참조값을 즉시 사용해서 바로 메서드를 호출할 수 있다.
+- 메서드 체이닝 기법은 코드를 간결하고 읽기 쉽게 만들어준다.
+
+> !다음과 같은 순서로 실행 (참조값을 x001 이라고 가정)  
+> adder.add(1).add(2).add(3).getValue()  
+> x001.add(2).add(3).getValue()  
+> x001.add(3).getValue()  
+> x001.getValue()  
+
+#### StringBuilder 와 메서드 체인 
+- StringBuilder 는 메서드 체이닝 기법을 제공한다.
+- StringBuilder 의 append() 메서드를 보면 자기 자신의 참조값을 반환한다.
+- StringBuilder 에서 문자열을 변경하는 대부분의 메서드도 메서드 체이닝 기법을 제공하기 위해 자기 자신을 반환한다.  
+  예: insert( ), delete( ), reverse( )
+
+      public StringBuilder append(String str) {
+        super.append(str);
+        return this;
+      }
+
+#### 정리
+- 만드는 사람이 수고스러우면 쓰는 사람이 편하고, 만드는 사람이 편하면 쓰는 사람이 수고롭다.
+- 메서드 체이닝은 구현하는 입장에서는 번거롭지만 사용하는 개발자는 편리해진다.
+- 참고로 자바의 라이브러리와 오픈 소소들은 메서드 체이닝 방식을 종종 사용한다.
 
 
 ### 3-9. 문제와 풀이 1
@@ -888,6 +1005,8 @@
 
 
 ### 3-11. 정리 
+
+
 
 <br>
 
