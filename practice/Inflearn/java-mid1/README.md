@@ -7,6 +7,7 @@
 - Ctrl + p: 메소드에 전달할 수 있는 파라미터를 보여준다.
 - Alt + Insert: 제너레이트(생성자, toString ...)
 - Ctrl + d: 현재줄 아래줄에 복사
+- Shift + F6: 소스코드창에서 rename
 
 #### for mac
 - Cmd + n: 제너레이트(생성자, toString ...)
@@ -1003,22 +1004,163 @@
 
 ### 3-10. 문제와 풀이 2
 
-
-### 3-11. 정리 
-
-
+### 정리
+- 문자열 비교에서는 equals( ) 를 사용한다.
+- 문자열은 불변객체이기 때문에 concat( ) 같은 메소드 사용 시 반환값을 받아서 사용한다.
+- StringBuilder 는 가변 String 이다. 변경이 끝나면 다시 String 으로 바꾼다.
+- 자바 컴파일러가 String 최적화를 하기 때문에 StringBuilder 를 사용할 일이 별로 없다.  
+- 그러나 반복문, 조건문에서 동적으로 문자열 조합, 매우 긴 문자열 다룰 땐 StringBuilder 를 사용한다.
+- 메서드 체이닝은 자기 자신의 값을 반환하기 때문에 연결해서 쭉 쓸 수 있다.
 
 <br>
 
 ## 4. Wrapper Class
 ### 4-1. 래퍼 클래스 - 기본형의 한계1
+- 자바는 객체 지향 언어이다. 그러나 int, double 같은 기본형(Primitive Type) 은 객체가 아니다.
+- 기본형은 객체가 아니기 때문에 다음과 같은 한계가 있다.
+- 객체 아님: 기본형 데이터는 객체가 아니기 때문에, 객체 지향 프로그래밍의 장점을 살릴 수 없다.  
+  예를 들어 객체는 유용한 메서드를 제공할 수 있는데, 기본형은 객체가 아니므로 메서드를 제공할 수 없다.
+- null 값을 가질 수 없음: 기본형 데이터 타입은 null 값을 가질 수 없다. 그리고 제네릭도 사용할 수 없다.
 
+      /* 
+       * 기본형의 한계를 이해하기 위해, 두 값을 비교해서 다음과 같은 결과를 출력하는 코드를 작성해보자.
+       * 왼쪽 값이 더 크다 1
+       * 두 값이 같다 0
+       * 왼쪽 값이 더 작다 -1
+       */
+  
+      public class MyIntegerMethodMain0 {
+          public static void main(String[] args) {
+              int value = 10;
+              int i1 = compareTo(value, 5);
+              int i2 = compareTo(value, 10);
+              int i3 = compareTo(value, 20);
+            
+              System.out.println("i1 = " + i1);
+              System.out.println("i2 = " + i2);
+              System.out.println("i3 = " + i3);
+        
+          }
+        
+          public static int compareTo(int value, int target) {
+              if (value < target) {
+                  return -1;
+              } else if (value > target) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          }
+      }
+
+- 여기서는 value 와 비교 대상 값을 compareTo( ) 라는 외부 메서드를 사용해서 비교한다.
+- 그런데 자기 자신인 value 와 다른 값을 연산하는 것이기 때문에 항상 자기 자신의 값인 value 가 사용된다.
+- 만약 value 가 객체라면 value 스스로 자기 자신의 값과 다른 값을 비교하는 메서드를 만드는 것이 더 유용하다.
+    
+#### 직접 만든 래퍼 클래스
+- int 를 클래스로 만들어보자, int 는 클래스가 아니지만, int 값을 가지고 클래스를 만들면 된다.
+- 다음 코드는 마치 int 를 클래스로 감싸서 만드는 것 처럼 보인다.
+- 이렇게 특정 기본형을 감싸서(Wrap) 만드는 클래스를 래퍼 클래스(Wrapper class)라고 한다.
+
+      public class MyInteger {
+          private final int value;
+      
+          public MyInteger(int value) {
+              this.value = value;
+          }
+      
+          public int getValue() {
+              return value;
+          }
+      
+          public int compareTo(int target) {
+              if (value < target) {
+                  return -1;
+              } else if (value > target) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          }
+        
+          @Override
+          public String toString() {
+              return String.valueOf(value);
+          }
+      }
+
+      public class MyIntegerMain1 {
+          public static void main(String[] args) {
+              MyInteger myInteger = new MyInteger(10);
+            
+                  int i1 = myInteger.compareTo(5);
+                  int i2 = myInteger.compareTo(10);
+                  int i3 = myInteger.compareTo(20);
+          
+                  System.out.println("i1 = " + i1);
+                  System.out.println("i2 = " + i2);
+                  System.out.println("i3 = " + i3);
+          }
+      }
+- myInteger.compareTo( ) 는 자기 자산의 값을 외부의 값과 비교한다.
+- MyInteger 는 객체이므로 자기 자신이 가진 메서드를 편리하게 호출할 수 있다.
 
 ### 4-2. 래퍼 클래스 - 기본형의 한계2
+- 기본형은 항상 값을 가져야한다. 선언만 해도 해당 타입의 default 값이 들어 있다.
+- 하지만 때로는 데이터가 '없음'이라는 상태가 필요할 수 있다.
 
+      public class MyIntegerNullMain0 {
+
+          public static void main(String[] args) {
+              int[] intArr = {-1, 0, 1, 2, 3};
+              System.out.println(findValue(intArr, -1));    // -1
+              System.out.println(findValue(intArr, 0));     // 0
+              System.out.println(findValue(intArr, 1));     // 1
+              System.out.println(findValue(intArr, 100));   // -1
+          }
+            
+          public static int findValue(int[] intArr, int target){
+              for (int value : intArr) {
+                  if (value == target) {
+                    return value;
+                  }
+              }
+              return -1;  // 반환 타입이 int  이기 때문에 뭐라도 반환해야한다. 이런 경우 실패인 경우 -1 이나 0 을 반환한다.
+          }
+      }
+- findValue( )는 배열에 찾는 값이 있으면 해당 값을 반환하고, 없으면 -1 을 반환한다.
+- findValue( )는 결과로 int 를 반환한다. int 와 같은 기본형은 항상 값이 있어야한다.  
+  여기서도 값을 반환할 때 값을 찾지 못하면 숫자 중에 하나를 반환해야 하는데 보통 -1 또는 0 을 사용한다.
+- 그런데 여기서 -1을 찾아도 -1을 반환하고 100을 못찾아도 -1을 반환한다.  
+  못찾았다라는 것도 숫자로 반환해야하는 문제이다.
+- 그러나 객체의 경우에는 null 을 반환할 수 있다.
+
+      public class MyIntegerNullMain1 {
+    
+          public static void main(String[] args) {
+              MyInteger[] intArr = {new MyInteger(-1), new MyInteger(0), new MyInteger(1), new MyInteger(2), new MyInteger(3)};
+              System.out.println(findValue(intArr, -1));
+              System.out.println(findValue(intArr, 0));
+              System.out.println(findValue(intArr, 1));
+              System.out.println(findValue(intArr, 100));
+          }
+            
+          public static MyInteger findValue(MyInteger[] intArr, int target){
+              for (MyInteger myInteger : intArr) {
+                  if (myInteger.getValue() == target) {
+                      return myInteger;
+                  }
+              }
+              return null;
+          }
+      }
+- 물론 null 값을 반환하는 경우 잘못하면 NullPointException 이 발생할 수 있기 때문에 주의해서 사용해야 한다.  
+  (null 에 . 을 찍으면 발생)
 
 ### 4-3. 래퍼 클래스 - 자바 래퍼 클래스 
-
+- 자바는 기본형에 대응하는 래퍼클래스를 기본적으로 제공한다.
+  - byte -> Byte
+  - 
 
 ### 4-4. 래퍼 클래스 - 오토 박싱
 
