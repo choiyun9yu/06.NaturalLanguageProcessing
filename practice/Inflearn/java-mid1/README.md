@@ -1,7 +1,8 @@
 # JAVA MIDDLE 1
 
 #### 단축어
-- soutm: 클래스명을 출력하는 코드
+- soutm: 클래스명을 출력하는 코드 자동완성
+- soutv: 변수명을 출력하는 코드 자동완성
 
 #### 단축키 for linux
 - Ctrl + p: 메소드에 전달할 수 있는 파라미터를 보여준다.
@@ -1160,15 +1161,232 @@
 ### 4-3. 래퍼 클래스 - 자바 래퍼 클래스 
 - 자바는 기본형에 대응하는 래퍼클래스를 기본적으로 제공한다.
   - byte -> Byte
-  - 
+  - short -> Short
+  - int -> Integer
+  - long -> Long
+  - float -> Float
+  - double -> Double
+  - char -> Character
+  - boolean -> Boolean
+- 그리고 자바가 제공하는 기본 래퍼 클래스는 다음과 같은 특징을 가지고 있다.
+  - 불변이다.
+  - equals( ) 로 비교해야한다.
+
+#### 래퍼 클래스 생성 - 박싱(Boxing)
+- 기본형을 래퍼 클래스로 변경하는 것을 마치 박스에 물건을 넣은 것 같다고 해서 박싱이라고 한다.
+- new Integer(10) 은 직접 사용하면 안된다. 작동은 하지만, 향후 자바에서 제거될 예정이다.
+- 대신에 Integer.valueOf(10) 을 사용하면 된다.
+- 추가로 Integer.valueOf( )에는 성능 최적화 기능이 있다.  
+  개발자들이 일반적으로 자주 사용햐는 -128 ~ 127 범위의 Integer 클래스를 미리 생성해준다.
+- **inValue( ) - 언박싱**: 래퍼 클래스에 들어있는 기본형 값을 다시 꺼내는 메서드이다.
+- **equals( ) - 비교**: 래퍼 클래스 내부 값을 비교하는 메서드 이다.
+
+      public class WrapperClassMain {
+      
+          public static void main(String[] args) {
+              Integer newInteger = new Integer(10);   // 미래에 삭제 예정, 대신에 valueOf() 사용, -128 ~ 127 는 자바가 미리 만들어 둬서 new 로 새로 만들지 말 것을 권장
+              Integer integerObj = Integer.valueOf(10);   // Integer integerObj = 10; 과 같음,
+              Long longObj = Long.valueOf(100);
+              Double doubleOjb = Double.valueOf(10.5);
+      
+              System.out.println("newInteger = " + newInteger.toString());    // toString() 이 기본적으로 오버라이딩 되어 있음
+              System.out.println("integerObj = " + integerObj);
+              System.out.println("longObj = " + longObj);
+              System.out.println("doubleOjb = " + doubleOjb);
+      
+              System.out.println("내부 값 읽기");
+              int intValue = integerObj.intValue();
+              System.out.println("intValue = " + intValue);
+              long longValue = longObj.longValue();
+              System.out.println("longValue = " + longValue);
+      
+              System.out.println("비교");
+              System.out.println("==: " + (newInteger == integerObj));    // false, 참조값이 달라서 false, 미리 만들어 둔 valueOf 로 만드 경우 참조값이 같아서 true
+              System.out.println("equals( ): " + (newInteger.equals(integerObj)));    // true
+          }
+      }
+
 
 ### 4-4. 래퍼 클래스 - 오토 박싱
+- 오토 박싱(Auto Boxing): 자바에서 int 를 Integer 로 변환하거나 Integer 를 int 로 변환할 때,
+  valueOf( ) 와 intValue( ) 메서드를 사용하면 된다.
+  - 박싱: valueOf( )
+  - 언박싱: xxxValue( )
+- 개발자들이 오랜기간 개발을 하다 보니 기본형을 래퍼 클래스로 변환하거나 또는 래퍼 클래스를 기본형으로 변환하는 일이 자주 발생 했다.
+- 자바는 이런 문제를 해결하기 위해 Java 5 부터 오토 박싱과 오토 언박싱을 지원한다.  
+  즉, 컴파일러가 개발자 대신 valueOf( ), xxxValue( ) 등의 코드를 추가해주는 것이다.
+
+#### 오토 박싱 & 오토 언박싱
+    public class AutoboxingMain2 {
+    
+        public static void main(String[] args) {
+            // Auto-boxing
+            int value = 7;
+            Integer boxedVlaue = value;
+    
+            // Auto-unboxing
+            int unboxedVlaue = boxedVlaue;
+    
+            System.out.println("boxedVlaue = " + boxedVlaue);
+            System.out.println("unboxedVlaue = " + unboxedVlaue);
+        }
+    }
 
 
 ### 4-5. 주요 메서드와 성능 
+    public class WrapperUtilsMain {
+    
+        public static void main(String[] args) {
+            // 변환
+            Integer i1 = Integer.valueOf(10);       // 숫자, 래퍼 객체 변환
+            Integer i2 = Integer.valueOf("10");     // 문자열, 래퍼 객체 변환
+            int intValue = Integer.parseInt("10");  // 문자열 전용, 기본형 변환
+    
+            // 비교
+            int compareResult = i1.compareTo(20);   // i1 이 20 에 비해 더 작으니까 -1 반환
+            System.out.println("compareResult = " + compareResult);
+    
+            // 산술 연산
+            System.out.println("sum: " + Integer.sum(10, 20));
+            System.out.println("min: " + Integer.min(10, 20));
+            System.out.println("max: " + Integer.max(10, 20));
+        }
+    }
+- valueOf( ): 래퍼 타입을 반환한다. 숫자, 문자열 모두 지원한다.
+- parseInt( ): 문자열을 기본형으로 변환한다.
+- compateTo( ): 내 값과 인수로 넘어온 값을 비교한다. 내 값이 크면 1, 같으면 0, 내 값이 작으면 -1을 반환한다.
+- Integer.sum( ), Integer.min( ), Integer.max( ): static 메서드이다. 간단한 덧셈, 최소값, 최대값 연산을 수행한다.
+
+#### parseInt( ) vs valueOf( )
+- valueOf("10") 은 래퍼 타입을 반환한다.
+- parseInt("10") 은 기본형을 반환한다. Long.parseLong( ) 처럼 parseXxx( ) 가 존재한다.
+
+#### 래퍼 클래스와 성능 
+- 래퍼 클래스는 객체이기 때문에 기본형보다 다양한 기능을 제공한다.
+- 그렇다면 더 좋은 래퍼 클래스만 제공하면 되지 기본형을 제공하는 이유는 기본형이 성능이 더 좋기 때문이다.
+
+      public class WrapperVsPrimitive {
+      
+          public static void main(String[] args) {
+              int iterations = 1_000_000_000; // 반복 횟수 설정 10억
+              long startTime, endTime;
+      
+              // 기본형 long 사용
+              long sumPrimitive = 0;
+              startTime = System.currentTimeMillis();
+              for (int i = 0; i < iterations; i++) {
+                  sumPrimitive += i;
+              }
+              endTime = System.currentTimeMillis();
+              System.out.println("sumPrimitive = " + sumPrimitive);
+              System.out.println("기본 자료형 long 실행 시간: " + (endTime - startTime) + "ms");   // 227ms
+      
+              // 기본형 long 사용
+              Long sumWrapper = 0L;
+              startTime = System.currentTimeMillis();
+              for (int i = 0; i < iterations; i++) {
+                  sumWrapper += i;
+              }
+              endTime = System.currentTimeMillis();
+              System.out.println("sumPrimitive = " + sumPrimitive);
+              System.out.println("래퍼 자료형 long 실행 시간: " + (endTime - startTime) + "ms");   // 2978ms
+      
+          }
+      }
+- 기본형은 메모리에서 단순히 그 크기만큼의 공간을 차지한다. 예를 들어 int 는 보통 4byte 의 메모리를 사용한다.
+- 래퍼 클래스의 인스턴스는 내부 필드로 가지고 있는 기본형의 값 뿐만 아니라 자바에서 객체 자체를 다루는데 필요한 객체 메타 데이터를 포함하므로 더 많은 메모리를 사용한다, 자바 버전과 시스템마다 다르지만 대략 8-16byte 의 메모리를 추가로 사용한다.
+- CPU 연산을 아주 많이 수행하는 특수한 경우이거나, 수만-수십만 이상 연속해서 연산을 수행해야 하는 경우라면 기본형을 사용해서 최적화를 고려한다.
+- 그렇지 않은 일반적인 경우라면 코드를 유지보수하기 더 나은 것을 선택하면 된다.
+
+#### 유지보수 vs 최적화
+- 유지보수와 최적화가 이율배반적이라면 유지보수하기 좋은 코드를 먼저 고민해야 한다.
+- 특히 최신 컴퓨터는 매우 빠르기 때문에 메모리 상에서 발생하는 연산을 몇 번 줄인다고해도 실질적인 도움이 되지 않는 경우가 많다.
+- 코드 변경 없이 성능 최적화를 하면 가장 좋겠지만, 성능 최적화는 대부분 단순함 보다는 복잡함을 요구하고, 더 많은 코드를 추가로 만들어야 한다.
+- 이는 최적화를 위해 유지보수 해야하는 코드가 더 늘어나는 것이다.
+- 그런데 진짜 문제는 최적화를 한다고 했지만 전체 애플리케이션의 성능 관점에서 보면 불필요한 최적화를 할 가능성이 있다.
+- 특히 웹 애플리케이션의 경우 메모리 안에서 발생하는 연산 하나보다 네트워크 호출 한 번이 많게는 수십만배 더 오래 걸린다.
+- 자바 메모리 내부에서 발생하는 연산을 수천번에서 한 번으로 줄이는 것 보다, 네트워크 호출 한 번을 더 줄이는 것이 효과적이다.
 
 
 ### 4-6. Class 클래스 
+- 자바에서 Class 클래스는 클래스의 정보(메타데이터)를 다루는데 사용된다.
+- Class 클래스를 통해 실행 중인 자바 애플리케이션 내에서 필요한 클래스의 속성과 메소드에 대한 정보를 조회하고 조작할 수 있다.
+  - **타입 정보 얻기**: 클래스의 이름, 슈퍼 클래스, 인터페이스, 접근 제한자 등과 같은 정보를 조회할 수 있다.
+  - **리플렉션**: 클래스에 정의된 메소드, 필드, 생성자 등을 조회하고, 이들을 통해 객체 인스턴스를 생성하거나 메소드를 호출하는 등의 작업을 할 수 있다. 
+  - **동적 로딩과 생성**: Class.forName( ) 메서드를 사용하여 클래스를 동적으로 로드하고, newInstance( ) 메서드를 통해 새로운 인스턴스를 생성할 수 있다.
+  - **어노테이션 처리**: 클래스에 적용된 어노테이션을 조회하고 처리하는 기능을 제공한다.
+- 예를 들어, String.class 는 String 클래스에 대한 Class 객체를 나타내며, 이를 통해 String 클래스에 대한 메타데이터를 조회하거나 조작할 수 있다.
+
+      public class ClassMetaMain {
+
+          // main( ) 옆에 throws Exception 이 추가된 부분에 주의하자. 이 코드가 없으면 컴파일 오류가 발생한다. 자세한 내용은 예외처리에서 학습한다.
+          public static void main(String[] args) throws Exception {
+              // Class 조회
+              Class clazz = String.class; // 1. 클래스에서 조회
+              // Class clazz1 = new String().getClass();   // 2. 인스턴스에서 조회
+              // Class clazz2 = Class.forName("java.lang.String");   // 3. 문자열로 조회
+              
+              // 모든 필드 출력
+              Field[] fields = clazz.getDeclaredFields();
+              for (Field field : fields) {
+                  System.out.println("field = " + field);
+              }
+      
+              // 모든 메서드 출력
+              Method[] declaredMethods = clazz.getDeclaredMethods();
+              for (Method method : declaredMethods) {
+                  System.out.println("method = " + method);
+              }
+      
+              // 상위 클래스 정보 출력
+              System.out.println("Superclass = " + clazz.getSuperclass());
+      
+              // 인터페이스 정보 출력
+              Class[] interfaces = clazz.getInterfaces();
+              for (Class i : interfaces) {
+                  System.out.println("Interfaces = " + i);
+              }
+          }
+      }
+
+#### Class 클래스의 주요 기능
+- getDeclaredFields( ): 클래스의 모든 필드를 조회한다.
+- getDeclaredMethods( ): 클래스의 모든 메서드를 조회한다.
+- getSuperclass( ): 클래스의 부모 클래스를 조회한다.
+- getInterfaces( ): 클래스의 인터페이스들을 조회한다.
+
+#### 클래스 생성하기
+- Class 클래스에는 클래스의 모든 정보가 들어있다. 이 정보를 기반으로 인스터스를 생성하거나, 메서드를 호출하고, 필드의 값도 변경할 수 있다.
+
+      public class Hello {
+          public String hello() {
+              return "Hello!";
+          }
+      }
+
+
+      public class ClassCreateMain {
+      
+          public static void main(String[] args) throws Exception {
+              Class helloClass = Hello.class;
+              // Class helloClass = Class.forName("lang.clazz.Hello");
+      
+              Hello hello = (Hello) helloClass.getDeclaredConstructor().newInstance();   // hello 클래스가 가진 생성자를 얻어서 객체를 생성한다. 반환하면 Object 니까 Hello 로 캐스팅 한다.
+              String result = hello.hello();
+              System.out.println("hello: " + hello);
+              System.out.println("result: " + result);
+          }
+      }
+
+- getDeclaredConstructor( ): 생성자를 선택한다.
+- newInstance( ) 는 선택된 생성자를 기반으로 인스턴스를 생성한다.
+
+#### 리플랙션 - reflection
+- Class 를 사용하면 클래스의 메타 정보를 기반으로 클래스에 정의된 메소드, 필드, 생성자 등을 조회하고,  
+  이들을 통해 객체 인스턴스를 생성하거나 메소드를 호출하는 작업을 할 수 있다.
+- 이런 작업을 리플렉션이라 한다. 추가로 어노테이션 정보를 읽어서 특별한 기능을 수행할 수 도 있다.  
+  최신 프레임워크들은 이런 기능을 적극 활용한다.
+- 지금은 Class 가 뭔지, 그리고 대략 어떤 기능들을 제공하는지만 알아두면 충분하다.
 
 
 ### 4-7. System 클래스 
