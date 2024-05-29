@@ -762,7 +762,7 @@
 - 문제는 중간에 만들어진 "AB" 와 "ABC" 는  사용되지 않고 GC 의 대상이 된다.
 - 즉, 불변인 String 클래스의 단점은 문자를 더하거나 변경할 때마다 계속 새로운 객체를 생성해야 한다는 것이다.
 - 결과적으로 컴퓨터의 CPU, 메모리 자원을 더 많이 사용하게 되고 문자열의 크기가 크고 더 자주 변경될 수록 시스템의 자원을 더 많이 소모한다. 
-> !참고 실제로는 문자열을 다룰 때 자바가 내부에서 최적화를 적용하는데, 이 부분은 뒤에서 다룬다.
+> !참고 - 실제로는 문자열을 다룰 때 자바가 내부에서 최적화를 적용하는데, 이 부분은 뒤에서 다룬다.
 
 #### StringBuilder
 - 위의 문제를 해결하는 방법은 단순하다. 가변 String이 존재하면 된다. 이를 위해 Java 는 StringBuilder 라는 가변 String 을 제공한다.   
@@ -894,7 +894,7 @@
   - 복잡한 문자열의 특정 부분을 변경해야 할 때
   - 매우 긴 대용량 문자열을 다룰 때
 
-> ! 참고 - StringBuilder vs StringBuffer
+> !참고 - StringBuilder vs StringBuffer
 > - StringBuilder 와 똑같은 기능을 수행하는 StringBuffer 클래스도 있다.
 > - StringBuffer 는 내부에 동기화가 되어 있어서, 멀티 스레드 상황에 안전하지만 동기화 오버헤드로 인해 성능이 느리다.
 > - StringBuilder 는 멀티 쓰레드 상황에서 안전하지 않지만 동기화 오버헤드가 없으므로 속도가 빠르다.
@@ -977,7 +977,7 @@
 - 대신 반환된 참조값을 즉시 사용해서 바로 메서드를 호출할 수 있다.
 - 메서드 체이닝 기법은 코드를 간결하고 읽기 쉽게 만들어준다.
 
-> !다음과 같은 순서로 실행 (참조값을 x001 이라고 가정)  
+> !참조 - 다음과 같은 순서로 실행 (참조값을 x001 이라고 가정)  
 > adder.add(1).add(2).add(3).getValue()  
 > x001.add(2).add(3).getValue()  
 > x001.add(3).getValue()  
@@ -1460,7 +1460,7 @@
    - cbrt(x): 세제곱근
    - random(): 0.0 과 1.0 사이의 무작위 값 생성
 
-> **!참고**: 아주 정밀한 숫자와 반올림 계산이 필요하다면 BigDecimal 을 사용한다. 
+> **!참고** - 아주 정밀한 숫자와 반올림 계산이 필요하다면 BigDecimal 을 사용한다. 
 
 #### Random 클래스 
 - Math.random( ) 을 사용해도 되지만 Random 클래스를 사용하면 더욱 다양한 랜덤 값을 구할 수 있다.
@@ -1777,7 +1777,7 @@
 - 간결성 및 일관성: 열거형을 사용하면 코드가 더 간결하고 명확해지며, 데이터의 일관성이 보장된다.
 - 확장성: 새로운 회원 등급 타입을 추가하고 싶을 때, ENUM 에 새로운 상수를 추가하기만 하면 된다.
 
-> !참고: 열거형을 사용하는 경우 static import 를 적절하게 사용하면 더 읽기 좋은 코드를 만들 수 있다.  
+> !참고 - 열거형을 사용하는 경우 static import 를 적절하게 사용하면 더 읽기 좋은 코드를 만들 수 있다.  
   (상수는 static import 사용 가능)
 
 
@@ -1809,7 +1809,7 @@
 - ordinal( ): ENUM 상수의 선언 순서(0부터 시작)를 반환한다.
 - toString( ): ENUM 상수의 이름을 문자열로 반환한다. name() 메서드와 유사하지만, toString()은 직접 오버라이드 할 수 있다.
 
-> !주의: ordinal( )은 가급적 사용하지 않는 것이 좋다.
+> !주의 - ordinal( )은 가급적 사용하지 않는 것이 좋다.
 > - 중간에 상수를 선언하는 순서가 변경되면 전체 상수의 위치가 모두 변경될 수 있기 때문이다.
 
 #### 열거형 정리
@@ -1975,13 +1975,263 @@
 ### 6-1. 날짜와 시간 라이브러리가 필요한 이유
 - 날짜와 시간을 계산하는 것은 단순하게 생각하면 쉬워보이지만, 실제로는 매우 어렵고 복잡하다.
 
+#### 1) 날짜와 시간 차이 계산
+- 특정 날짜에서 다른 날짜까지의 정확한 일수를 계산하는 것은 생각보다 복잡하다.
+- 윤년, 각 달의 일수 등을 모두 고려해야 하며, 간단한 뺄셈 연산으로는 정확한 결과를 얻기 힘들다.
+
+#### 2) 윤년 계산
+- 지구가 태양을 한바퀴 도는 데 걸리는 평균 시간은 대략 365.24251일, 즉 365일 5시간 48분 45초 정도이다.
+- 우리가 사용하는 그레고리력(현재 대부분의 세계가 사용하는 달력)은 1년이 보통 365일로 설정되어 있다.
+- 따라서 둘의 시간이 정확히 맞지않다. 이런 문제를 해결하기 위해 4년마다 하루(2월 29일)를 추가하는 윤년(leap year)을 도입한다.
+- 윤년 계산은 간단해 보이지만 실제로는 매우 복잡하다. 윤년은 보통 4년마다 한 번씩 발생하지만, 100년 단위일 때는 윤년이아니며, 400년 단위일 때는 다시 윤년이다.
+- 이 규칙에 따라 2000년과 2020년은 윤년이지만, 1900년과 2100년은 윤년이 아니다. 
+
+#### 3) 일광 절약 시간(Daylight Saving Time, DST) 변환
+- 보통 3월에서 10월은 태양이 일찍 뜨고, 나머지는 태양이 상대적으로 늦게 뜬다. 
+- 시간도 여기에 맞추어 1시간 앞당기거나 늦추는 제도를 일광 절약 시간제 또는 썸머타임이라고 한다.
+- 일괄 절약 시간은 국가나 지역에 따라 적용 여부와 시작 및 종료 날짜가 다르다. 
+- 이로 인해 날짜와 시간 계산 시 1시간의 오차가 발생할 수 있으며, 이를 정확하게 계산하는 것은 복잡하다.
+
+####  4) 타임존 계산
+- 세계는 다양한 타임존으로 나뉘어 있으며, 각 타임존 UTF(협정 세계시)로 부터의 시간 차이로 정의된다. 
+- 타임존 간의 시간 변환을 정확히 계산하는 것은 복잡하다.
+
+* GMT(그리니치 평균시, Greenwich Mean Time): 태양이 그리니치 천문대를 통과할 때를 정오로 한다.
+* UTC 는 세계 협정 시, GMT 와 거의 비슷하지만 UTC 가 더 정밀해서 영국을 제외한 국가 대부분 UTC 를 쓴다.
+
+> 이러한 복잡성 때문에 대부분의 현대 개발 환경에서는 날짜와 시간을 처리하기 위해 잘 설계된 라이브러리를 사용해야한다.
+
+
 ### 6-2. 자바 날짜와 시간 라이브러리 소개
+- 자바 날짜와 시간 라이브러리는 자바 공식 문서가 제공하는 다음 표 하나로 정리할 수 있다.
+![img_9.png](img_9.png)
+
+#### LocalDate, LocalTime, LocalDateTime
+- LocalDate: 날짜만 표현할 때 사용한다. 년, 월, 일을 다룬다. 예) 2013-11-21
+- LocalTime: 시간만을 표현할 때 사용한다. 시,분,초를 다룬다. 예) 08:20:30.213  
+  (초는 밀리초, 나노초 단위도 포함할 수 있다.)
+- LocalDateTime:  LocalDate 와 LocalTime 을 합한 개념이다.
+
+* 앞에 Local 이 붙는 이유는 세계 시간대를 고려하지 않아서 타임존이 적용되지 않기 때문이다.
+* 특정 지역의 날짜와 시간만 고려할 때 사용한다. (애플리케이션 개발시 국내 서비스만 고려할 때)
+
+#### ZonedDateTime, OffsetDateTime
+- ZonedDateTime: 시간대를 고려한 날짜와 시간을 표현할 때 사용한다. 여기에는 시간대를 표현하는 타임존이 포함된다.
+  - 예) 2013-11-21T08:20:30.213+9:000[Asia/Seoul]
+  - +9:00 은 UTC 로 부터의 시간대 차이이다. 오프셋이라 한다.
+  - Asia/Seoul 은 타임존이라 한다. 이 타임존을 알면 오프셋과 일광 절약 시간제에 대한 정보를 알 수 있다.
+  - 일광 절약 시간제가 적용된다.
+- OffsetDateTime: 시간대를 고려한 날짜와 시간을 표현할 때 사용한다. 타임존은 없고 UTC 로 부터의 시간대 차이인 고정된 오프셋만 포함된다.
+  - 예) 2013-11-21T08:20:30.213+9:00 
+  - 일광 절약 시간제가 적용되지 않는다.
+  
+#### Year, Month, YearMonth, MonthDay
+- 년, 월, 년월, 달일을 각각 다룰 때 사용한다. 자주 사용하지는 않는다.
+- DayOfWeek 와 같이 월, 화, 수, 목, 금, 토, 일을 나타내는 클래스도 있다.
+
+#### Instant
+- Instant 는 UTC(협정 세계시)를 기준으로 하는, 시간의 한 지점을 나타낸다. 
+- Instant 는 날짜와 시간을 나노초 정밀도로 표현하며, 1970년 1월 1일 0시 0분 0초(UTC)를 기준으로 경과한 시간으로 계산된다.
+- 쉽게 이야기해서 Instant 내부에는 초 데이터만 들어 있다. (나노초 포함)
+- 따라서 날짜와 시간을 계산에 사용할 때는 적합하지 않다.
+
+#### Period, Duration
+- 시간의 개념은 크게 2가지로 나뉜다. 
+  - 특정 시점 시간(시각)
+  - 시간의 간격(기간) 
+- Period, Duration 은 시간의 간격(기간)을 표현하는데 사용한다.
+  - Period: 두 날짜 사이의 간격을 년, 월, 일 단위로 나타낸다.
+  - Duration: 두 시간 사이의 간격을 시, 분, 초(나노초) 단위로 나타낸다.
 
 
 ### 6-3. 기본 날짜와 시간 - LocalDateTime
+#### LocalDate
+    import java.time.LocalDate;
+    
+    public class LocalDateMain {
+    
+        public static void main(String[] args) {
+            LocalDate nowDate = LocalDate.now();
+            LocalDate ofDate = LocalDate.of(2019, 1, 1);
+            System.out.println("오늘 날짜 = " + nowDate);
+            System.out.println("지정 날짜 = " + ofDate);
+    
+            // 계산(불변 객체이기 때문에 반환값을 받아야한다.)
+            ofDate = ofDate.plusDays(10);
+            System.out.println("ofDate + 10 = " + ofDate);
+        }
+    }
+- 생성 
+  - now( ): 현재 시간을 기준으로 생성한다.
+  - of(...): 특정 날짜를 기준으로 생성한다. 년, 월, 일을 입력할 수 있다.
+- 계산
+  - plusDay( ): 특정 일을 더한다. 다양한 plusXxx( ) 메서드가 존재한다. 
+
+#### LocalTime
+    public class LocalTimeMain {
+    
+        public static void main(String[] args) {
+            LocalTime nowTime = LocalTime.now();
+            LocalTime ofTime = LocalTime.of(9, 10, 30);
+    
+            System.out.println("현재 시간 = " + nowTime);
+            System.out.println("지정 시간 = " + ofTime);
+    
+            // 계산(불변)
+            LocalTime ofTimePlus1 = ofTime.plusHours(1);
+            LocalTime ofTimePlus2 = ofTimePlus1.plusMinutes(5);
+            LocalTime ofTimePlus3 = ofTimePlus2.plusSeconds(10);
+            System.out.println("지정 시간 +1: +5: +10 = " + ofTimePlus3);
+        }
+    }
+
+#### LocalDateTime
+    public class LocalDateTimeMain {
+    
+        public static void main(String[] args) {
+            LocalDateTime nowDt = LocalDateTime.now();
+            LocalDateTime ofDt = LocalDateTime.of(2016, 8, 16, 8, 10, 1);
+            System.out.println("현재 날짜시간 = " + nowDt);
+            System.out.println("지정 날짜시간 = " + ofDt);
+    
+            // 날짜와 시간 분리
+            LocalDate localDate = ofDt.toLocalDate();
+            LocalTime localTime = ofDt.toLocalTime();
+            System.out.println("localDate = " + localDate);
+            System.out.println("localTime = " + localTime);
+    
+            // 날짜와 시간 합체
+            LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+            System.out.println("localDateTime = " + localDateTime);
+            
+            // 계산(불변)
+            LocalDateTime ofDtPlus = ofDt.plusDays(1000);
+            System.out.println("지정 날짜시간 + 1000d = " + ofDtPlus);
+            LocalDateTime ofDtPlus1Year = ofDt.plusYears(1);
+            System.out.println("지정 날짜시간 + 1y = " + ofDtPlus1Year);
+    
+            // 비교
+            System.out.println("현재 날짜시간이 지정 날짜시간보다 이전인가? " + nowDt.isBefore(ofDt));
+            System.out.println("현재 날짜시간이 지정 날짜시간보다 이후인가? " + nowDt.isAfter(ofDt));
+            System.out.println("현재 날짜시간이 지정 날짜시간이 같은가? " + nowDt.isEqual(ofDt));
+        }
+    }
+- 생성
+  - now( ): 현재 날짜와 시간을 기준으로 생성
+  - of(...): 특정 날짜와 시간을 기준으로 생성
+- 분리
+  - toXxx( ): 메서드로 분리
+- 합체
+  - LocalDateTime.of(LocalDate, LocalTime)
+- 계산
+  - plusXxx( ): 특정 날짜와 시간을 더한다.
+- 비교
+  - isBefore( ): 다른 날짜시간과 비교한다. 현재 날짜와 시간이 이전이라면 true 를 반환한다.
+  - isAfter( ): 다른 날짜시간과 비교한다. 현재 날짜와 시간이 이후라면 true 를 반환한다.
+  - isEquals( ): 다른 날짜와 시간적으로 동일한지 비교한다. 시간이 같으면 true 를 반환한다.
+
+> !참고 - isEquals( )는 단순히 비교 대상이 시간적으로 같으면 true 를 반환한다. 객체가 다르고, 타임존이 달라도 시간적으로 같으면 true 를 반환한다.
+> 반면 equals( )는 객체의 타입, 타임존 등등 내부 데이터의 모든 구성요소가 같아야 true 를 반환한다.
 
 
 ### 6-4. 타임존 - ZonedDateTime
+- "Asia/Seoul" 같은 타임존 안에는 일광 절약 시간제에 대한 정보와 UTC +9:00와 같은 UTC 로 부터의 시간차이인 오프셋 정보를 모두 포함하고 있다.
+- 타임존 목록 예시 
+  - Europe/London
+  - GMT
+  - UTC
+  - US/Arizona -07:00
+  - America/New_York -05:00
+  - Asia/Seoul +09:00
+  - Asia/Dubai +04:00
+  - Asia/Istanbul +03:00
+  - Asia/Shanghai +08:00
+  - Europe/Paris +01:00
+  - Europe/Berlin + 01:00
+
+#### ZoneId
+- 자바는 타임존을 ZoneId 클래스로 제공한다.
+
+
+    public class ZoneIdMain {
+    
+        public static void main(String[] args) {
+            for (String availableZoneId : ZoneId.getAvailableZoneIds()) {
+                ZoneId zoneId = ZoneId.of(availableZoneId);
+                System.out.println(zoneId + "|" + zoneId.getRules());
+            }
+    
+            ZoneId zoneIdSystemDefault = ZoneId.systemDefault();
+            System.out.println("ZoneId.systemDefault = " + zoneIdSystemDefault);
+    
+            ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
+            System.out.println("seoulZoneId = " + seoulZoneId);
+        }
+    }
+- 생성
+  - ZoneId.systemDefault( ): 시스템이 사용하는 기본 ZoneId를 반환한다.
+  - ZoneId.of( ): 타임존을 직접 제공해서 ZoneId를 반환한다.
+- ZoneId는 내부에 일광 절약 시간 관련 정보, UTC 와의 오프셋 정보를 포함하고 있다.
+
+#### ZonedDateTime
+- ZonedDateTime 은 LocalDateTime 에 시간대 정보인 ZoneId 가 합쳐진 것이다.
+
+
+    import java.time.LocalDateTime;
+    import java.time.ZoneId;
+    import java.time.ZonedDateTime;
+    
+    public class ZoneDateTimeMain {
+    
+        public static void main(String[] args) {
+            ZonedDateTime nowZdt = ZonedDateTime.now();
+            System.out.println("now2dt = " + nowZdt);
+    
+            LocalDateTime ldt = LocalDateTime.of(2030, 1, 1, 13, 30, 50);
+            ZonedDateTime zdt1 = ZonedDateTime.of(ldt, ZoneId.of("Asia/Seoul"));
+            System.out.println("zdt1 = " + zdt1);
+    
+            ZonedDateTime zdt2 = ZonedDateTime.of(2030, 1, 1, 13, 30, 50, 0, ZoneId.of("Asia/Seoul"));  // 나노초까지 포함
+            System.out.println("zdt2 = " + zdt2);
+    
+            // 존 바꾸기
+            ZonedDateTime utcZdt = zdt2.withZoneSameInstant(ZoneId.of("UTC"));
+            System.out.println("utcZdt = " + utcZdt);
+        }
+    }
+- 생성
+  - now( ): 현재 날짜와 시간을 기준으로 생성한다. 이때 ZoneId 는 현재 시스템을 따른다.
+  - of(...): 특정 날짜와 시간을 기준으로 생성한다. ZoneId 를 추가해야 한다.
+- 타임존 변경 
+  - withZoneSameInstant(ZoneId): 타임존을 변경한다. 타임존에 맞추어 시간도 함께 변경된다.
+  - 이 메서드를 사용하면 지금 다른 나라는 몇 시 인지 확인일 수 있다. 
+  - 예를 들어서 서울이 지금 9시라면, UTC 타임존으로 변경하면 0시를 확인할 수 있다.
+
+#### OffsetDateTime
+- OffsetDateTime 은 LocalDateTime 에 UTC 오프셋 정보인 ZoneOffset 이 합쳐진 것이다.
+- 달리 말하면 ZonedDateTime 에서 ZoneId 가 빠진 것이다.
+- 따라서 DST 같은 일광 절약 시간대 정보는 없다.
+
+
+    public class OffsetDateTimeMain {
+    
+        public static void main(String[] args) {
+            OffsetDateTime nowOdt = OffsetDateTime.now();
+            System.out.println("nowOdt = " + nowOdt);
+    
+            LocalDateTime ldt = LocalDateTime.of(2030, 1, 1, 13, 30, 50);
+            System.out.println("ldt = " + ldt);
+            
+            OffsetDateTime odt = OffsetDateTime.of(ldt, ZoneOffset.of("+01:00"));
+            System.out.println("odt = " + odt);
+        }
+    }
+
+#### ZonedDateTime vs OffsetDateTime
+- ZonedDateTime 은 구체적인 지역 시간대를 다룰 때 사용하며, 일광 절약 시간을 자동으로 처리할 수 있다.
+- 사용자 지정 시간대에 따른 시간 계산이 필요할 때 적합하다.
+- OffsetDateTime 은 UTC 와의 시간 차이만을 나타낼 때 사용하며, 지역 시간대의 복잡성을 고려하지 않는다.
+- 시간대 변환 없이 로그를 기록하고, 데이터를 저장하고 처리할 때 적합하다.
 
 
 ### 6-5. 기계 중심의 시간 - Instant
