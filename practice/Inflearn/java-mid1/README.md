@@ -9,7 +9,7 @@
 - Alt + Insert: 제너레이트(생성자, toString ...)
 - Ctrl + d: 현재줄 아래줄에 복사
 - Shift + F6: 소스코드창에서 rename
-
+- Ctrl + Alt + N: inline variable, 두 줄 코드에 교집합 변수가 있을 때 합치는 단축키
 #### for mac
 - Cmd + n: 제너레이트(생성자, toString ...)
 
@@ -1390,9 +1390,113 @@
 
 
 ### 4-7. System 클래스 
+    public class SystemMain {
+    
+        public static void main(String[] args) {
+            // 현재 시간(밀리초)
+            long currentTimeMillis = System.currentTimeMillis();
+            System.out.println("currentTimeMillis = " + currentTimeMillis);
+    
+            // 현재 시간(나노초)
+            long currentTimeNano = System.nanoTime();
+            System.out.println("currentNano = " + currentTimeNano);
+    
+            // 환경 변수 읽기 (운영체제가 사용하는 환경 변수)
+            Map<String, String> getenv = System.getenv();
+            System.out.println("getenv = " + getenv);
+    
+            // 시스템 속성 읽기 (자바가 사용하는 시스템의 환경)
+            Properties properties = System.getProperties();
+            System.out.println("properties = " + properties);
+            System.out.println("Java version: " + properties.getProperty("java.version"));
+    
+            // 배열 고속 복사
+            char[] originalArray = {'h', 'e', 'l', 'l', 'o'};
+            char[] copiedArray = new char[5];
+            System.arraycopy(originalArray, 0, copiedArray, 0, originalArray.length);   // 자바에서 루프돌면서 복사하는게 아니라 운영체제에서 통채로 복사한다.
+    
+            // 배열 출력
+            System.out.println("copiedArray = " + copiedArray); // 배열은 그냥 출력하면 배열의 참조값이 나온다. [C@6b884d57 [ 이 배열이란 뜻, C 가 char 란 뜻, @ 이가 참조값이란 뜻 이다.
+            System.out.println("Arrays.toString = " + Arrays.toString(copiedArray));
+    
+            // 프로그램 종료 (일반적으로 사용을 권장하지 않음, 웹 어플리케이션은 쓰면 안됨)
+            System.exit(0);
+    
+        }
+    }
+- 표준 입력, 출력, 오류 스트림: System.in, System.out, System.err 는 각각 표준 입력, 표준 출력, 표준 오류 스트림을 나타낸다.
+- 시간 측정: System.currentTimeMillis( )와 System.nanoTime( )은 현재 시간을 밀리초 또는 나초로 단위로 제공한다.
+- 환경 변수: System.getenv( ) 메서드를 사용하여 OS 에서 설정한 환경 변수의 값을 얻을 수 있다. 환경 변수는 운영체제에서 사용하는 변수이다.
+- 시스템 속성: System.getProperties( ) 를 사용해 현재 시스템 속성을 얻거나 System.getProperty(String key)로 특정 속성을 얻을 수 있다. 시스템 속성은 자바에서 사용하는 설정 값이다.
+- 시스템 종료: System.exit(int status) 메서드는 프로그램을 종료하고, OS 에 프로그램 종료의 상태코드를 전달한다.
+  - 상태 코드 0: 정상종료
+  - 상태 코드 0 이 외: 오류나 예외적인 종료
+- 배열 고속 복사: System.arraycopy 는 시스템 레벨에서 최적화된 메모리 복사 연산을 사용한다. 직접 반복문을 사용해서 배열 복사할 때보다 수 배 이상 빠른 성능을 제공한다.
 
 
 ### 4-8. Math, Random 클래스
+#### Math 클래스
+- Math 는 수 많은 수학 문제를 해결해주는 클래스이다. 너무 많은 기능을 제공하기 때문에 대략 이런 것이 있구나 하는 정도면 충분하다.
+1. **기본 연산 메서드**
+   - abs(x): 절대값
+   - max(x): 최대값 
+   - min(x): 최소값
+2. **지수 및 로그 연산 메서드**
+   - exp(x): e^x 계산
+   - log(x): 자연 로그 
+   - log10(x): 로그 10
+   - pow(a, b): a^b 계산
+3. **반올림 및 정밀도 메서드**
+   - ceil(x): 올림
+   - floor(x): 내림
+   - rint(x): 가장 가까운 정수로 반올림
+   - round(x): 반올림
+4. **삼각 함수 메서드**
+   - sin(x):
+   - cos(x):
+   - tan(x):
+5. **기타 유용한 메서드** 
+   - sqrt(x): 제곱근
+   - cbrt(x): 세제곱근
+   - random(): 0.0 과 1.0 사이의 무작위 값 생성
+
+> **!참고**: 아주 정밀한 숫자와 반올림 계산이 필요하다면 BigDecimal 을 사용한다. 
+
+#### Random 클래스 
+- Math.random( ) 을 사용해도 되지만 Random 클래스를 사용하면 더욱 다양한 랜덤 값을 구할 수 있다.
+- 사실 Math.random( ) 도 내부에서 Random 클래스를 사용한다.  
+- 참고로 Random 클래스는 java.util 패키지 소속이다.
+
+      public class RandomMain {
+      
+          public static void main(String[] args) {
+              Random random = new Random();
+      
+              int randomInt = random.nextInt();   // 0.0 ~ 1.0
+              System.out.println("randomInt: " + randomInt);
+      
+              double randomDouble = random.nextDouble();  // 0.0d ~ 1.0d
+              System.out.println("randomDouble: " + randomDouble);
+      
+              boolean randomBoolean = random.nextBoolean();
+              System.out.println("randomBoolean: " + randomBoolean);
+      
+              // 범위 조회
+              int randomRange1 = random.nextInt(10);   // 0 ~ 9
+              System.out.println("0 ~ 9: " + randomRange1);
+      
+              int randomRange2 = random.nextInt(10) + 1;   // 1 ~ 10
+              System.out.println("1 ~ 10: " + randomRange2);
+              
+          }
+      }
+
+#### 씨드 - Seed
+- 랜덤은 내부에서 씨드(Seed) 값을 사용해서 랜덤 값을 구한다.
+- 그런데 이 씨드 값이 같으면 항상 같은 결과가 출력된다.
+
+      // Random random = new Random();
+      Random random = new Random(1);  // seed 가 같으면 Random 의 결과가 같다.
 
 
 ### 4-9. 문제와 풀이1
@@ -1401,35 +1505,463 @@
 ### 4-10. 문제와 풀이2
 
 
-### 4-11. 정리 
-
-
 <br>
 
 ## 5. 열거형 - ENUM
 ### 5-1. 문자열과 타입 안정성1
+- 자바가 제공하는 열겨형(Enum Type)을 제대로 이해하려면 먼저 열거형이 생겨난 이유를 알아야한다.
+
+#### 비즈니스 요구사항
+- 고객은 3등급으로 나누고, 상품 구매시 등급별로 할인을 적용한다. 할인시 소수점 이하는 버린다.
+  - BASIC: 10% discount
+  - GOLD: 20% discount
+  - DIAMOND: 30% discount
+####
+    /*
+     * 회원 등급과 가격을 입력하면 할임 금액을 계싼해주는 클래스를 만들어보자.
+     * 예를 들어서 GOLD, 10000원을 입력하면 할인 대상 금액인 2000원을 반환한다.
+     */
+    
+    public class DiscountService {
+    
+        public int discount(String grade, int price){
+            int dicountPercent = 0;
+    
+            if (grade.equals("BASIC")){
+                dicountPercent = 10;
+            } else if (grade.equals("GOLD")){
+                dicountPercent = 20;
+            } else if (grade.equals("DIAMOND")){
+                dicountPercent = 30;
+            } else {
+                System.out.println(grade + " : 할인X");
+            }
+    
+            return price * dicountPercent/100;
+        }
+    }
+####
+    public class StringGradeEx0_1 {
+    
+        public static void main(String[] args) {
+            int price = 10000;
+    
+            DiscountService discountService = new DiscountService();
+            int basic = discountService.discount("BASIC", price);
+            int gold = discountService.discount("GOLD", price);
+            int diamond = discountService.discount("DIAMOND", price);
+    
+            System.out.println("BASIC 등급의 할인 금액 = " + basic);
+            System.out.println("GOLD 등급의 할인 금액 = " + gold);
+            System.out.println("DIAMOND 등급의 할인 금액 = " + diamond);
+        }
+    }
+- 그러나 이렇게 수동으로 등급을 입력하면 오타 혹은 존재하지 않는 등급을 입력하는 실수를 할 수 있다.
+  - 타입 안정성 부족: 문자열은 오타가 발생하기 쉽고, 유효하지 않은 값이 입력될 수 있다. 
+  - 데이터 일관성: "GOLD", "gold". "Gold" 등 다양한 형식으로 문자열을 입력할 수 있어 일관성이 떨어진다.
+- String 사용 시 타입 안정성 부족 문제 
+  - 값의 제한 부족: String 으로 상태나 카테고리를 표현하면,  
+    잘못된 문자열을 실수로 입력할 가능성이 있다.
+  - 컴파일 시 오류 감지 불가: 이러한 잘못된 값은 컴파일 시에는 감지되지 않고,  
+    런타임에서만 문제가 발견되기 때문에 디버깅이 어려워질 수 있다.
+- 이러한 문제를 해결하려면 특정 범위로 값을 제한해야한다. 
+- 예를 들어 BASIC, GOLD, DIAMOND 라는 정확한 문자만 discount( ) 메서드에 전달되어야 한다.
+- 하지만 String 은 어떤 문자열이든 받을 수 있기 때문에 자바 문법 관점에서는 아무런 문제가 없다.
+- 결국 String 타입을 사용해서는 문제를 해결할 수 없다.
+
 
 
 ### 5-2. 문자열과 타입 안정성2
+- 이번에는 대안으로 문자열 상수를 사용해보자. 상수는 미리 정의한 변수명을 사용할 수 있기 때문에 문자열을 직접 사용하는 것 보다는 더 안전한다.
+####
+    public class StringGrade {
+        public static final String BASIC = "BASIC";
+        public static final String GOLD = "GOLD";
+        public static final String DIAMOND = "DIAMOND";
+    }
+####
+    public class DiscountService {
+    
+        public int discount(String grade, int price){
+            int dicountPercent = 0;
+    
+            if (grade.equals(StringGrade.BASIC)){
+                dicountPercent = 10;
+            } else if (grade.equals(StringGrade.GOLD)){
+                dicountPercent = 20;
+            } else if (grade.equals(StringGrade.DIAMOND)){
+                dicountPercent = 30;
+            } else {
+                System.out.println(grade + " : 할인X");
+            }
+    
+            return price * dicountPercent/100;
+        }
+    
+    }
+####
+    public class StringGradeEx1_1 {
+    
+        public static void main(String[] args) {
+            int price = 10000;
+    
+            enumeration.ex0.DiscountService discountService = new DiscountService();
+            int basic = discountService.discount(StringGrade.BASIC, price);
+            int gold = discountService.discount(StringGrade.GOLD, price);
+            int diamond = discountService.discount(StringGrade.DIAMOND, price);
+    
+            System.out.println("BASIC 등급의 할인 금액 = " + basic);
+            System.out.println("GOLD 등급의 할인 금액 = " + gold);
+            System.out.println("DIAMOND 등급의 할인 금액 = " + diamond);
+        }
+    }
+- 문자열 상수를 사용한 덕분에 전체적으로 코드가 더 명확해졌다.
+- 그리고 discount( ) 에 인자를 전달할 때도 StringGrade 가 제공하는 문자열 상수를 사용하면 된다.
+- 더 좋은 점은 만약 실수로 상수의 이름을 잘못 입력하면 컴파일 시점에서 오류가 발생한다는 점이다.
+- 하지만 문자열 상수를 사용해도, 지금까지 발생한 문제들을 근본적으로 해결할 수는 없다.
+- 왜냐하면 String 타입은 어떤 문자열이든 입력할 수 있기 때문이다. 개발자가 실수로 StringGrade 에 있는  
+  문자열 상수를 사용하지 않고 직접 문자열을 사용해도 막을 수 있는 방법이 없다.
 
 
-### 5-3. 타입 안전 열거형 패턴 
+### 5-3. 타입 안전 열거형 패턴 (Type-Safe Enum Pattern)
+- 지금까지 설명한 문제를 해결하기 위해 많은 개발자들이 오랜기간 고민하고 나온 결과가 바로 타입 안전 열거형 패턴이다.
+- 여기서 영어인 enum 은 enumeration 의 줄임말인데, 번역하면 열거라는 뜻이고, 어떤 항목을 나열하는 것을 뜻한다.
+- 우리의 경우 회원 등급이 BASIC, GOLD, DIAMOND 를 나열하는 것이다.
+- 여기서 중요한 것은 타입 안전 열거형 패턴을 사용하면 이렇게 나열한 항목만 사용할 수 있다는 것이 핵심이다.
+####
+    public class ClassGrade {
+        public static final ClassGrade BASIC = new ClassGrade();
+        public static final ClassGrade GOLD = new ClassGrade();
+        public static final ClassGrade DIAMOND = new ClassGrade();
+    }
+- 먼저 회원 등급을 다루는 클래스를 만들고, 각 회원 등급별로 상수를 선언한다.
+- 이때 각각의 상수마다 별도의 인스턴스를 생성하고, 생성한 인스턴스를 대입한다.
+- 각각을 상수로 선언하기 위해 static 과 final 을 사용한다.  
+![img_8.png](img_8.png) 
+####
+    public class DiscountService {
+    
+        public int discount(ClassGrade classGrade, int price){
+            int dicountPercent = 0;
+    
+            // 같은 참조값을 가진 것과 비교
+            if (classGrade == ClassGrade.BASIC) {
+                dicountPercent = 10;
+            } else if (classGrade == ClassGrade.GOLD) {
+                dicountPercent = 20;
+            } else if (classGrade == ClassGrade.DIAMOND) {
+                dicountPercent = 30;
+            } else {
+                System.out.println(classGrade + " : 할인X");
+            }
+    
+            return price * dicountPercent/100;
+        }
+    
+    }
+- discount( ) 메서드는 매개변수로 ClassGrade 클래스를 사용한다.
+- 값을 비교할 때는 classGrade == ClassGrade.BASIC 과 같이 == 참조값 비교를 사용하면 된다.
+- 매개 변수로 넘어오는 인수도 classGrade 가 가진 상수 중에 하나를 사용하기 때문이다.  
+  (같은 참조값을 가진 것 끼리 == 비교하기 때문에 가능)
+
+####
+    public class ClassGradeEX2_1 {
+    
+        public static void main(String[] args) {
+            int price = 10000;
+    
+            DiscountService discountService = new DiscountService();
+            int basic = discountService.discount(ClassGrade.BASIC, price);
+            int gold = discountService.discount(ClassGrade.GOLD, price);
+            int diamond = discountService.discount(ClassGrade.DIAMOND, price);
+    
+            System.out.println("BASIC 등급의 할인 금액 = " + basic);
+            System.out.println("GOLD 등급의 할인 금액 = " + gold);
+            System.out.println("DIAMOND 등급의 할인 금액 = " + diamond);
+    
+        }
+    }
+
+#### 외부에서 ClassGrade 를 생성할 수 없게 막지 않은 경우 
+    public class ClassGradeEx2_2 {
+    
+        public static void main(String[] args) {
+            int price = 10000;
+    
+            DiscountService discountService = new DiscountService();
+    
+            // 외부에서 ClassGrade 를 생성
+            ClassGrade newClassGrade = new ClassGrade();
+    
+            int result = discountService.discount(newClassGrade, price);
+            System.out.println(" newClassGrade 등급의 할인 금액 : " + result);
+        }
+    }
+- 외부에서 ClassGrade 를 생성하면 할인X 가 출력된다.
+
+#### 외부에서 ClassGrade 를 생성할 수 없게 막은 경우 (기본생성자를 private 로 변경)
+    public class ClassGrade {
+        public static final ClassGrade BASIC = new ClassGrade();
+        public static final ClassGrade GOLD = new ClassGrade();
+        public static final ClassGrade DIAMOND = new ClassGrade();
+    
+        // private 생성자 추가
+        private ClassGrade() {}
+    }
+- private 생성자를 사용해서 외부에서 ClassGrade 를 임의로 생성하지 못하게 막으면  
+  ClassGrade 타입의 값을 전달할 때 BASIC, GOLD, DIAMOND 처럼 내부에서 생성한 상수만 사용 가능하다.
+- 그리고 이를 타입 안전 열거형 패턴이라고 한다.
+  - 타입 안정성 향상: 정해진 객체만 사용할 수 있기 때문에, 잘못된 값을 입력하는 문제를 근본적으로 방지할 수 있다.
+  - 데이터 일관성: 정해진 객체만 사용하므로 데이터의 일관성이 보장된다.
+  - 제한된 인스턴스 생성: 클래스는 사전에 정의된 몇 개의 인스턴스만 생성하고,  
+    외부에서는 이 인스턴스들만 사용할 수 있도록 한다. 이를 통해 정의된 값들만 사용하도록 보장한다.
+  - 타입 안정성: 이 패턴을 사용하면, 잘못된 값이 할당되거나 사용되는 것을 컴파일 시점에서 방지할 수 있다. 
+    예를 들어, 특정 메서드가 특정 열거형 타입의 값을 요구한다면, 오직 그 타입의 인스턴스만 전달할 수 있다.
 
 
 ### 5-4. 열거형 - Enum Type
+- 자바는 타입 안전 열거형 패턴(Type-Safe Enum Pattern)을 매우 편리하게 사용할 수 있는 열거형(Enum Type)을 제공한다.
+- 쉽게 이야기해서 자바의 열거형은 앞서 배운 타입 안전 열거형 패턴을 쉽게 사용할 수 있도록 프로그래밍 언어에서 지원하는 것이다.
+- 영어인 enum 은 enumeration 의 줄임말인데, 번역하면 열거라는 뜻이고, 어떤 항목을 나열하는 것을 뜻한다.
+- 'Enumeration' 은 일련의 명명된 상수들의 집합을 정의하는 것이며,  
+  프로그래밍에서는 이러한 상수들을 사용하여 코드 내에서 미리 정의된 값들의 집합을 나타낸다.
+####
+    public enum Grade {
+        BASIC, GOLD, DIAMOND
+    }
+- 열거형을 정의할 때는 class 대신에 enum 을 사용한다.
+- 원하는 상수의 이름을 나열하면 된다.
+####
+    public class DiscountService {
+    
+        public int discount(Grade grade, int price){
+            int dicountPercent = 0;
+    
+            if (grade == Grade.BASIC) {
+                dicountPercent = 10;
+            } else if (grade == Grade.GOLD) {
+                dicountPercent = 20;
+            } else if (grade == Grade.DIAMOND) {
+                dicountPercent = 30;
+            } else {
+                System.out.println(grade + " : 할인X");
+            }
+    
+            return price * dicountPercent/100;
+        }
+    
+    }
+####
+    import static enumeration.ex3.Grade.BASIC;  // static import 
+    
+    public class ClassGradeEx3_1 {
+    
+        public static void main(String[] args) {
+            int price = 10000;
+    
+            DiscountService discountService = new DiscountService();
+            int basic = discountService.discount(BASIC, price);
+            int gold = discountService.discount(Grade.GOLD, price);
+            int diamond = discountService.discount(Grade.DIAMOND, price);
+    
+            System.out.println("BASIC 등급의 할인 금액 = " + basic);
+            System.out.println("GOLD 등급의 할인 금액 = " + gold);
+            System.out.println("DIAMOND 등급의 할인 금액 = " + diamond);
+        }
+    }
+- 열거형의 사용법이 앞서 타입 안전 열거형 패턴을 직접 구현한 코드와 같은 것을 확인할 수 있다.
+- 참고로 열거형은 switch 문에 사용할 수 있다. 또한 열거형은 외부 생성이 불가능하다.
+
+#### 열거형의 장점
+- 타입 안정성 향상: 열거형은 사전에 정의된 상수들로만 구성되므로, 유효하지 않은 값이 입력될 가능성이 없다. (이런 경우 컴파일 오류 발생)
+- 간결성 및 일관성: 열거형을 사용하면 코드가 더 간결하고 명확해지며, 데이터의 일관성이 보장된다.
+- 확장성: 새로운 회원 등급 타입을 추가하고 싶을 때, ENUM 에 새로운 상수를 추가하기만 하면 된다.
+
+> !참고: 열거형을 사용하는 경우 static import 를 적절하게 사용하면 더 읽기 좋은 코드를 만들 수 있다.  
+  (상수는 static import 사용 가능)
 
 
 ### 5-5. 열거형 - 주요 메서드 
+- 모든 열거형은 java.lang.Enum 클래스를 자동으로 상속 받는다.  
+  따라서 해당 클래스가 제공하는 기능들을 사용할 수 있다.
+####
+    public class EnumMethodMain {
+  
+        public static void main(String[] args) {
+      
+              // 모든 ENUM 반환
+              Grade[] values = Grade.values();
+              System.out.println("values = " + Arrays.toString(values));
+              for (Grade value : values) {
+                  System.out.println("name=" + value.name() + ", ordinal=" + value.ordinal());
+              }
+            
+              // String -> ENUM 변환, 잘못된 문자면 IllegalArgumentException 발생
+              String input = "GOLD";
+              Grade gold = Grade.valueOf(input);
+              System.out.println("gold = " + gold);   // toString() 오버라이딩 가능
+        }
+    }
+#### ENUM 주요 메서드 
+- values( ): 모든 ENUM 상수를 포함하는 배열을 반환한다.
+- valueOf(String name): 주어진 이름과 일치하는 ENUM 상수를 반환한다.
+- name( ): ENUM 상수의 이름을 문자열로 반환한다.
+- ordinal( ): ENUM 상수의 선언 순서(0부터 시작)를 반환한다.
+- toString( ): ENUM 상수의 이름을 문자열로 반환한다. name() 메서드와 유사하지만, toString()은 직접 오버라이드 할 수 있다.
+
+> !주의: ordinal( )은 가급적 사용하지 않는 것이 좋다.
+> - 중간에 상수를 선언하는 순서가 변경되면 전체 상수의 위치가 모두 변경될 수 있기 때문이다.
+
+#### 열거형 정리
+- 열거형은 java.lang.Enum 을 자동(강제)으로 상속 받는다.
+- 열거형은 이미 java.lang.Enum 을 상속 받았기 때문에 추가로 다른 클래스를 상속받을 수 없다.
+- 열거형은 인터페이스를 구현할 수 있다.
+- 열거형에 추상 메서드를 선언하고, 구현할 수 있다. 이 경우 익명 클래스와 같은 방식을 사용한다.
 
 
-### 5-6. 열거형- 리팩토링1
+### 5-6. 열거형 - 리팩토링1
+- 앞에서 구현한 ex2 의 열거형 코드들을 리팩토링 한다. 
+  - 불필요한 if 문을 제거한다.
+  - 할인율은 각각의 회원 등극별로 판단된다. 
+  - 할인율은 결국 회원 등급을 따라간다. 
+  - 따라서 회원 등급 클래스가 할인율을 가지고 관리하도록 변경한다.
+####
+    public class ClassGrade {
+        public static final ClassGrade BASIC = new ClassGrade(10);
+        public static final ClassGrade GOLD = new ClassGrade(20);
+        public static final ClassGrade DIAMOND = new ClassGrade(30);
+    
+        private final int discountPercent;
+    
+        // private 생성자 추가
+        private ClassGrade(int discountPercent) {
+            this.discountPercent = discountPercent;
+        }
+
+        public int getDiscountPercent() {
+            return discountPercent;
+    }
+
+    }
+- ClassGrade 에 할인율 필드를 추가했다. 조회 메서드도 추가한다.
+- 생성자를 통해서만 discountPercent 를 설정하도록 했고, 중간에 이 값이 변하지 않도록 불변으로 설계했다.
+####
+    public class DiscountService {
+    
+        public int discount(ClassGrade classGrade, int price){
+            return price * classGrade.getDiscountPercent() /100;
+        }
+    
+    }
 
 
 ### 5-7. 열거형 - 리팩토링2
+- 열거형도 클래스이다. 앞서 했던 리팩토링을 열거형인 Grade 에 동일하게 적용해보자.
+  - discountPercent 필드를 추가하고, 생성자를 통해서 필드에 값을 저장한다.
+  - 열거형은 상수로 저장하는 것 외에 일반적인 방법으로 생성이 불가능하다.  
+    따라서 생성자에 접근제어자를 선언할 수 없게 막혀있다. (private 이라고 생각하면 된다.)
+  - BASIC(10) 과 같이 상수 마지막에 괄호를 열고 생성자에 맞는 인수를 전달하면 적절한 생성자가 호출된다.
+####
+    public enum Grade {
+        BASIC(10), GOLD(20), DIAMOND(30);
+    
+        private final int discountPercent;
+    
+        // 접근 제한자가 생략 되었다고 생각
+        Grade(int discountPercent) {
+            this.discountPercent = discountPercent;
+        }
+    
+        public int getDiscountPercent() {
+            return discountPercent;
+        }
+    }
+####
+    public class DiscountService {
+    
+        public int discount(Grade grade, int price){
+            return price * grade.getDiscountPercent() /100;
+        }
+    }
 
 
 ### 5-8. 열거형 - 리팩토링3
+- 위에서 코드를 리펙토링하고 나니, 단순한 할인율 계산만 남았다.
 
+      public class DiscountService {
+      
+          public int discount(Grade grade, int price){
+              return price * grade.getDiscountPercent() /100;
+          }
+      }
+  - 이 코드를 보면 할인율 계산을 위해 Grade 가 가지고 있는 데이터인 discountPercent 의 값을 꺼내서 사용한다.
+  - 결국 Grade 의 데이터인 discountPercent 를 할인율 계산에 사용한다.
+  - 객체지향 관점에서 이렇게 자신의 데이터를 외부에 노출하는 것 보다는, Grade 클래스가 자신의 할인율을 어떻게 계산하는지 스스로 관리하는 것이 캡슐화 원칙에 더 맞다.
+####
+    public enum Grade {
+        BASIC(10), GOLD(20), DIAMOND(30);
+    
+        private final int discountPercent;
+    
+        Grade(int discountPercent) {
+            this.discountPercent = discountPercent;
+        }
+    
+        public int getDiscountPercent() {
+            return discountPercent;
+        }
+    
+        // 추가
+        public int discount(int price){
+            return price * discountPercent / 100;
+        }
+    }
+####
+    public class EnumRefMain3_2 {
+    
+        public static void main(String[] args) {
+            int price = 10000;
+    
+            System.out.println("BASIC 등급의 할인 금액 = " + Grade.BASIC.discount(price));
+            System.out.println("GOLD 등급의 할인 금액 = " + Grade.GOLD.discount(price));
+            System.out.println("DIAMOND 등급의 할인 금액 = " + Grade.DIAMOND.discount(price));
+    
+        }
+    }
+
+#### 출력 부분의 중복 제거 
+    public class EnumRefMain3_3 {
+    
+        public static void main(String[] args) {
+            int price = 10000;
+            printDiscount(Grade.BASIC, price);
+            printDiscount(Grade.GOLD, price);
+            printDiscount(Grade.DIAMOND, price);
+        }
+    
+        private static void printDiscount(Grade grade, int price) {
+            System.out.println(grade.name() + " 등급의 할인 금액: " + grade.discount(price));
+        }
+    }
+- grade.name( ) 메서드를 통해서 ENUM 상수의 이름을 사용할 수 있다.
+
+#### ENUM 목록
+    public class EnumRefMain3_4 {
+    
+        public static void main(String[] args) {
+            int price = 10000;
+            Grade[] grades = Grade.values();
+            for (Grade grade : grades) {
+                printDiscount(grade, price);
+            }
+        }
+    
+        private static void printDiscount(Grade grade, int price) {
+            System.out.println(grade.name() + " 등급의 할인 금액: " + grade.discount(price));
+        }
+    }
+- Grade.values( ) 를 사용하면 Grade 열거형의 모든 상수를 배열로 구할 수 있다.
+- 이후에 새로운 등급이 추가되더라도 main() 코드의 변경없이 모든 등급의 할인을 출력할 수 있다.
 
 ### 5-9. 문제와 풀이1
 
@@ -1437,14 +1969,11 @@
 ### 5-10. 문제와 풀이2
 
 
-### 5-11. 정리 
-
-
 <br>
 
 ## 6. 날짜와 시간
 ### 6-1. 날짜와 시간 라이브러리가 필요한 이유
-
+- 날짜와 시간을 계산하는 것은 단순하게 생각하면 쉬워보이지만, 실제로는 매우 어렵고 복잡하다.
 
 ### 6-2. 자바 날짜와 시간 라이브러리 소개
 
