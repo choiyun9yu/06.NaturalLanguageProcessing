@@ -2445,25 +2445,279 @@
         }
     }
 
-#### ChronoField
+#### 시간 필드 - ChronoField
+- ChronoField 는 날짜 및 시간을 나타내는 데 사용되는 열거형이다.
+- 이 열거형은 다양한 필드를 통해 날짜와 시간의 특정 부분을 나타낸다. 여기에는 연도, 월, 일, 시간, 분 등이 포함된다.
+  - TemporalField 인터페이스는 날짜와 시간을 나타내는데 사용된다.
+  - 주로 구현체는 java.time.temporal.ChronoField 열거형으로 구현되어 있다.
+- Field 의 뜻은 날짜와 시간 중에 있는 특정 필드들을 뜻한다.   
+  예를 들어 2024년 8월 16일 이라고 하면 각각의 필드는 아래와 같다.
+  - YEAR: 2024
+  - MONTH_OF_YEAR: 8
+  - DAY_OF_MONTH: 16
+- 단순히 시간의 단위 하나하나를 뜻하는 ChronoUnit 과는 다른 것을 아 수 있다. 
+- ChronoField 를 사용해야 날짜와 시간의 각 필드 중에 원하는 데이터를 조회할 수 있다.
+
+#### 연도 관련 필드
+| 필드 이름       | 설명                                      |
+|-------------|-----------------------------------------|
+| ERA         | 연대, 예를 들어 서기(AD) 또는 기원전(BC)             |
+| YEAR_OF_ERA | 연대 내의 연도                                |
+| YEAR        | 연도                                      |
+| EPOCH_DAY   | 유닉스 에폭(1970-01-01)부터의 일 수               |
+
+#### 월 관련 필드
+| 필드 이름           | 설명           |
+|-----------------|--------------|
+| MONTH_OF_YEAR   | 월(1월 = 1)    |
+| PROLEPTIC_MONTH | 연도를 월로 확장한 값 |
+
+#### 주 및 일 관련 필드
+| 필드 이름                        | 설명                        |
+|------------------------------|---------------------------|
+| DAY_OF_WEEK                  | 요일(월요일 = 1)               |
+| ALIGNED_DAY_OF_WEEK_IN_MONTH | 월의 첫 번째 요일을 기준으로 정렬된 요일   |
+| ALIGNED_DAY_OF_WEEK_IN_YEAR  | 연의 첫 번째 요일을 기준으로 정렬된 요일   |
+| DAY_OF_MONTH                 | 월의 일(1일 = 1)              |
+| DAY_OF_YEAR                  | 연의 일 (1월 1일 = 1)          |
+| EPOCH_DAY                    | 유닉스 에폭(1970-01-01)부터의 일 수 |
+
+#### 시간 관련 필드
+| 필드 이름              | 설명                    |
+|--------------------|-----------------------|
+| HOUR_OF_DAY        | 시간 (0-23)             |
+| CLOCK_HOUR_OF_DAY  | 시계 시간 (1-24)          |
+| HOUR_OF_AMPM       | 오전/오후 시간(0-11)        |
+| CLOCK_HOUR_OF_AMPM | 오전/오후 시계 시간(1-12)     |
+| MINUTE_OF_HOUR     | 분(0-59)               |
+| SECOND_OF_MINUTE   | 초(0-59)               |
+| NANO_OF_SECOND     | 초의 나노초(0-999.999.999) |
+| MICRO_OF_SECOND    | 초의 마이크로초(0-999,999)   |
+| MILLI_OF_SECOND    | 초의 밀리초(0-999)         |
+
+#### 기타 필드
+| 필드 이름           | 설명                   |
+|-----------------|----------------------|
+| AMPM_OF_DAY     | 하루의 AM/PM 부분         |
+| INSTANT_SECONDS | 초를 기준으로 한 시간         |
+| OFFSET_SECONDS  | UTC/GMT 에서의 시간 오프셋 초 |
+
+#### 주요 메서드
+| 메서드             | 반환 타입        | 설명                                                                    |
+|-----------------|--------------|-----------------------------------------------------------------------|
+| getBaseUnit( )  | TemporalUnit | 필드의 기본 단위를 반환한다. 예를 들어, 분 필드의 기본 단위는 ChronoUnit.MINUTES 이다.           |
+| getRangeUnit( ) | TemporalUnit | 필드의 범위 단위를 반환한다. 예를 들어, MONTH_OF_YEAR 의 범위 단위는 ChronoUnit.YEARS 이다.   |
+| isDateBased( )  | boolean      | 필드가 주로 날짜를 기반으로 하는지 여부를 나타낸다. YEAR 와 같은 날짜 기반 필드는 true 를 반환한다.        |
+| isTimeBased( )  | boolean      | 필드가 주로 시간을 기반으로 하는지 여부를 나타낸다. HOUR_OF_DAY 와 같은 시간 기반 필드는 true 를 반환한다. |
+| range( )        | ValueRange   | 필드가 가질 수 있는 값의 유효 범위를 ValueRange 객체로 반환한다. 이 객체는 최소값과 최대값을 제공한다.      |
+
+    public class ChronoFieldMain {
+    
+        public static void main(String[] args) {
+            ChronoField[] values = ChronoField.values();
+            for (ChronoField field : values) {
+                System.out.println(field + ", range = " + field.range());
+            }
+    
+            System.out.println("ChronoField.MONTH_OF_YEAR.range() = " + ChronoField.MONTH_OF_YEAR.range());
+            System.out.println("ChronoField.DAY_OF_MONTH.range() = " + ChronoField.DAY_OF_MONTH.range());
+        }
+    }
+
+#### 정리
+- TemporalUnit(ChronoUnit), TemporalField(ChronoField) 는 단독으로 사용하기 보다는 주로 날짜와 시간을 조회하거나 조작할 때 사용한다.
 
 
 ### 6-8. 날짜와 시간 조회하고 조작하기1
+- 날짜와 시간을 조회하려면 날짜와 시간 항목중에 어떤 필드를 조회할 지 선택해야 한다. 
+- 이때 날짜와 시간의 필드를 뜻하는 ChronoField 가 사용된다.
+
+
+    public class GetTimeMain {
+    
+        public static void main(String[] args) {
+            LocalDateTime dt = LocalDateTime.of(2030, 1, 1, 13, 30, 59);
+            System.out.println("YEAR = " + dt.get(ChronoField.YEAR));
+            System.out.println("MONTH_OF_YEAR = " + dt.get(ChronoField.MONTH_OF_YEAR));
+            System.out.println("DAY_OF_MONTH = " + dt.get(ChronoField.DAY_OF_MONTH));
+            System.out.println("HOUR_OF_DAY = " + dt.get(ChronoField.HOUR_OF_DAY));
+            System.out.println("MINUTE_OF_HOUR = " + dt.get(ChronoField.MINUTE_OF_HOUR));
+            System.out.println("SECOND_OF_MINUTE = " + dt.get(ChronoField.SECOND_OF_MINUTE));
+    
+            System.out.println("편의 메서드 사용");
+            System.out.println("YEAR = " + dt.getYear());
+            System.out.println("MONTH_OF_YEAR = " + dt.getMonthValue());  // MonthValue 라고해야 숫자로 반환된다.
+            System.out.println("DAY_OF_MONTH = " + dt.getDayOfMonth());
+            System.out.println("HOUR_OF_DAY = " + dt.getHour());
+            System.out.println("MINUTE_OF_HOUR = " + dt.getMinute());
+            System.out.println("SECOND_OF_MINUTE = " + dt.getSecond());
+
+            System.out.println("편의 메서드에 없는 경우");
+            System.out.println("MINUTE_OF_DAY = " + dt.get(ChronoField.MINUTE_OF_DAY)); // 하루에 있는 분만 구하는 것, 이 예제에서는 13:30:59 이 몇 분인지 구함
+            System.out.println("SECOND_OF_DAY = " + dt.get(ChronoField.SECOND_OF_DAY)); // 하루에 있는 초만 구하는 것, 이 예제에서는 13:30:59 이 몇 분인지 구함
+        }
+    }
+- TemporalAccessor.get(TemporalField field)
+  - LocalDateTime 을 포함한 특정 시점의 시간을 제공하는 클래스는 모두 TemporalAccessor 인터페이스를 구현한다.
+  - TemporalAccessor 는 특정 시점의 시간을 조회하는 기능을 제공한다.
+  - get(TemporalField field )을 호출할 때 어떤 날짜와 시간 필드를 조회할 지 TemporalField 의 구현인 ChronoField 를 인수로 전달하면 된다.
+- 편의 메서드 사용
+  - get(TemporalFiled field) 을 사용하면 코드가 길어지고 번거롭기 때문에 자주 사용하는 조회 필드는 간단한 편의 메서드를 제공한다.
+  - dt.get(ChronoField.DAY_OF_MONTH) -> dt.getDayOfMonth()
+- 편의 메서드에 없음
+  - 자주 사용하지 않는 특별한 기능은 편의 메서드를 제공하지 않는다.
+  - 편의 메서드를 사용하는 것이 가독성이 좋기 때문에 일반적으로는 편의 메서드를 사용하고, 편의 메서드가 없는 경우   
+    get(TemporalField field) 을 사용하면 된다.
+
+#### 날짜와 시간 조작하기
+- 날짜와 시간을 조작하려면 어떤 시간 단위(Unit)를 변경할 지 선택해야 한다. 
+- 이때 날짜와 시간의 단위를 뜻하는 ChronoUnit 이 사용된다.
+
+
+    public class ChangeTimePlusMain {
+    
+        public static void main(String[] args) {
+            LocalDateTime dt = LocalDateTime.of(2018, 1, 1, 13, 30, 59);
+            System.out.println("dt = " + dt);
+    
+            LocalDateTime plusDt1 = dt.plus(10, ChronoUnit.YEARS);
+            System.out.println("plusDt1 = " + plusDt1);
+    
+            LocalDateTime plusDt2 = dt.plusYears(10);
+            System.out.println("plusDt2 = " + plusDt2);
+    
+            Period period = Period.ofYears(10);
+            LocalDateTime plusDt3 = dt.plus(period);
+            System.out.println("plusDt3 = " + plusDt3);
+    
+        }
+    }
+- Temporal plus(long amountToAdd, TemporalUnit unit)
+  - LocalDateTime 을 포함한 특정 시점의 시간을 제공하는 클래스는 모두 Temporal 인터페이스를 구현한다.
+  - Temporal 은 특정 시점의 시간을 조작하는 기능을 제공한다.
+  - plus(long amountToAdd, TemporalUnit unit) 를 호출할 때 더하기 할 숫자와 시간의 단위(Unit) 를 전달하면 된다.  
+    이때 TemporalUnit 의 구현인 ChronoUnit 을 인수로 전달하면 된다.
+  - 불변이므로 반환 값을 받아야 한다. 
+  - 참고로 minus( ) 도 존재한다.
+- 편의 메서드 사용: 자주 사용하는 메서드는 편의 메서드가 제공된다.
+- Period 를 사용한 조작: 특정 시점의 시간에 기간을 더 할 수 있다.
+
+#### 정리 
+- 시간을 조회하고 조작하는 부분을 보면 TemporalAccessor.get( ), Temporal.plus( ) 와 같은 인터페이스를 통해 특정 구현 클래스와 무관하게 아주 일관성 있는 시간 조회, 조작 기능을 제공하는 것을 확인할 수 있다.
+- 덕분에 LocalDateTime, LocalDate, LocalTime, ZonedDateTime, Instant 와 같은 수 많은 구현에 관계 없이 일관성 있는 방법으로 시간을 조회하고 조작할 수 있다.
+- 하지만 모든 시간 필드를 다 조회할 수 있는 것은 아니다. 조회하지 못하는 필드를 조회하는 문제를 예방하기 위해 TemporalAccessor 와 Temporal 인터페이스는 현재 타입에서 특정 시간 단위나 필드를 사용할 수 있는지 확인할 수 있는 메서드를 제공한다.
+  - TemporalAccessor
+
+        boolean isSupported(TemporalField field);
+
+  - Temporal
+
+        boolean isSupported(TemporalUnit field);
+####
+    public class IsSupportedMain2 {
+    
+        public static void main(String[] args) {
+            LocalDate now = LocalDate.now();
+    
+            boolean suported = now.isSupported(ChronoField.SECOND_OF_MINUTE);
+            System.out.println("suported = " + suported);
+
+            if (suported) {
+              int minute = now.get(ChronoField.SECOND_OF_MINUTE);
+              System.out.println("minute = " + minute);
+            }
+        }
+    }
+- LocalDate 는 분의 초 필드를 지원하지 않으므로 ChronoField.SECOND_OF_MINUTE 를 조회하면 false 를 반환한다.
 
 
 ### 6-9. 날짜와 시간 조회하고 조작하기2
+- 날짜와 시간을 조작하는 with( ) 메서드에 대해 알아보자.
+
+
+    public class ChangeTimeWithMain {
+    
+        public static void main(String[] args) {
+            LocalDateTime dt = LocalDateTime.of(2018, 1, 1, 13, 30, 59);
+            System.out.println("dt = " + dt);
+    
+            // with( ) 는 불변 타입일 때 기존 값의 일부를 바꾸고 새로운 걸 만들 때 쓴다. 기존의 거에다가 뭔가 살짝 하나를 바꿔서 이 새로 넘어온 애로 바꾸는 것
+            LocalDateTime changeDt1 = dt.with(ChronoField.YEAR, 2020);  // 여기서는 년도만 2018 에서 2020 으로 변경
+            System.out.println("changeDt1 = " + changeDt1);
+    
+            // 편의 메서드
+            LocalDateTime changeDt2 = dt.withYear(2020);
+            System.out.println("changeDt2 = " + changeDt2);
+    
+            // TemporalAdjuster 사용
+            // 다음주 금요일
+            LocalDateTime with1 = dt.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
+            System.out.println("기준 날짜: " + dt);
+            System.out.println("다음 금요일: " + with1);
+    
+            // 이번 달의 마지막 일요일
+            LocalDateTime with2 = dt.with(TemporalAdjusters.lastInMonth(DayOfWeek.SUNDAY));
+            System.out.println("같은 달의 마지막 일요일 = " + with2);
+        }
+    }
+- Temporal with(TemporalField field, long newValue)
+  - Temporal with 를 사용하면 날짜와 시간의 특정 필드의 값만 변경할 수 있다.
+  - 불변이므로 반환 값을 받아야 한다.
+- 편의 메서드
+  - 자주 사용하는 메서드는 편의 메서드가 제공된다.
+  - dt.with(ChronoField.YEAR, 2020) -> dt.withYear(2020)
+- TemporalAdjuster 사용
+  - with( ) 는 아주 단순한 날짜만 변경할 수 있다. 다음 주 금요일, 이번 달의 마지막 일요일 같은 복잡한 날짜를 계산하고 싶다면 TemporalAdjusters 를 사용한다.
+  - 원래라면 TemporalAduster Interface 를 직접 구현해야하지만, 자바는 이미 필요한 구현체들을 TemporalAdjusters 에 다 만들어 두었다.
+- DayOfWeek: 월, 화, 수, 목, 금, 토, 일을 나타내는 열거형이다.
 
 
 ### 6-10. 날짜와 시간 문자열 파싱과 포맷팅
+- 포맷팅: 날짜와 시간 데이터를 원하는 포맷의 문자열로 변경하는 것, Date -> String
+- 파싱: 문자열을 날짜와 시간 데이터로 변경하는 것, String -> Date
 
+
+    public class FormattingMain1 {
+    
+        public static void main(String[] args) {
+            // 포맷팅: 날짜 -> 문자열
+            LocalDate date = LocalDate.of(2024, 12, 31);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+            String formattedDate = date.format(formatter);
+            System.out.println("현재 날짜와 시간 포맷팅: " + formattedDate);
+    
+            // 파싱: 문자열 -> 날짜
+            String input = "2030년 01월 01일";
+            LocalDate parseDate = LocalDate.parse(input, formatter);
+            System.out.println("문자열 파싱 날짜와 시간: " + parseDate);  // 2030-01-01 이런 형태를 ISO 표준 입출력이라고 한다.
+        }
+    
+    }
+
+#### 날짜와 시간까지 포함해서 포매팅
+    public class FormattingMain2 {
+    
+        public static void main(String[] args) {
+            // 포매팅: 날짜와 시간을 문자로
+            LocalDateTime now = LocalDateTime.of(2024, 12, 31, 13, 30, 59);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String formattedDateTime = now.format(formatter);
+            System.out.println("now: " + now);
+            System.out.println("날짜와 시간 포맷팅: " + formattedDateTime);
+    
+            // 파싱
+            String dateTimeString = "2030-01-01 11:30:00";
+            LocalDateTime parsedDateTime = LocalDateTime.parse(dateTimeString, formatter);
+            System.out.println("문자열 파싱 날짜와 시간: " + parsedDateTime);
+        }
+    }
+- LocalDateTime 과 같은 날짜와 시간 객체를 원하는 형태의 문자로 변경하려면 DateTimeFormatter 를 사용하면 된다.
+- 여기에 ofPattern( ) 으로 원하는 포맷을 지정하면 된다.
 
 ### 6-11. 문제와 풀이1
 
 
 ### 6-12. 문제와 풀이2
-
-
-### 6-13. 정리 
 
 
 <br>
