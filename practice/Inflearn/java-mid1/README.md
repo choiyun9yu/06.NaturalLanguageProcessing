@@ -3,6 +3,7 @@
 #### 단축어
 - soutm: 클래스명을 출력하는 코드 자동완성
 - soutv: 변수명을 출력하는 코드 자동완성
+- {출력할코드}.soutv: 출력할 코드 뒤에 . 찍고 soutv 입력하면 해당 코드를 sout 이 감싸는 코드 자동완성
 
 #### 단축키 for linux
 - Ctrl + p: 메소드에 전달할 수 있는 파라미터를 보여준다.
@@ -2235,12 +2236,216 @@
 
 
 ### 6-5. 기계 중심의 시간 - Instant
+- Instant 는 UTC 를 기준으로 하는, 시간의 한 지점을 나타낸다. 
+- Instant 는 날짜와 시간을 나노초 정밀도로 표현하며, 1970년 1월 1일 0시 0분 0초를 기준으로 경과한 시간이다.
+- 쉽게 이야기해서 Instant 내부에는 초 데이터만 들어있다.(나노초 포함)
+- 따라서 날자와 시간을 계산에 사용할 때는 적합하지 않다.
+
+* Epoch 는 어떤 중요한 사건이 발생한 시점을 기준으로 삼는 시작점을 뜻하는 용어이고 Instant 는 바로 이 Epoch 시간을 다루는 클래스이다.
+#### Instant 특징 
+- 장점
+  - 시간대 독립성: Instant 는 UTC 를 기준으로 하므로, 시간대에 영향을 받지 않는다. 이는 전세계 어디서나 동일한 시점을 가르키는데 유용하다.
+  - 고정된 기준점: 모든 Instant 는 1970년 1월 1일 UTC 를 기준으로 하기 때문에, 시간 계산 및 비교가 명확하고 일관된다.
+- 단점
+  - 사용자 친화적이지 않음: 기계적인 시간 처리에는 적합하지만, 사람이 읽고 이해하기에는 직관적이지 않다.
+  - 시간대 정보 부재: Instant 에는 시간대 정보가 포함되어 있지 않아, 특정 지역의 날짜와 시간으로 변환하려면 추가적인 작업이 필요하다.
+- 사용 예
+  - 전 세계적인 시간 기준 필요 시: Instant 는 UTC 기준으로 하므로, 전 세계적으로 일관된 시점을 표현할 때 사용하기 좋다.
+  - 시간대 변환 없이 시간 계산이 필요 시: 시간대의 변화 없이 순수하게 시간의 흐름만을 다루고 싶을 때 적합하다.
+  - 데이터 저장 및 교환: 데이터베이스에 날짜와 시간 정보를 저장하거나, 다른 시스템과 날짜와 시간 정보를 교환할 때 Instant 를 사용하면 데이터 일관성을 유지하기 쉽다.
+####
+    public class InstantMain {
+    
+        public static void main(String[] args) {
+            // 생성
+            Instant now = Instant.now();    // UTC 기준
+            System.out.println("now = " + now);
+    
+            // ZonedDateTime -> Instant
+            ZonedDateTime zdt = ZonedDateTime.now();
+            Instant from = Instant.from(zdt);
+    
+            // 1970 년 1월 1일 0시 0분 0초 에서 파라미터로 전달한 값 만 큼의 초를 더한 값
+            Instant epochStart = Instant.ofEpochSecond(0);
+            System.out.println("epochStart = " + epochStart);
+    
+            // 계산 (세컨드, 밀리세컨드, 나노세컨드)
+            Instant later = epochStart.plusSeconds(3600);
+            System.out.println("later = " + later);
+    
+            // 조회 (Epoch 로 부터 흐른 초)
+            long laterepochSecond = later.getEpochSecond();
+            System.out.println("laterepochSecond = " + laterepochSecond);
+        }
+    }
+- 생성
+  - now( ): UTC 기준 현재 시간의 Instant 를 생성한다.
+  - from ( ): 다른 타입의 날짜와 시간을 기준으로 Instant 를 생성한다.  
+    참고로 Instant 는 UTC 를 기준으로 하기 때문에 시간대 정보가 필요하다.  
+    따라서 LocalDateTime 은 사용할 수 없다.
+  - ofEpochSecond( ): Epoch 시간을 기준으로 인자로 전달한 초만큼 지난 Instant 를 생성한다
+- 계산
+  - plusSecond( ): 초를 더한다. 초, 밀리초, 나노초 정도만 더하는 간단한 메서드이다.
+- 조회 
+  - getEpochSecond( ): Epoch 시간을 기준으로 인자로 전달한 Instant 가 몇초 지났는지 반환한다.
+
+> !참고 - 날짜 계산이 필요하면 그냥 LocalDateTime or ZonedDateTime 을 사용하는 것이 좋다.
 
 
-### 6-6. 기간, 시간의 간격 - Duration, Period
+### 6-6. 기간, 시간의 간격 - Period, Duration
+- 시간 개념은 크게 2가지로 표현할 수 있다.
+  - 특정 시점의 시간(시각)
+  - 시간의 간격(기간)
+- Period, Duration 은 시간의 간격을 표현하는데 사용된다.
+
+| 구분     | Period                                | Duration                                            |
+|--------|---------------------------------------|-----------------------------------------------------|
+| 단위     | 년, 월, 일                               | 시간, 분, 초, 나노초                                       |
+| 사용 대상  | 날짜                                    | 시간                                                  |
+| 주요 메소드 | getYears( ), getMonths( ), getDays( ) | toHours( ), toMinutes( ), getSeconds( ), getNano( ) |
+
+> !참고 - getXxx 는 보통 내가 가지고 있는 것을 반환하는 메서드이고 toXxx 는 가지고 있는 값으로 뭔가를 계산해서 반환하는 메서드이다. Duration 은 초 정보를 가지고 있어서 초는 getXxx 으로 가져오지만 시, 분은 계산을해서 toXxx 로 가져온다
+
+#### Period
+    public class PeriodMain {
+    
+        public static void main(String[] args) {
+            // 생성
+            Period period = Period.ofDays(10);
+            System.out.println("period = " + period);
+    
+            // 시점에 기간 더하기(시점 + 기간)
+            LocalDate currentDate = LocalDate.of(2030, 1, 1);
+            LocalDate plusDate = currentDate.plus(period);
+            System.out.println("currentDate = " + currentDate);
+            System.out.println("plusDate = " + plusDate);
+    
+            // 시점간 기간 차이(시점 - 시점)
+            LocalDate startDate = LocalDate.of(2030, 1, 1);
+            LocalDate endDate = LocalDate.of(2030, 4, 2);
+            Period between = Period.between(startDate, endDate);
+            System.out.println("기간: " + between.getMonths() + "개월 " + between.getDays() + "일");
+        }
+    }
+- 생성 
+  - ofDays( ), ofMonths( ), ofYears( )
+- 기간 차이
+  - Period.between(startDate, endDate) 와 같이 특정 날짜의 차이를 구하면 Period 가 반환된다.
+
+#### Duration
+    public class DurationMain {
+    
+        public static void main(String[] args) {
+            // 생성
+            Duration duration = Duration.ofMinutes(30);
+            System.out.println("duration = " + duration);
+    
+            LocalTime lt = LocalTime.of(1, 0);
+            System.out.println("lt = " + lt);
+    
+            // 시점에 기간 더하기(시점 + 기간)
+            LocalTime plusTime = lt.plus(duration);
+            System.out.println("더한 시간: " + plusTime);
+    
+            // 시점간 기간 차이(시점 - 시점)
+            LocalTime start = LocalTime.of(9, 0);
+            LocalTime end = LocalTime.of(10, 0);
+            Duration between = Duration.between(start, end);
+            System.out.println("차이: " + between.getSeconds() + "초");
+            System.out.println("근무 시간: " + between.toHours() + "시간 " + between.toMillisPart() + "분");
+            // toMinutes( ): 전체 분 표현, toMinutesPart( ): 시간을 제외한 분만 표현
+        }
+    }
 
 
 ### 6-7. 날짜와 시간의 핵심 인터페이스
+- 특정 시점의 시간: Temporal(TemporalAccessor 포함) 인터페이스를 구현한다.  
+  (LocalDateTime, LocalDate, LocalTime, ZonedDateTime, OffsetDateTime, Instant)
+- 시간의 간격(기간): TemporalAmount 인터페이스를 구현한다.  
+  (Period, Duration)  
+
+![img_10.png](img_10.png)
+
+####
+- **TemporalAccessor Interface**
+  - 날짜와 시간을 읽기 위한 기본 인터페이스
+  - 이 인터페이스는 특정 시점의 날짜와 시간 정보를 읽을 수 있는 최소한의 기능을 제공한다.
+
+- **Temporal Interface**  
+  - TemporalAccessor 의 하위 인터페이스로, 날짜와 시간을 조작(추가, 빼기 등)하기 위한 기능을 제공한다.  
+  - 이를 통해 날짜와 시간을 변경하거나 조작할 수 있다.
+
+* 간단히 말하면 TemporalAccessor 는 읽기 전용 접근을, Temporal 은 읽기와 쓰기(조작) 등 모두를 지원한다.
+
+- **TemporalAmount Interface**
+  - 시간의 간격(시간의 양, 기간)을 나타내며, 날짜와 시간 객체에 적용하여 그 객체를 조정할 수 있다.
+  - 예를 들어, 특정 날짜에 일정 기간을 더하거나 빼는 데 사용된다.
+
+#### 시간의 단위와 시간 필드 
+![img_11.png](img_11.png)
+- 시간의 단위를 뜻하는 TemporalUnit(ChronoUnit) 과 시간의 각 필드를 뜻하는 TemporalField(ChronoField)이 있다.
+- TemporalUnit 인터페이스는 날짜와 시간을 측정하는 단위를 나타내며, 주로 사용되는 구현체는 java.time.temporal.ChronoUnit 열거형으로 구현되어 있다.
+- ChoronoUnit 은 다양한 시간 단위를 제공한다. (여기서 Unit 은 단위를 의미)
+
+#### 시간 단위
+| ChronoUnit | 설명       |
+|------------|----------|
+| NANOS      | 나노초 단위   |
+| MICROS     | 마이크로초 단위 |
+| MILLIS     | 밀리초 단위   |
+| SECONDS    | 초 단위     |
+| MINUTES    | 분 단위     |
+| HOURS      | 시간 단위    |
+
+#### 날짜 단위
+| ChronoUnit | 설명     |
+|------------|--------|
+| DAYS       | 일 단위   |
+| WEEKS      | 주 단위   |
+| MONTHS     | 월 단위   |
+| YEARS      | 년 단위   |
+| DECADES    | 10년 단위 |
+| CENTURIES  | 세기 단위  |
+| MILLENNIA  | 천년 단위  |
+
+#### 기타 단위
+| ChronoUnit | 설명         |
+|------------|------------|
+| ERAS       | 시대 단위      |
+| FOREVER    | 무한대의 시간 단위 |
+
+#### ChronoUnit 의 주요 메서드 
+| 메서드 이름                      | 설명                                                 |
+|-----------------------------|----------------------------------------------------|
+| between(Temporal, Temporal) | 두 Temporal 객체 사이의 시간을 현재 ChronoUnit 단위로 측정하여 반환한다. |
+| isDateBased( )              | 현재 ChronoUnit 이 날짜 기반 단위인지 여부를 반환한다.               |
+| isTimeBased( )              | 현재 ChronoUnit 이 시간 기반 단위인지 여부를 반환한다.               |
+| isSupportedBy(Temporal)     | 주어진 Temporal 객체가 현재 ChronoUnit 단위를 지원하는지 여부를 반환한다. |
+| getDuration( )              | 현재 ChronoUnit 의 기간을 Duration 객체로 반환한다.             |
+
+    public class ChronoUnitMain {
+    
+        public static void main(String[] args) {
+            // 시간단위 조회
+            ChronoUnit[] values = ChronoUnit.values();
+            for (ChronoUnit value : values) {
+                System.out.println("value: " + value);
+            }
+            System.out.println("ChronoUnit.HOURS = " + ChronoUnit.HOURS);
+            System.out.println("ChronoUnit.HOURS.getDuration() = " + ChronoUnit.HOURS.getDuration().getSeconds());
+            System.out.println("ChronoUnit.DAYS = " + ChronoUnit.DAYS);
+            System.out.println("ChronoUnit.DAYS.getDuration().getSeconds() = " + ChronoUnit.DAYS.getDuration().getSeconds());
+    
+            // 차이 구하기
+            LocalTime lt1 = LocalTime.of(1, 10, 0);
+            LocalTime lt2 = LocalTime.of(1, 20, 0);
+            System.out.println("ChronoUnit.SECONDS.between(lt1, lt2) = " + ChronoUnit.SECONDS.between(lt1, lt2));
+            System.out.println("ChronoUnit.MINUTES.between(lt1, lt2) = " + ChronoUnit.MINUTES.between(lt1, lt2));
+    
+        }
+    }
+
+#### ChronoField
 
 
 ### 6-8. 날짜와 시간 조회하고 조작하기1
