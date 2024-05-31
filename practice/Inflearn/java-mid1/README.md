@@ -2785,13 +2785,98 @@
             Local local = new local();
           }
         }
+- 중첩(Nested)과 내부(Inner)의 차이
+  - 중첩: 어떤 것의 내부에 또 다른 것이 위치하거나 포함되는 구조적인 관계  
+    즉, 나의 내부에 있지만 내것이 아닌 것 
+  - 내부: 나의 내부에 있는 나를 구성하는 요소  
+    즉, 나의 내부에 나를 구성하는 요소
+- 여기서 의미하는 중첩과 내부를 분류하는 핵심은 바깥 클래스 입장에서 볼때 안에 있는 클래스가 나의 인스턴스에 소속이 되는가 되지 않는 가의 차이이다.
+  - 정적 중첩 클래스는 바깥 클래스와 전혀 다른 클래스이다. 따라서 바깥 클래스의 인스턴스에 소속되지 않는다.
+  - 내부 클래스는 바깥 클래스를 구성하는 요소이다. 따라서 바깥 클래스의 인스턴스에 소속된다.
 
+- 정적 중첩 클래스
+  - static 이 붙는다.
+  - 바깥 클래스의 인스턴스에 소속되지 않는다.
+- 내부 클래스
+  - static 이 붙지 않는다.
+  - 바깥 클래스의 인스턴스에 소속된다.
+- 내부클래스의 종류
+  - 내부 클래스(inner class): 바깥 클래스의 인스턴스의 멤버에 접근 
+  - 지역 클래스(local class): 내부 클래스의 특징 + 지역 변수에 접근 
+  - 익명 클래스(anonymous class): 지역 클래스의 특징 + 클래스의 이름이 없는 특별한 클래스
 
+- 용어 정리
+  - 중첩 클래스: 정적 중첩 클래스와 내부 클래스 종류 모두 포함
+  - 정적 중첩 클래스: 정적 중첩 클래스만 해당
+  - 내부 클래스: 내부 클래스, 지역 클래스, 익명 클래스를 모두 포함
 
+#### 중첩 클래스는 언제 사용해야 하나?
+- 내부 클래스를 포함한 모든 중첩 클래스는 특정 클래스가 다른 하나의 클래스 안에서만 사용되거나,  
+  둘이 아주 긴밀하게 연결되어 있는 특별한 경우에만 사용한다.  
+  외부의 여러 클래스가 특정 중첩 클래스를 사용한다면 중첩 클래스로 만들면 안된다. 
+
+#### 중첩 클래스를 사용하는 이유
+- 논리적 그룹화: 특정 클래스가 다른 하나의 클래스 안에서만 사용되는 경우 해당 클래스 안에 포함하는 것이 논리적으로 더 그룹화 된다.  
+  패키지를 열었을 때 다른 곳에서 사용될 필요가 없는 중첩 클래스가 외부에 노출되지 않는 장점도 있다.
+- 캡슐화: 중첩 클래스는 바깥 클래스의 private 멤버에 접근할 수 있다. 이렇게 해서 둘을 긴밀하게 연결하고 불필요한 public 메서드를 제거할 수 있다.
 
 
 ### 7-2. 정적 중첩 클래스 
+    public class NestedOuter {
+    
+        private static int outClassValue = 3;
+        private int outInstanceValue = 2;
+        
+        static class Nested {
+            private int nestedInstanceValue = 1;
+            
+            public void print() {
+                
+                // 자신의 멤버에 접근
+                System.out.println(nestedInstanceValue);
+                
+                // 바깥 클래스의 인스턴스 멤버에는 접근할 수 없다. (static 은 당연히 instance 영역에 접근할 수 없다.)
+                // System.out.println(outInstanceValue);
+                
+                // 바깥 클래스의 멤버에는 접근할 수 있다. private 도 접근 가능
+                System.out.println(NestedOuter.outClassValue);
+            }
+        }
+    }
 
+- static 은 instance 영역에 접근할 수 없다.
+- private 접근 제어자
+  - private 접근 제어자는 같은 클래스 안에 있을 때만 접근할 수 있다.
+  - 중첩 클래스도 바깥 클래스와 같은 클래스 안에 있다.  
+    따라서 중첩 클래스는 바깥 클래스의 private 접근 제어자에 잡근할 수 있다.
+####
+    public class NestedOuterMain {
+    
+        public static void main(String[] args) {
+            NestedOuter outer = new NestedOuter();  // 지금 이 예제에서는 굳이 생성하지 않아도 된다.
+            NestedOuter.Nested nested = new NestedOuter.Nested();
+            nested.print();
+    
+            System.out.println("nestedClass = " + nested.getClass());   // nestedClass = class nested.NestedOuter$Nested 자바에서는 내부 안쪽 클래스를 $ 표시로 구분한다.
+    
+        }
+    }
+- 정적 중첩 클래스는 new 바깥클래스, 중첩클래스( ) 로 생성할 수 있다.
+- 중첩 클래스는 NestedOuter.Nested 와 같이 바깥 클래스.중첩클래스로 접근할 수 있다.
+- 여기서 new NestedOuter( )로 만든 바깥 클래스의 인스턴스와 new NestedOuter.Nested( )로 만든  
+  정적 중첩 클래스의 인스턴스는 서로 아무 관계가 없는 인스턴스이다. 단지 클래스 구조상 중첩해 두었을 뿐이다.  
+  (참고로 둘이 아무런 관련이 없으므로 정적 중첩 클래스의 인스턴스만 따로 생성해도 된다.)
+
+- 인스턴스가 생성된 상태  
+![img_14.png](img_14.png)
+
+- 바깥 클래스의 멤버에게 접근  
+![img_13.png](img_13.png)
+
+#### 정리
+- 정적 중첩 클래스는 사실 다른 클래스를 그냥 중첩해 둔 것일 뿐이다. 쉽게 말해 둘은 아무런 관계가 없다.
+- NestedOuter.outClassValue 와 같은 정적 필드에 접근하는 것은 중첩 클래스가 아니어도 어차피 클래스명.정적필드명으로 접근할 수 있다.
+- 그냥 클래스를 2개 따로 만든 것과 정적 중첩 클래스의 차이는 private 접근 제어자에 접근할 수 있다는 정도이다.
 
 ### 7-3. 정적 중첩 클래스의 활용 
 
