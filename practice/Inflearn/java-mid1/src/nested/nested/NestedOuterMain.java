@@ -1,4 +1,4 @@
-package nested;
+package nested.nested;
 
 public class NestedOuterMain {
 

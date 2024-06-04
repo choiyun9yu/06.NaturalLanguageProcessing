@@ -2878,16 +2878,300 @@
 - NestedOuter.outClassValue 와 같은 정적 필드에 접근하는 것은 중첩 클래스가 아니어도 어차피 클래스명.정적필드명으로 접근할 수 있다.
 - 그냥 클래스를 2개 따로 만든 것과 정적 중첩 클래스의 차이는 private 접근 제어자에 접근할 수 있다는 정도이다.
 
+
 ### 7-3. 정적 중첩 클래스의 활용 
+
+    // 이 객체는 Network 객체 안에서만 사용할 것이다.
+    public class NetworkMessage {
+    
+        private String content;
+    
+        public NetworkMessage(String content) {
+            this.content = content;
+        }
+    
+        public void print() {
+            System.out.println(content);
+        }
+    
+    }
+####
+    public class Network {
+    
+        public void sendMessage(String text) {
+            NetworkMessage networkMessage = new NetworkMessage(text);
+            networkMessage.print();
+        }
+    }
+####
+    public class NetworkMain {
+    
+        public static void main(String[] args) {
+            Network network = new Network();
+            network.sendMessage("hello java!");
+        }
+    }
+- Network 를 생성하고 network, sendMessage( ) 를 통해 메시지를 전달한다.
+- NetworkMain 은 오직 Network 클래스만 사용한다. NetworkMessage 클래스는 전혀사용하지 않는다.
+- NetworkMessage 는 오직 Network 내부에서만 사용된다.
+- Network 관련 라이브러리를 사용하기 위해  ex1 패키지를 열어보면 클래스가 두개가 보인다.  
+  (Network 와 NetworkMessage)
+- 처음 본 개발자는 두 클래스 모두 사용해야할지 NetworkMessage 클래스에 담아서 Network 에 전달할지 고민할 것이다.
+
+#### 중첩 클래스로 리팩토링 후
+    public class Network {
+    
+        public void sendMessage(String text) {
+            NetworkMessage networkMessage = new NetworkMessage(text);
+            networkMessage.print();
+        }
+    
+        private static class NetworkMessage {
+            private String content;
+    
+            public NetworkMessage(String content) {
+                this.content = content;
+            }
+    
+            public void print() {
+                System.out.println(content);
+            }
+    
+        }
+    
+    }
+- NetworkMessage 클래스를 Network 클래스 안에 중첩해서 만들었다.
+- NetworkMessage 의 접근 제어자를 private 설정했다. 따라서 외부에서 NetworkMessage 에 접근할 수 없다.
+- 새로운 개발자는 ex2 패키지에 들어가서 Network 클래스 하나만 확인하면 된다.
+- 또한  NetworkMessage 클래스가 private 접근 자로 되어 있는 것을 보고 Network 내부에서만 단독으로 사용됨을 알 수 있다.
+
+#### 중첩 클래스의 접근
+- 나의 클래스에 포함된 중첩 클래스가 아니라 다른 곳에 있는 중첩 클래스에 접근할 때는 **바깥클래스.중첩클래스** 로 접근해야 한다.
+- 중첩클래스는 그 용도가 자신이 소속된 바깥 클래스 안에서 사용되는 것이다.
+- 따라서 자신이 소속된 바깥클래스가 아닌 외부에서 생성하고 사용하고 있다면, 이미 중첩 클래스의 용도에 맞지 않을 수 있다.
+- 이때는 중첩클래스를 밖으로 빼는 것이 더 나은 선택이다.
 
 
 ### 7-4. 내부 클래스
+- 정적 중첩 클래스는 바깥 클래스와 서로 관계가 없다. 하지만 내부 클래스는 바깥 클래스의 인스턴스를 이루는 요소가 된다.
+- 쉽게 이야기해서 내부 클래스는 바깥 클래스의 인스턴스에 소속된다.
+####
+    public class InnerOuter {
+    
+        private static int outClassValue = 3;
+        private int outInstanceValue = 2;
+    
+        // 내부 클래스
+        class Inner {
+            private int innerInstanceValue = 1;
+    
+            public void print() {
+                // 자신의 멤버에 접근
+                System.out.println(innerInstanceValue);
+    
+                // 외부 클래스의 인스턴스 멤버에 접근 가능, private 도 접근 가능
+                System.out.println(outInstanceValue);
+    
+                // 외부 클래스의 클래스 멤버에 접근 가능, private 도 접근 가능
+                System.out.println(outClassValue);
+            }
+        }
+    }
+- 내부 클래스는 앞에 static 이 붙지 않는다. 쉽게 이야기해서 인스턴스 멤버가 된다.
+  - 내부클래스는 자신의 멤버에 당연히 접근할 수 있다.
+  - 바깥 클래스의 인스턴스 멤버에 접근할 수 있다.
+  - 바깥 클래스의 클래스 멤버에 접근할 수 있다.
+####
+    public class InnerOuterMain {
+    
+        public static void main(String[] args) {
+            InnerOuter outer = new InnerOuter();
+            InnerOuter.Inner inner = outer.new Inner();
+            inner.print();
+    
+            System.out.println("innerClass = " + inner.getClass());
+        }
+    }
+- 내부 클래스는 바깥 클래스의 인스턴스에 소속된다. 따라서 바깥 클래스의 인스턴스 정보를 알아야 생성할 수 있다.
+- 내부 클래스는 **new 바깥클래스의 인스턴스 참조.내부클래스()** 로 생성할 수 있다.
+  - 내부 클래스는 바깥클래스의 인스턴스에 소속되어야 한다. 따라서 내부 클래스를 생성할 때, 바깥 클래스의 인스턴스 참조가 필요하다. 
+  - outer.new Inner() 에서 outer 는 바깥 클래스의 인스턴스 참조를 가진다.
+  - outer.new Inner() 로 생성한 내부 클래스는 개념상 바깥 클래스의 인스턴스 내부에 생성된다.
+  - 따라서 바깥 클래스의 인스턴스를 먼저 생성해야 내부 클래스의 인스턴스를 생성할 수 있다.
+#### 정적 중첩 클래스와 내부클래스의 생성자 차이
+- 정적 중첩 클래스
+
+      // 바깥클래스 인스턴스 없이 생성 가능, 생성자에 접근하기 위해 메서드체이닝 사용
+      NestedOuter.Nested nested = new NestedOuter.Nested();    
+- 내부 클래스
+
+      // 바깥 클래스 인스턴스가 있어야 생성가능, 바깥 클래스 인스턴스에 접근하기 위해 메서드체이닝 사용
+      InnerOuter outer = new InnerOuter();
+      InnerOuter.Inner inner = outer.new Inner();
+
+- 개념 - 내부클래스의 생성
+  - 개념상 바깥 클래스의 인스턴스 내부에 내부 클래스의 인스턴스가 생성된다.
+  - 따라서 내부 인스턴스는 바깥 인스턴스를 알기 때문에 바깥 인스턴스의 멤버에 접근할 수 있다.  
+    ![img_15.png](img_15.png)
+
+- 실제 - 내부 클래스의 생성
+  - 실제로 내부 인스턴스가 바깥 인스턴스 안에 생성되는 것은 아니다.
+  - 하지만 개념 상 안에 생성된다고 이해하면 충분하다.
+  - 실제로는 내부 인스턴스는 바깥 인스턴스의 참조를 보관한다. 
+  - 이 참조를 통해 바깥 인스턴스의 멤버에 접근할 수 있다.  
+    ![img_16.png](img_16.png)
+
+#### 정리
+- 정적 중첩 클래스와 다르게 내부 클래스는 바깥 인스턴스에 소속된다.
+- 중첩은 나의 안에 있지만 내것이 아닌 것을 말한다. 단순히 위침나 안에 있는 것이다.
+- 반면 여기서 의미하는 내부는 나의 내부에서 나를 구성하는 요소를 말한다.
+- 정적 중첩 클래스는 다른 클래스를 그냥 중첩해 둔 것일 뿐이다. 
+- 쉽게 말해 둘은 아무런 관계가 없다. 
+- 반면에 내부 클래스는 바깥 클래스의 인스턴스 내부에서 구성 요소로 사용된다.
 
 
 ### 7-5. 내부 클래스의 활용 
+    // Car에서만 사용
+    public class Engine {
+    
+        private Car car;
+    
+        public Engine(Car car) {
+            this.car = car;
+        }
+    
+        public void start() {
+            System.out.println("충전 레벨 확인: " + car.getChargeLevel());
+            System.out.println(car.getModel() + "의 엔진을 구동합니다.");
+        }
+    
+    }
+####
+    public class Car {
+        private String model;
+        private int chargeLevel;
+        private Engine engine;
+    
+        public Car(String model, int chargeLevel) {
+            this.model = model;
+            this.chargeLevel = chargeLevel;
+            this.engine = new Engine(this); // 자신에 대한 정보를 넘겨서 Engine 인스턴스 생성
+        }
+    
+        // Engine 에서만 사용할 메서드
+        public String getModel() {
+            return model;
+        }
+    
+        // Engine 에서만 사용할 메서드
+        public int getChargeLevel() {
+            return chargeLevel;
+        }
+    
+        public void start() {
+            engine.start();
+            System.out.println(model + " 시작 완료");
+        }
+    }
+- Car 클래스는 엔진에 필요한 메서드들을 제공해야 한다. 
+- 다음 메서드는 엔진에서만 사용하고, 다른 곳에서는 사용하지 않는다.
+  - getModel( )
+  - getChargeLevel( )
+- 결과적으로  Car 클래스는 엔진에서만 사용하는 기능을 위해 메서드를 추가해서,  
+  모델 이름과 충전 레벨을 외부에 노출한다.
+
+#### 내부 클래스로 리팩토링 후
+- 엔진은 차의 내부에서만 사용된다. 엔진을 차의 내부 클래스로 만들어보자.  
+  엔진은 차의 충번 레벨과 모데 명에 접근할 수 있어야 한다.
+####
+    public class Car {
+        private String model;
+        private int chargeLevel;
+        private Engine engine;
+        
+        public Car(String model, int chargeLevel) {
+            this.model = model;
+            this.chargeLevel = chargeLevel;
+            this.engine = new Engine();
+        }
+    
+        public void start() {
+            engine.start();
+            System.out.println(model + " 시작 완료");
+        }
+    
+        private class Engine {
+    
+            // 내부 클래스는 car 에 정보가 없어도 바깥 클래스의 정보를 알 수 있다.
+            // private Car car;
+    
+            // public Engine(Car car) {
+            //    this.car = car;
+            //}
+    
+            public void start() {
+                // getter 메서드가 없어도 바로 바깥 클래스의 필드 값에 접근할 수 있다.
+                System.out.println("충전 레벨 확인: " + chargeLevel);
+                System.out.println(model + "의 엔진을 구동합니다.");
+            }
+        }
+    }
+-  엔진을 내부 클래스로 만들었다.
+  - Car 의 인스턴스 변수인 chargeLevel 에 직접 접근할 수 있다.
+  - Car 의 인스턴스 변수인 model 에 직접 접근할 수 있다.
+- 내부 클래스의 생성
+  - 바깥 클래스에서 내부 클래스의 인스턴스를 생성할 때는 바깥 클래스 이름을 생략할 수 있다.
+  - 바깥 클래스에서 내부 클래스의 인스턴스를 생성할 때 내부 클래스의 인스턴스는 자신을 생성한 바깥 클래스의 인스턴스를 자동으로 참조한다.
+  - 여기서 new Engine( ) 으로 생성된 Engine 인스턴스는 자신을 생성한 바깥의 Car 인스턴스를 자동으로 참조한다.
+
+#### 리팩토링 전의 문제
+- Car 클래스는 엔진에 필요한 메서드들을 제공해야한다. 하지만 해당 메서드들은 엔진에서만 사용하고, 다른 곳에서는 사용하지 않는다.
+- 결과적으로 엔진에서만 사용하는 기능을 위해 메서드를 추가해서, 모델 이름과 충전 레벨을 외부에 노출해야 한다.
+- 리팩토링 전에는 결과적으로 모델 이름과 충전 레벨을 외부에 노출했다. 
+- 이것은 불필요한 Car 클래스의 정보들이 추가로 외부에 노출되는 것이기 때문에 캡슐화를 떨어트린다.
+- 리팩토링 후에는 getModel( ), getChargeLevel( ) 과 같은 메서드를 모두 제거했다.
+- 결과적으로 꼭 필요한 메서드만 외부에 노출함으로써 Car 의 캡슐화를 더 높일 수 있다.
+
+#### 중첩 클래스는 언제 사용해야 하는가?
+- 중첩 클래스는 특정 클래스가 다른 하나의 클래스 안에서만 사용되거나, 둘이 아주 긴밀하게 연결되어 있는 특별한 경우에만 사용해야 한다.
+- 외부 여러곳에서 특정 클래스를 사용한다면 중첩 클래스로 사용하면 안된다.
+
+#### 중첩 클래스를 사용해야 하는 이유
+- 논리적 그룹화: 특정 클래스가 다른 하나의 클래스 안에서만 사용되는 경우 해당 클래스 안에 포함하는 것이 논리적으로 더 그룹화가 된다.  
+  패키지를 열었을 때 다른 곳에서 사용될 필요가 없는 중첩 클래스가 외부에 노출되지 않는 장점도 있다.
+- 캡슐화: 중첩 클래스는 바깥 클래스의 private 멤버에 접근할 수 있다. 이렇게 해서 둘을 긴밀하게 연결하고 불필요한 public 메서드를 제거할 수 있다.
 
 
 ### 7-6. 같은 이름의 바깥 변수 접근 
+- 바깥 클래스의 인스턴스 변수 이름과 내부 클래스의 인스턴스 변수 이름이 같으면 어떻게 될까?
+
+      public class ShdowingMain {
+      
+          public int value = 1;
+      
+          class Inner {
+              public int value = 2;
+      
+              void go() {
+                  int value = 3;
+                  System.out.println("value = " + value); // 3 (메소드 안의 value)
+                  System.out.println("this.value = " + this.value);   // 2 (내부 클래스의 value)
+                  System.out.println("ShdowingMain.this.value = " + ShdowingMain.this.value); // 1 (바깥 클래스의 value)
+              }
+          }
+      
+          public static void main(String[] args) {
+              ShdowingMain main = new ShdowingMain();
+              Inner inner = main.new Inner();
+              inner.go();
+          }
+      }
+- 변수의 이름이 같기 때문에 어떤 변수를 먼저 사용할지 우선순위가 필요하다.
+- 프로그래밍에서 우선순위는 대부분 더 가깝거나, 더 구체적인 것이 우선권을 가진다.
+- 쉽게 말해 사람이 직관적으로 이해하기 쉬운 방향으로 우선순위를 설계한다.
+- 메서드 go( ) 의 경우 지역 변수인 value 가 가장 가깝다. 따라서 우선순위가 가장 높다.
+- 이렇게 다른 변수들을 가려서 보이지 않게 하는 것을 섀도잉(shadowing)이라 한다.
+- 다른 변수를 가리더라도 인스턴스 참조를 사용하면 외부 변수에 접근할 수 있다.
 
 
 <br>
