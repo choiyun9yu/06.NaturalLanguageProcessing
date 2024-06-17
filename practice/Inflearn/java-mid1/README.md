@@ -3172,12 +3172,103 @@
 - 메서드 go( ) 의 경우 지역 변수인 value 가 가장 가깝다. 따라서 우선순위가 가장 높다.
 - 이렇게 다른 변수들을 가려서 보이지 않게 하는 것을 섀도잉(shadowing)이라 한다.
 - 다른 변수를 가리더라도 인스턴스 참조를 사용하면 외부 변수에 접근할 수 있다.
-
+- 프로그래밍에서 가장 중요한 것은 명확성이다. 처음부터 이름을 다르게하여 명확하게 구분하는 것이 더 낫다.
 
 <br>
 
 ## 8. 중첩 클래스, 내부 클래스 2
 ### 8-1. 지역 클래스 - 시작
+- 지역 클래스(Local Class)는 내부 클래스의 특별한 종류의 하나이다. 따라서 내부 클래스의 특징을 그대로 가진다.
+- 예를 들어 지역 클래스도 내부 클래스이므로 바깥 클래스의 인스턴스 멤버에 접근할 수 있다.
+- 지역 클래스는 지역 변수와 같이 코드 블럭 안에서 정의된다.
+
+      class Outer {
+          // 지역변수
+          int localVar = 0;
+          
+          // 지역 클래스
+          class Local {...}
+
+          Local local = new Local();
+      }
+- 지역 클래스의 특징
+  - 지역 클래스는 지역 변수처럼 코드 블럭 안에 클래스를 선언한다.
+  - 지역 클래스는 지역 변수에 접근할 수 있다.
+ 
+#### 지역 클래스의 접근 범위
+    public class LocalOuterV1 {
+    
+        private int outInstanceVar = 3;
+    
+        public void process(int paraVar) {
+            int localVar = 1;
+    
+            class LocalPrinter {
+                int value = 0;
+    
+                public void printData() {
+                    System.out.println("value = " + value);
+                    System.out.println("localVar = " + localVar);
+                    System.out.println("paraVar = " + paraVar); // 매개변수도 지역변수의 한 종류라 볼 수 있기 때문에 접근 가능
+                    System.out.println("outInstanceVar = " + outInstanceVar);
+                }
+            }
+    
+            LocalPrinter localPrinter = new LocalPrinter();
+            localPrinter.printData();
+        }
+    
+        public static void main(String[] args) {
+            LocalOuterV1 localOuter = new LocalOuterV1();
+            localOuter.process(2);
+        }
+    }
+- 자신의 인스턴스 변수인 value 에는 당연히 접근할 수 있다.
+- 자신이 속한 코드 블럭의 지역 변수인 localVar 에 접근할 수 있다.
+- 자신이 속한 코드 블럭의 매개변수인 paramVar 에 접근할 수 있다.  
+  참고로 매개변수도 지역 변수의 한 종류이다.
+- 바깥 클래스의 인스턴스 멤버인 outInstanceVar 에 접근할 수 있다.  
+  (지역 클래스도 내부 클래스의 한 종류이다.)
+
+> !참고 - 지역 클래스는 지역 변수 처럼 접근 제어자를 사용할 수 없다.  
+> 지역 변수 앞에 private, public 을 쓸 수 없듯이 지역 class 정의 시에도 접근 제어자를 붙일 수 없다.
+
+#### 지역 클래스와 상속
+- 내부 클래스를 포함한 중첩 클래스들도 일반 클래스처럼 인터페이스를 구현하거나, 부모 클래스를 상속할 수 있다.
+####
+    public interface Printer {
+        void print();
+    }
+####
+    public class LocalOuterV2 {
+    
+        private int outInstanceVar = 3;
+    
+        public void process(int paraVar) {
+            int localVar = 1;
+    
+            class LocalPrinter implements Printer {
+                int value = 0;
+    
+                @Override
+                public void print() {
+                    System.out.println("value = " + value);
+                    System.out.println("localVar = " + localVar);
+                    System.out.println("paraVar = " + paraVar);
+                    System.out.println("outInstanceVar = " + outInstanceVar);
+                }
+            }
+    
+            LocalPrinter localPrinter = new LocalPrinter();
+            localPrinter.print();
+        }
+    
+        public static void main(String[] args) {
+            LocalOuterV2 localOuter = new LocalOuterV2();
+            localOuter.process(2);
+        }
+    }
+
 
 
 ### 8-2. 지역 클래스 - 지역 변수 캡처1
