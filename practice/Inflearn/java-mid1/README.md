@@ -3270,36 +3270,583 @@
     }
 
 
-
 ### 8-2. 지역 클래스 - 지역 변수 캡처1
+> **!참고** - 지금부터 설명할 지역 변수 캡처에 관한 내용은 너무 깊이있게 이해하지 않아도 된다.
+> 어렵다면 단순하게 지역 클래스가 접근하는 지역 변수의 값은 변경하면 안된다. 정도로 이해하면 된다.
+
+- 지역 클래스 를 더 자세히 알아보기 전에 잠시 변수들의 생명 주기에 대해 정리해보자.
+![img_17.png](img_17.png)
+  - **클래스 변수**: 프로그램 종료 까지, 가장 길다(메서드 영역)
+    - 클래스 변수(static 변수)는 메서드 영역에 존재하고,   
+      자바가 클래스 정보를 읽어 들이는 순간부터 프로그램 종료까지 존재한다.
+  - **인스턴스 변수**: 인스턴스의 생존 기간(힙영역)
+    - 인스턴스 변수는 본인이 소속된 인스턴스가 GC 되기 전까지 존재한다.  
+      생명 주기가 긴 편이다.
+  - **지역 변수**: 메서드 호출이 끝나면 사라짐(스택 영역)
+    - 지역 변수는 스택 영역의 스택 프레임 안에 존재한다.  
+      따라서 메서드가 호출되면 생성되고, 메서드 호출이 종료되면 스택 프레임이 제거되면서   
+      그안에 있는 지역 변수도 모두 제거된다.  
+      생명 주가기 아주 짧다. 참고로 매개변수도 지역 변수의 한 종류이다.
+
+#### 지역 클래스 예제3
+- 지금까지 작성한 지역 클래스 예제를 약간 수정해서 새로 만들어보자.
+
+
+    public class LocalOuterV3 {
+
+        private int outInstanceVar = 3;
+    
+        public Printer process(int paraVar) {
+    
+            int localVar = 1;   // 지역 변수는 스택 프레임이 종료되는 순간 함께 제거된다.
+    
+            class LocalPrinter implements Printer {
+                int value = 0;
+    
+                @Override
+                public void print() {
+                    System.out.println("value = " + value);
+    
+                    // 인스턴스는 지역 변수보다 더 오래 살아남는다.
+                    System.out.println("localVar = " + localVar);
+                    System.out.println("paraVar = " + paraVar);
+                    System.out.println("outInstanceVar = " + outInstanceVar);
+                }
+            }
+    
+            LocalPrinter printer = new LocalPrinter();
+            // localPrinter.print(); 를 여기서 실행하지 않고 Printer 인스턴스만 반환한다.
+            return printer;
+        }
+    
+        public static void main(String[] args) {
+            LocalOuterV3 localOuter = new LocalOuterV3();
+            Printer printer = localOuter.process(2);
+            // printer.print() 를 나중에 실행한다. process() 의 스택 프레임이 사라진 이후 실행
+            printer.print();
+        }
+    }
+- LocalPrinter 클래스는 Printer 인터페이스의 구현체라서 LocalPrinter 클래스를 반환해도  
+  Printer 를 반환하는 것으로 인정한다.
+- process() 는 Printer 타입을 반환한다. 여기서  LocalPrinter 인스턴스를 반환한다.
+- 여기서는 Localprinter.print() 메서드를 process() 안에서 실행하는 것이 아니라  
+  process() 메서드가 종료된 이후에 main() 메서드에서 실행한다.
+
+#### LocalPrinter 인스턴스 생성 직후 메모리 그림
+![img_18.png](img_18.png)
+- 지역 클래스로 만든 객체도 인스턴스 이기 때문에 힙 영역에 존재한다. 따라서 GC 전까지 생존한다.
+  - LocalPrinter 인스턴스는 process() 메서드 안에 생성된다. 그리고 process() 에서 main() 으로  
+    생성한 LocalPrinter 인스턴스를 반환하고 printer 변수에 참조를 보관한다.  
+    따라서 LocalPrinter 인스턴스는 main() 이 종료될 때 까지 생존한다.
+- paramVar, localVar 와 같은 지역 변수는 process() 메서드를 실행하는 동안에만 스택 영역에서 생존한다.  
+  process() 메서드가 종료되면 process() 스택 프레임이 스택 영역에서 제거 되면서 함께 제거된다.
+
+#### LocalPrinter.print() 접근 메모리 그림  
+![img_19.png](img_19.png)
+- LocalPrinter 인스턴스는 print() 메서드를 통해 힙 영역에 존재하는 바깥 인스턴스의 변수인 outInstanceVar 에 접근한다.  
+  이 부분은 인스턴스의 필드를 참조하는 것이기 때문에 특별한 문제가 없다.
+- LocalPrinter 인스턴스는 print() 메서드를 통해 스택 영역에 존재하는 지역 변수도 접근하는 것 처럼 보인다.  
+  하지만 스택 영역에 존재하는 지역 변수를 힙 영역에 있는 인스턴스가 접근하는 것은 생각처럼 단순하지 않다.
+
+#### process() 메서드의 종류
+![img_20.png](img_20.png)
+- 지역 변수의 생명주기는 매우 짧다. 반면에 인스턴스의 생명주기는 GC 전까지 생존할 수 있다.
+- 지역 변수인 paramVar, localVar 는 process() 메서드가 실행되는 동안에만 생존할 수 있다.  
+  process() 메서드가 종료되면 process() 의 스택 프레임이 제거되면서 두 지역 변수도 함께 제거된다.
+- 여기서 문제는 process() 메서드가 종료되어도 LocalPrinter 인스턴스는 계속 생존할 수 있다는 점이다.
+
+#### process() 메서드가 종료된 이후에 지역 변수 접근
+![img_21.png](img_21.png)
+- 예제를 잘 보자. 여기서는 process() 메서드가 종료된 이후에 main() 메서드 안에서 LocalPrinter.print() 메서드를 호출한다.
+- LocalPrinter 인스턴스에 있는 print() 메서드는 지역 변수인 paramVar, localVar 에 접근해야 한다.  
+  하지만 process() 메서드가 이미 종료되었으므로 해당 지역 변수들도 이미 제거된 상태이다.
+- 그런데 실행 결과를 보면 localVar, paramVar 와 같은 지역 변수들의 값들이 모두 정상적으로 출력된다.  
+  어떻게 제거된 지역 변수들에 접근할 수 있는 걸까?
+
+> **!참고** - 여기서는 이해를 돕기 위해 설명을 단순화 했지만, 더 정확히 이야기하면 LocalPrinter.print() 메서드를 실행하면 이 메서드도 당연히 스택 프레임에 올라가서 실행된다. main() 에서 print() 를 실행했으므로 main() 스택 프레임 위에 print() 스택 프레임이 올라간다. 물론 process() 스택 프레임은 이미 제거된 상태이므로 지역 변수인 localVar, paramVar 도 함께 제거되어서 접근할 수 없다.
 
 
 ### 8-3. 지역 클래스 - 지역 변수 캡처2
+- 지역 클래스는 지역 변수에 접근할 수 있다. 그런데 앞서 본 것 처럼 지역 변수의 생명주기는 짧고,  
+  지역 클래스를 통해 생성한 인스턴스의 생명 주기는 길다.
+- 지역 클래스를 통해 생성한 인스턴스가 지역 변수에 접근해야하는데, 둘의 생명주기가 다르기 때문에  
+  인스턴스는 살아있지만, 지역 변수는 이미 제거된 상태일 수 있다.
+
+#### 지역 변수 캡처
+- 자바는 이런 문제를 해결하기 위해 지역 클래스의 인스턴스를 생성하는 시점에 필요한 지역 변수를 복사해서   
+  생성한 인스턴스에 함께 넣어둔다. 이런 과정을 변수 캡처(Capture) 라 한다.
+- 캡처라는 단어는 스크린 캡처를 떠올려 보면 바로 이해가 될 것이다. 인스턴스를 생성할 때 필요한 지역 변수를  
+  복사해서 보관해두는 것이다. 물론 모든 지역 변수를 캡처하는 것이 아니라 접근이 필요한 지역 변수만 캡처한다.
+
+#### 지역 클래스의 인스턴스 생성과 지역 변수 캡처 과정
+![img_22.png](img_22.png)
+1. LocalPrinter 인스턴스 생성 시도: 지역 클래스의 인스턴스를 생성할 때 지역 클래스가 접근하는 지역 변수를 확인한다.  
+  LocalPrinter 클래스는 paramVar, localVar 지역 변수에 접근한다.
+2. 사용하는 지역 변수 복사: 지역 클래스가 사용하는 지역 변수를 복사한다. (매개변수도 지역 변수의 한 종류이다.)  
+  여기서는 paramVar, localVar 지역 변수를 복수한다.
+
+![img_23.png](img_23.png)
+3. 지역 변수 복사 완료: 복사한 지역 변수를 인스턴스에 포함한다.
+4. 인스턴스 생성 완료: 복사한 지역 변수를 포함해서 인스턴스 생성이 완료된다.  
+  이제 복사한 지역 변수를 인스턴스를 통해 접근할 수 있다.
+
+#### 캡처 변수 접근 
+![img_24.png](img_24.png)
+- LocalPrinter 인스턴스에서 printer() 메서드를 통해 paramVar, localVar 에 접근하면  
+  사실은 스택 영역에 있는 지역 변수에 접근하는 것이 아니다. 대신에 인스턴스에 있는 캡처한 변수에 접근한다.
+- 캡처한 paramVar, localVar 의 생명주기는 LocalPrinter 인스턴스의 생명주기와 같다.  
+  LocalPrinter 인스턴스는 지역 변수의 생명주기와 무관하게 언제든지 paramVar, localVar 캡처 변수에 접근할 수 있다.
+- 이렇게 해서 지역 변수와 지역 클래스를 통해 생성한 인스턴스의 생명주기가 다른 문제를 해결한다.
+
+#### 코드로 캡처 변수 확인하기 
+    public class LocalOuterV3 {
+
+        private int outInstanceVar = 3;
+    
+        public Printer process(int paraVar) {
+    
+            int localVar = 1;   // 지역 변수는 스택 프레임이 종료되는 순간 함께 제거된다.
+    
+            class LocalPrinter implements Printer {
+                int value = 0;
+    
+                @Override
+                public void print() {
+                    System.out.println("value = " + value);
+    
+                    // 인스턴스는 지역 변수보다 더 오래 살아남는다.
+                    System.out.println("localVar = " + localVar);
+                    System.out.println("paraVar = " + paraVar);
+                    System.out.println("outInstanceVar = " + outInstanceVar);
+                }
+            }
+    
+            LocalPrinter printer = new LocalPrinter();
+            // localPrinter.print(); 를 여기서 실행하지 않고 Printer 인스턴스만 반환한다.
+            return printer; // LocalPrinter 클래스는 Printer 인터페이스의 구현체라서 LocalPrinter 클래스를 반환해도 Printer 를 반환하는 것으로 인정해줌.
+        }
+    
+        public static void main(String[] args) {
+            LocalOuterV3 localOuter = new LocalOuterV3();
+            Printer printer = localOuter.process(2);
+            // printer.print() 를 나중에 실행한다. process() 의 스택 프레임이 사라진 이후 실행
+            printer.print();
+    
+            // 추가
+            System.out.println("필드 확인");
+            Field[] fields = printer.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                System.out.println("field = " + field);
+            }
+        }
+    }
+####
+    필드 확인
+    // 인스턴스 변수
+    field = int nested.local.LocalOuterV3$1LocalPrinter.value
+    // 캡처 변수
+    field = final int nested.local.LocalOuterV3$1LocalPrinter.val$localVar
+    field = final int nested.local.LocalOuterV3$1LocalPrinter.val$paraVar
+    // 바깥 클래스 참조
+    field = final nested.local.LocalOuterV3 nested.local.LocalOuterV3$1LocalPrinter.this$0
+- LocalPrint.value 이외에도 localVar 와 paramVar 가 있음을 알 수 있다.
+- 바깥 클래스를 참조하기 위한 필드도 확인할 수 있다. 참고로 이런 필드들은 자바가 내부에서 만들어서 사용하는 필드들이다.
+
+#### 정리
+- 지역 클래스는 인스턴스를 생성할 때 필요한 지역 변수를 먼저 캡처해서 인스턴스에 보관한다.
+- 그리고 지역 클래스의 인스턴스를 통해 지역 변수에 접근하면, 실제로는 지역 변수에 접근하는 것이 아니라   
+  인스턴스에 있는 캡처 변수에 접근한다.
 
 
 ### 8-4. 지역 클래스 - 지역 변수 캡처3
+- 지역 클래스가 접근하는 지역 변수는 절대로 중간에 값이 변하면 안된다.  
+- 따라서 final 로 선언하거나 또는 사실상 final 이어야 한다. 이것은 자바 문법이고 규칙이다.
+
+#### 용어 - 사실상 final
+- 영어로는 effectively final 이라 한다. 사실상 final 지역 변수는 지역 변수에 final 키워드를 사용하지는 않지만,  
+  값을 변경하지 않는 지역 변수를 뜻한다.
+- final 키워드를 넣지 않았을 뿐이지, 실제로는 final 키워드를 넣은 것 처럼 중간에 값을 변경하지 않은 지역 변수 이다.
+- 따라서 사실상 final 지역 변수는 final 키워드를 넣어도 동일하게 작동해야 한다.
+####
+- LocalPrinter 를 생성하는 시점에 지역 변수인 localVar, paramVar 를 캡처한다.
+- 그런데 이후에 캡처한 지역 변수의 값을 다음과 같이 변경하면 어떻게 될까?
+
+      LocalPrinter printer = new LocalPrinter();
+      // 만약 localVar 의 값을 변경한다면? 다시 캡쳐해야 하나??
+      localVar = 10;
+      paramVar = 20;
+- 이렇게 되면 스택 영역에 존재하는 지역 변수의 값과 인스턴스에 캡처한 캡처 변수의 값이 서로 달라지는 문제가 발생한다.  
+- 이것을 동기화 문제라한다. (지역변수 제거 시가 아닌 인스턴스 생성시 캡처되기 때문)
+- 물론 자바 언어를 설계할 때 지역 변수의 값이 변경되면 인스턴스에 갭처한 변수의 값도 함께 변경하도록 설계할 수 있다.  
+  그러나 이로 인해 수 많은 문제들이 파생될 수 있다.
+
+#### 캡처 변수의 값으 변경하지 못하는 이유
+- 지역 변수의 값을 변경하면 인스턴스에 캡처한 변수의 값도 변경해야 한다.
+- 반대로 인스턴스에 있는 캡처 변수의 값을 변경하면 해당 지역 변수의 값도 다시 변경해야 한다.
+- 개발자 입장에서 보면 예상하지 못한 곳에서 값이 변경될 수 있다. 이는 디버깅을 어렵게 한다.
+- 지역 변수의 값과 인스턴스에 있는 캡처변수의 값을 서로 동기화 해야 하는데,  
+  멀티쓰레드 상황에서 이런 동기화는 매우 어렵고, 나쁜 영향을 줄 수 있다. 
+- 이 모든 문제는 캡처한 변수의 값이 변하기 때문에 발생한다.  
+  자바는 캡처된 지역 변수의 값을 변하지 못하게 막아 이런 문제를 근본적으로 차단했다.
+- 필요하면 변수 새로 선언해서 쓰면 된다..
+
+> **!참고** - 변수 캡처에 대한 내용이 이해가 어렵다면 단순하게 지역 클래스가 접근하는 지역 변수의 값은 변경하면 안된다 정도로 이해하면 충분하다.
 
 
 ### 8-5. 익명 클래스 - 시작 
+- 익명 클래스(anonymous class)는 지역 클래스의 특별한 종류의 하나이다.
+- 익명 클래스는 지역 클래스 인데, 클래스의 이름이 없다는 특징이 있다.
+
+#### 
+    public class LocalOuterV2 {
+    
+        private int outInstanceVar = 3;
+    
+        public void process(int paraVar) {
+            int localVar = 1;
+    
+            class LocalPrinter implements Printer {
+                int value = 0;
+    
+                @Override
+                public void print() {
+                    System.out.println("value = " + value);
+                    System.out.println("localVar = " + localVar);
+                    System.out.println("paraVar = " + paraVar);
+                    System.out.println("outInstanceVar = " + outInstanceVar);
+                }
+            }
+    
+            LocalPrinter localPrinter = new LocalPrinter();
+            localPrinter.print();
+        }
+    
+        public static void main(String[] args) {
+            LocalOuterV2 localOuter = new LocalOuterV2();
+            localOuter.process(2);
+        }
+    }
+- 위 코드는 지역 클래스를 사용하기 위해 선언과 생성이라는 2가지 단계를 거친다.
+  1. 선언: 지역 클래스를 LocalPrinter 라는 이름으로 선언한다. 이때 Printer 인터페이스도 함께 구현한다.
+  2. 생성: new LocalPrinter() 를 사용해서 앞서 선언한 지역 클래스의 인스턴스를 생성한다.
+
+#### 지역 클래스의 선언과 생성 
+    // 선언
+    class LocalPrinter implements Printer {
+        // body
+    }
+
+    // 생성 
+    Printer printer = new LocalPrinter();
+- 익명 클래스를 사용하면 클래스의 이름을 생략하고, 클래스의 선언과 생성을 한번에 처리할 수 있다.
+
+#### 익명 클래스 - 지역 클래스의 선언과 생성을 한번에
+    Printer printer = new Printer() {
+        // body
+    }
+
+#### 익명 클래스 예제 코드
+    public class AnonymousOuter {
+    
+        private int outInstanceVar = 3;
+    
+        public void process(int paraVar) {
+            int localVar = 1;
+    
+            Printer printer = new Printer() {
+                int value = 0;
+    
+                @Override
+                public void print() {
+                    System.out.println("value = " + value);
+                    System.out.println("localVar = " + localVar);
+                    System.out.println("paraVar = " + paraVar);
+                    System.out.println("outInstanceVar = " + outInstanceVar);
+                }
+            };
+    
+            printer.print();
+            System.out.println("printer.class = " + printer.getClass());
+    
+        }
+    
+        public static void main(String[] args) {
+            AnonymousOuter localOuter = new AnonymousOuter();
+            localOuter.process(2);
+        }
+    }
+- 인터페이스를 구현하면서 구현체를 이름없이 바로 만드는 것이다. 익명 클래스는 클래스의 본문(body)을 정의하면서 동시에 생성한다.   
+  new 다음에 바로 상속 받으면서 구현 할 부모 타입을 입력하면 된다. 이 코드는 마치 인터페이스 Printer 를 생성하는 것 처럼 보인다.  
+  하지만 자바에서 인터페이스를 생성하는 것은 불가능하다. 이 코드는 인터페이스를 생성하는 것이 아니고, Printer 라는 이름의   
+  자바 인터페이스를 구현한 익명 클래스를 생성하는 것이다. {body} 부분에 Printer 인터페이스를 구현할 코드를 작성하면 된다.    
+  이 부분이 바로 익명 클래스의 본문이 된다. 쉽게 말해, 상속(구현) 하면서 바로 생성하는 것이다.  
+
+#### 익명 클래스 특징 
+- 익명 클래스는 이름 없는 지역 클래스를 선언하면서 동시에 생성한다.
+- **익명 클래스는 부모 클래스를 상속 받거나, 또는 인터페이스를 구현해야 한다.**  
+  익명 클래스를 사용할 때는 상위 클래스나 인터페이스가 필요하다.
+- 익명 클래스는 말 그대로 이름이 없다. 이름을 가지지 않으므로, 생성자를 가질 수 없다. (기본 생성자만 사용됨)
+- 익명 클래스는 AnonymousOuter$1 과 같이 자바 내부에서 바깥 클래스 이름 + $ + 숫자로 정의된다.  
+  익명 클래스가 여러개면 $1, $2, $3 으로 숫자가 증가하면서 구분된다.
+
+#### 익명 클래스의 장점
+- 익명 클래스를 사용하면 클래스를 별도로 정의하지 않고도 인터페이스나 추상 클래스를 즉석으로 구현할 수 있어 코드가 간결해진다.
+- 하지만 복잡하거나 재사용이 필요한 경우에는 별도의 클래스를 정의하는 것이 좋다.
+
+#### 익명 클래스를 사용할 수 없을 때
+- 익명 클래스는 단 한 번만 인스턴스를 생성할 수 있다. 여러 번 생성이 필요하다면 지역 클래스를 사용해야 한다.
+
+#### 정리
+- 익명 클래스는 이름이 없는 지역 클래스다.
+- 특정 부모 클래스(인터페이스)를 상속받고 바로 사용하는 경우 사용한다.
+- 지역 클래스가 일회성으로 사용되는 경우나 간단한 구현을 제공할 때 사용한다.
 
 
 ### 8-6. 익명 클래스 활용1
+#### 리팩토링 전 
+    public class Ex0Main {
+    
+        public static void hellowJava() {
+            System.out.println("프로그램 시작!");
+            System.out.println("Hellow Java");
+            System.out.println("프로그램 종료!");
+        }
+    
+        public static void hellowSpring() {
+            System.out.println("프로그램 시작!");
+            System.out.println("Hellow Spring");
+            System.out.println("프로그램 종료!");
+        }
+    
+        public static void main(String[] args) {
+            hellowJava();
+            hellowSpring();
+        }
+    }
+
+#### 리팩토링 후 
+    public class Ex0RefMain {
+        public static void hellow(String str) {
+            System.out.println("프로그램 시작!");     // 변하지 않는 부분
+            System.out.println(str);    // 변하는 부분
+            System.out.println("프로그램 종료!");     // 변하지 않는 부분
+        }
+        
+        public static void main(String[] args) {
+            hellow("Hello Java");
+            hellow("Hello Spring");
+        }
+    }
+- 변하지 않는 부분은 그대로 유지하고, 변하는 문자열은 외부에서 전달 받아서 처리한다.
+- 단순한 문제였지만 프로그래밍에서 중복을 제거하고, 좋은 코드를 유지하는 핵심은 변하는 부분과 변하지 않는 부분을 분리하는 것이다.
+- 여기서 변하지 않는 부분은 그대로 유지하고, 상황에 따라 변화가 필요한 부분은 외부에서 전달받아 처리했다.
+- 이렇게 변하는 부분과 변하지 않는 부분을 분리하고, 변하는 부분을 외부에서 전달 받으면, 메서드(함수)의 재사용성을 높일 수 있다.
+- 핵심은 변하는 부분을 메서드(함수) 내부에서 가지고 있는 것이 아니라, 외부에서 전달 받는다는 점이다.
 
 
 ### 8-7. 익명 클래스 활용2
+#### 리팩토링 전
+    public class Ex1Main {
+    
+        public static void helloDice() {
+            System.out.println("프로그램 시작");
+    
+            // 코드 조각 시작
+            int randomValue = new Random().nextInt(6) + 1;
+            System.out.println("주사위 = " + randomValue);
+            // 코드 조각 종료
+    
+            System.out.println("프로그램 종료");
+        }
+    
+        public static void helloSum() {
+            System.out.println("프로그램 시작");
+    
+            // 코드 조각 시작
+            for (int i = 1; i <= 3; i++){
+                System.out.println("i = " + i);
+            }
+            // 코드 조각 종료
+    
+            System.out.println("프로그램 종료");
+        }
+    
+        public static void main(String[] args) {
+            helloDice();
+            helloSum();
+        }
+    }
+
+#### 리팩토링 후 
+    public class Ex1RefMain {
+    
+        public interface Process {
+            void run();
+        }
+    
+        public static class Dice implements Process {
+            @Override
+            public void run() {
+                int randomValue = new Random().nextInt(6) + 1;
+                System.out.println("주사위 = " + randomValue);
+            }
+        }
+    
+        public static class Sum implements Process {
+            @Override
+            public void run() {
+                for (int i = 1; i <= 3; i++){
+                    System.out.println("i = " + i);
+                }
+            }
+        }
+    
+        public static void hello(Process process) {
+            System.out.println("프로그램 시작");
+    
+            // 코드 조각 시작
+            process.run();
+            // 코드 조각 종료
+    
+            System.out.println("프로그램 종료");
+        }
+    
+        public static void main(String[] args) {
+            hello(new Dice());
+            hello(new Sum());
+        }
+    }
+- 여기서는 단순히 데이터를 전달하는 수준을 넘어서, 코드 조각을 전달해야 한다.
+- 프로그램 시작, 프로그램 종료를 출력하는 부분은 변하지 않는 부분이다.
+- 코드 조각을 시작하고 종료하는 부분은 변하는 부분이다.
+- 결국 코드 조각을 시작하고 종료하는 부분을 외부에서 전달 받아야 한다.  
+  이것은 단순히 문자열 같은 데이터를 전달 받는 것과는 차원이 다른 문제이다.
+
+#### 어떻게 외부에서 코드 조각을 전달할 수 있을까?
+- 코드 조각은 보통 메서드(함수)에 정의한다. 따라서 코드 조각을 전달하기 위해서는 메서드가 필요하다.
+- 그런데 지금까지 학습한 내용으로는 메서드를 전달할 수 있는 방법이 없다. 
+- 대신에 인스턴스를 전달하고, 인스턴스에 있는 메서드를 호출하면 된다.
+- 이 문제를 해결하기 위해 인터페이스를 정의하고 구현 클래스를 만들었다.
+
+#### 정리
+- 문자열 같은 데이터를 메서드에 전달할 때는 String, int 와 같은 각 데이터에 맞는 타입을 전달하면 된다.
+- 코드 조각을 메서드에 전달할 때는 인스턴스를 전달하고 해당 인스턴스에 있는 메서드를 호출하면 된다.
 
 
 ### 8-8. 익명 클래스 활용3
+- 이번에는 지역 클래스를 활용해서 구현해보자.
+
+#### 리펙토링 전 (활용2 코드를 지역 클래스로 만듬)
+    public class Ex1RefMain2 {
+    
+        public static void hello(Process process) {
+            System.out.println("프로그램 시작");
+    
+            // 코드 조각 시작
+            process.run();
+            // 코드 조각 종료
+    
+            System.out.println("프로그램 종료");
+        }
+    
+        public static void main(String[] args) {
+    
+            class Dice implements Process {
+                @Override
+                public void run() {
+                    int randomValue = new Random().nextInt(6) + 1;
+                    System.out.println("주사위 = " + randomValue);
+                }
+            }
+    
+            class Sum implements Process {
+                @Override
+                public void run() {
+                    for (int i = 1; i <= 3; i++){
+                        System.out.println("i = " + i);
+                    }
+                }
+            }
+    
+            hello(new Dice());
+            hello(new Sum());
+        }
+    }
 
 
-### 8-9. 문제와 풀이1
 
+#### 리펙토링 후 (익명 클래스 쓴 경우)
+    public class Ex1RefMain4 {
+    
+        public static void hello(Process process) {
+            System.out.println("프로그램 시작");
+    
+            // 코드 조각 시작
+            process.run();
+            // 코드 조각 종료
+    
+            System.out.println("프로그램 종료");
+        }
+    
+        public static void main(String[] args) {
+    
+            hello(new Process() {
+                @Override
+                public void run() {
+                    int randomValue = new Random().nextInt(6) + 1;
+                    System.out.println("주사위 = " + randomValue);
+                }
+            });
+            hello(new Process() {
+                @Override
+                public void run() {
+                    for (int i = 1; i <= 3; i++){
+                        System.out.println("i = " + i);
+                    }
+                }
+            });
+        }
+    }
 
-### 8-10. 문제와 풀이2
+#### 람다(lambda)
+- 자바 8 이전까지는 메서드에 인수로 전달할 수 있는 것은 크게 2가지였다.
+  - int, double 과 같은 기본형 타입
+  - Process Member 와 같ㅇ느 참조형 타입(인스턴스)
+- 결국 메서드에 인수로 전달할 수 있는 것은 간단한 데이터나, 인스턴스의 참조였다.
+####
+- 지금처럼 코드 조각을 전달하기 위해 클래스를 정의하고 메서드를 만들고 또 인스턴스를 꼭 생성해야 할까?
+- 생각해보면 클래스나 인스턴스와 관계 없이 메서드만 전달할 수 있으면 더 좋지 않을까?
+- 자바 8 에 들어서면서 큰 변화가 있었는데 바로 메서드(더 정확히는 함수)를 인수로 전달할 수 있게 되었다.  
+  이것을 간단히 람다라 한다.
 
-
-### 8-11. 정리 
-
+#### 리팩토링 후 (람다 쓴 경우)
+    public class Ex1RefMain5 {
+    
+        public static void hello(Process process) {
+            System.out.println("프로그램 시작");
+    
+            // 코드 조각 시작
+            process.run();
+            // 코드 조각 종료
+    
+            System.out.println("프로그램 종료");
+        }
+    
+        public static void main(String[] args) {
+    
+            hello(() -> {
+                    int randomValue = new Random().nextInt(6) + 1;
+                    System.out.println("주사위 = " + randomValue);
+            });
+            hello(() -> {
+                    for (int i = 1; i <= 3; i++){
+                        System.out.println("i = " + i);
+                }
+            });
+        }
+    }
+- 코드를 보면 클래스나 인스턴스를 정의하지 않고, 메서드(더 정확히는 함수)의 코드 블럭을 직접 전달하는 것을 알 수 있다.
+- 람다는 클래스가 아니기 때문에 멤버 변수를 선언할 수 없다. 멤버 변수가 필요한 경우 지역 클래스를 사용하면된다.
 
 <br>
 
