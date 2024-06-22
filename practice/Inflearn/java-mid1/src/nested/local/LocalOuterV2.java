@@ -2,9 +2,9 @@ package nested.local;
 
 public class LocalOuterV2 {
 
-    private int outInstanceVar = 3;
+    private int outInstance = 3;
 
-    public void process(int paraVar) {
+    public void process(int paramVar) {
         int localVar = 1;
 
         class LocalPrinter implements Printer {
@@ -14,13 +14,13 @@ public class LocalOuterV2 {
             public void print() {
                 System.out.println("value = " + value);
                 System.out.println("localVar = " + localVar);
-                System.out.println("paraVar = " + paraVar);
-                System.out.println("outInstanceVar = " + outInstanceVar);
+                System.out.println("paramVar = " + paramVar);   // 매개변수도 지역변수의 한 종류이다.
+                System.out.println("outInstance = " + outInstance);
             }
         }
 
-        LocalPrinter localPrinter = new LocalPrinter();
-        localPrinter.print();
+        LocalPrinter printer = new LocalPrinter();
+        printer.print();
     }
 
     public static void main(String[] args) {
