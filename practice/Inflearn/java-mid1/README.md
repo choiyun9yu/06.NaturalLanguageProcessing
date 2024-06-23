@@ -3860,15 +3860,30 @@
 
 #### 실행 예시
 > 전송할 문자: hello
-> http://example.com 서버 연결 성공
-> http://example.com 서버에 데이터 전송 : hello
+> http://example.com 서버 연결 성공  
+> http://example.com 서버에 데이터 전송 : hello  
 > http://example.com 서버 연결 해제 
 
 #### 클래스 설명
-- NetworkClient:
-- NetworkService: 
-- Main:
-- 전체흐름: 
+- NetworkClient: 외부 서버와 연결하고, 데이터를 전송하고, 연결을 종료하는 기능을 제공한다.
+- NetworkService: NetworkClient 를 사용해서 데이터를 전송한다.   
+  NetworkClient 를 사용하려면 연결, 전송, 연결 종료와 같은 복잡한 흐름을 제어해야 하는데,   
+  이런 부분을 NetworkService 가 담당한다.
+- Main: 사용자의 입력을 받는다.
+- 전체흐름: Main 을 통해 사용자의 입력을 받으면 사용자의 입력을 NetworkService 에 전달한다.   
+  NetworkService 는 NetworkClient 를 사용해서 외부 서버에 연결하고,   
+  데이터를 전송하고, 전송이 완료되면 연결을 종료한다.
+
+#### NetworkClient 사용법
+- connect( )를 먼저 호출해서 서버와 연결한다.
+- send(data)로 연결된 서버에 메시지를 전송한다.
+- disconnect( )로 연결을 해제한다.
+
+#### NetworkClient 사용시 주의 사항
+- connect( )가 실패한 경우 send( )를 호출하면 안된다.
+- 사용 후에는 반드시 disconnect( )를 호출해서 연결을 해제해야 한다.
+  - connect( ), send( ) 호출에 오류가 있어도 disconnect( )는 반드시 호출해야 한다.
+
 
 
 ### 9-2. 예외 처리가 필요한 이유2 - 오류 상황 만들기
