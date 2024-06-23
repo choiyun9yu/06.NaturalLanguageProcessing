@@ -11,6 +11,8 @@
 - Ctrl + d: 현재줄 아래줄에 복사
 - Shift + F6: 소스코드창에서 rename
 - Ctrl + Alt + N: inline variable, 두 줄 코드에 교집합 변수가 있을 때 합치는 단축키
+- Ctrl + Alt + Shift + T: 리팩토링 단축키 
+- Ctrl + Alt + M: 
 #### for mac
 - Cmd + n: 제너레이트(생성자, toString ...)
 
@@ -3874,23 +3876,190 @@
   NetworkService 는 NetworkClient 를 사용해서 외부 서버에 연결하고,   
   데이터를 전송하고, 전송이 완료되면 연결을 종료한다.
 
-#### NetworkClient 사용법
-- connect( )를 먼저 호출해서 서버와 연결한다.
-- send(data)로 연결된 서버에 메시지를 전송한다.
-- disconnect( )로 연결을 해제한다.
+#### NetworkService 코드 예시
+    String address = "http://example.com";
+    NetworkClientV1 client = new NetworkClientV1(address);
+    client.connect();
+    client.send();
+    client.disconnect();
 
-#### NetworkClient 사용시 주의 사항
-- connect( )가 실패한 경우 send( )를 호출하면 안된다.
-- 사용 후에는 반드시 disconnect( )를 호출해서 연결을 해제해야 한다.
-  - connect( ), send( ) 호출에 오류가 있어도 disconnect( )는 반드시 호출해야 한다.
 
+#### NetworkClientV0
+    public class NetworkClientV0 {
+
+        private final String address;
+    
+        public NetworkClientV0(String address) {
+            this.address = address;
+        }
+    
+        public String connect() {
+            // 연결 성공
+            System.out.println(address + " 서버 연결 성공");
+            return "success";
+        }
+    
+        public String send(String message) {
+            // 전송 성공
+            System.out.println(address + " 서버에 데이터 전송: " + message);
+            return "success";
+        }
+    
+        public void disconnect() {
+            // 연결 해제
+            System.out.println(address + " 서버에 연결 해제");
+        }
+    }
+
+#### NetworkServiceV0
+    public class NetworkServiceV0 {
+
+        public void sendMessage(String data) {
+            String address = "http://example.com";
+            NetworkClientV0 client = new NetworkClientV0(address);
+    
+            client.connect();
+            client.send(data);
+            client.disconnect();
+        }
+    }
+
+#### MainV0
+    import java.util.Scanner;
+
+    public class MainV0 {
+    
+        public static void main(String[] args) {
+            NetworkServiceV0 networkService = new NetworkServiceV0();
+    
+            Scanner scanner = new Scanner(System.in);
+            while (true) {
+                System.out.println("전송할 문자: ");
+                String input = scanner.nextLine();
+                if (input.equals("exit")) {
+                    break;
+                }
+                networkService.sendMessage(input);
+                System.out.println();
+            }
+            System.out.println("프로그램을 정상 종료합니다.");
+        }
+    }
 
 
 ### 9-2. 예외 처리가 필요한 이유2 - 오류 상황 만들기
+- 외부 서버와 통신할 때는 다음과 같은 다양한 문제들이 발생한다.
+  - 외부 서버와 연결에 실패한다. (네트워크 오류 등)
+  - 데이터 전송에 문제가 발생한다.
+- 오류 상황을 시뮬레이션 할 수 있는 다음 코드를 만들어 보자.
+  - 언결 실패: 사용자가 입력하는 문자에 "error1" 단어가 있으면 연결에 실패한다. 오류 코드는 "connectError" 이다.
+  - 전송 실패: 사용자가 입력하는 문자에 "error2" 단아가 있으면 전송에 실패한다. 오류 코드는 "sendError" 이다.
 
+#### NetworkClientV1
+    public class NetworkClientV1 {
+
+        private final String address;
+        public boolean connectError;    // boolean 의 default 는 false
+        public boolean sendError;
+    
+        public NetworkClientV1(String address) {
+            this.address = address;
+        }
+    
+        public String connect() {
+            if (connectError) {
+                System.out.println(address + " 서버 연결 실패");
+                return "connectError";
+            }
+            // 연결 성공
+            System.out.println(address + " 서버 연결 성공");
+            return "success";
+        }
+    
+        public String send(String message) {
+            if (sendError) {
+                System.out.println(address + " 서버에 데이터 전송 실패: " + message);
+                return "sendError";
+            }
+            // 전송 성공
+            System.out.println(address + " 서버에 데이터 전송: " + message);
+            return "success";
+        }
+    
+        public void disconnect() {
+            // 연결 해제
+            System.out.println(address + " 서버에 연결 해제");
+        }
+    
+        public void initError(String data) {
+            if (data.contains("error1")) {
+                connectError = true;
+            }
+            if (data.contains("error2")) {
+                sendError = true;
+            }
+        }
+    }
+
+#### NetworkServiceV1_1
+
+    public class NetworkServiceV1_1 {
+
+        public void sendMessage(String data) {
+            String address = "http://example.com";
+            NetworkClientV1 client = new NetworkClientV1(address);
+            client.initError(data);
+            
+            client.connect();
+            client.send(data);
+            client.disconnect();
+        }
+    }
+    
 
 ### 9-3. 예외 처리가 필요한 이유3 - 반환 값으로 예외 처리
+- 남은 문제는 연결이 실패하면 데이터를 전송하지 않아야 하는데, 여기서는 데이터를 전송한다.
+- 오류가 발생했을 때 어떤 오류가 발생했는지 자세한 내역을 남기면 이후 디버깅에 도움이 될 것이다.  
+  (오류 로그를 남겨야 한다.)
+- NetworkClientV1 은 connectError, sendError 와 같은 오류 코드를 문자열로 반환해주고 있다.
+- 이 반환 값을 사용해서 예외 상황을 처리해보자.
 
+#### NetworkServiceV1_2
+    public class NetworkServiceV1_2 {
+    
+        public void sendMessage(String data) {
+            String address = "http://example.com";
+            NetworkClientV1 client = new NetworkClientV1(address);
+            client.initError(data);
+    
+            String connectResult = client.connect();
+            // 결과가 성공이 아니다 -> 오류다. (성공이 아니다보다 오류다가 이해하기 쉬워서 코드 리팩토링)
+            if (isError(connectResult)) {
+                System.out.println("[네트워크 오류 발생] 오류 코드: " + connectResult); // 로그를 남김
+                return; // 리턴으로 나가버려서 다음 진행이 되지 않음
+            }
+    
+            String sendResult = client.send(data);
+            if (isError(sendResult)) {
+                System.out.println("[네트워크 오류 발생] 오류 코드: " + sendResult);
+                return;
+            }
+    
+            client.disconnect();
+        }
+    
+        private static boolean isError(String connectResult) {
+            return !connectResult.equals("success");
+        }
+- connect( ) 가 실패한 경우 send( ) 를 호출하면 안된다 -> 해결
+- 사용 후에는 반드시 disconnect( ) 를 호출해서 연결을 해제해야 한다. -> 해결안됨
+  - connect(), send() 호출에는 오류가 있어도 disconnect() 는 반드시 호출해야 한다.
+
+> !참고 - 자바의 경우 GC 가 있기 때문에 JVM 메모리에 있는 인스턴스는 자동으로 해제할 수 있다.  
+> 하지만 외부 연결과 같은 자바 외부의 자원은 자동으로 해제가 되지 않는다. 따라서 외부 자원을  
+> 사용한 후에는 연결을 해제해서 외부 자원을 반드시 반납해야 한다.
+
+#### NetworkServiceV1_3
 
 ### 9-4. 자바 예외 처리1 - 예외 계층 
 
