@@ -4101,14 +4101,325 @@
 
 
 ### 10-9. 실무 예외 처리 방안2 - 구현 
+![img_26.png](img_80.png)
+- NetworkClientExceptionV4 는 언체크 예외인 RuntimeException 을 상속 받는다.
+- 이제 NetworkClientExceptionV4 와 자식은 모두 언체크(런타임) 예외가 된다.
+
+#### NetworkClientExceptionV4
+    public class NetworkClientExceptionV4 extends RuntimeException{
+        public NetworkClientExceptionV4(String message) { super(message); }
+    }
+
+#### ConnectExceptionV4
+    public class ConnectExceptionV4 extends NetworkClientExceptionV4 {
+    
+        private final String address;
+    
+        public ConnectExceptionV4(String address, String message) {
+            super(message);
+            this.address = address;
+        }
+    
+        public String getAddress() {
+            return address;
+        }
+    }
+
+#### SendExceptionV4
+    public class SendExceptionV4 extends NetworkClientExceptionV4 {
+    
+        private final String sendData;
+    
+        public SendExceptionV4(String sendData, String message) {
+            super(message);
+            this.sendData = sendData;
+        }
+    
+        public String getSendData() { return sendData; }
+    }
+
+#### NetworkClientV4
+    public class NetworkClientV4 {
+    
+        private final String address;
+        public boolean connectError;
+        public boolean sendError;
+    
+        public NetworkClientV4(String address) {
+            this.address = address;
+        }
+    
+        public void connect() {
+            if (connectError) {
+                throw new ConnectExceptionV4(address, address + " 서버 연결 실패");
+            }
+            // 연결 성공
+            System.out.println(address + " 서버 연결 성공");
+        }
+    
+        public void send(String data) {
+            if (sendError) {
+                throw new SendExceptionV4(data, address + " 서버에 데이터 전송 실패: " + data);
+            }
+            // 전송 성공
+            System.out.println(address + " 서버에 데이터 전송: " + data);
+        }
+    
+        public void disconnect() {
+            // 연결 해제
+            System.out.println(address + " 서버에 연결 해제");
+        }
+    
+        public void initError(String data) {
+            if (data.contains("error1")) {
+                connectError = true;
+            }
+            if (data.contains("error2")) {
+                sendError = true;
+            }
+        }
+    }
+
+
+#### NetworkServiceV4
+    public class NetworkServiceV4 {
+    
+        public void sendMessage(String data) {
+            String address = "http://example.com";
+            NetworkClientV4 client = new NetworkClientV4(address);
+            client.initError(data);
+    
+            try {
+                client.connect();
+                client.send(data);
+            } finally {
+                client.disconnect();
+            }
+        }
+    }
+- NetworkServiceV4 는 발생하는 예외인 ConnectExceptionV4, SendExceptionV4 를 잡아도 오류들을 복구할 수 없다.  
+  따라서 밖으로 던진다.
+- 언체크 예외이므로 throws 를 사용하지 않는다.
+- 사실 NetworkServiceV4 개발자 입장에서는 해당 예외들을 복구할 수 없다.  
+  따라서 해당 예외들을 생각하지 않는 것이 더 나은 선택일 수 있다.  
+  해결할 수 없는 예외들은 다른 곳에서 공통으로 처리된다.
+- 이런 방식 덕분에 NetworkServiceV4 는 해결할 수 없는 예외 보다는 본인 스스로의 코드에 더 집중할 수 있다.  
+  따라서 코드가 깔끔해진다.
+
+#### MainV4
+    public class MainV4 {
+    
+        public static void main(String[] args) {
+            NetworkServiceV4 networkService = new NetworkServiceV4();
+    
+            Scanner scanner = new Scanner(System.in);
+            while (true) {
+                System.out.println("전송할 문자: ");
+                String input = scanner.nextLine();
+                if (input.equals("exit")) {
+                    break;
+                }
+    
+                // 공통 예외 처리
+                try {
+                    networkService.sendMessage(input);
+                } catch (Exception e) { // Exception 을 잡는 다는 것은 모든 예외를 다 잡는 다는 것 (공통 예외 처리)
+                    exceptionHandler(e);
+                }
+    
+                System.out.println();
+            }
+            System.out.println("프로그램을 정상 종료합니다.");
+        }
+    
+        // 공통 예외 처리 메서드
+        private static void exceptionHandler(Exception e) {
+            // 공통 처리
+            System.out.println("사용자 메시지: 죄송합니다. 알 수 없는 문제가 발생했습니다.");
+            System.out.println("==개발자용 디버깅 메시지==");
+            e.printStackTrace(System.out);  // 스택 트레이스 출력
+            // e.printStackTrace()
+    
+            // 필요하면 예외 별로 별도의 추가 처리 가능 (공통처리를 하지만 결국 인스턴스가 넘어오기 때문에 개별처리도 가능)
+            if (e instanceof SendExceptionV4 sendEx) {
+                System.out.println("[전송 오류] 전송 데이터: " + sendEx.getSendData());
+            }
+        }
+    }
+
+#### 공통 예외 처리 
+    // 공통 예외 처리
+    try {
+        networkService.sendMessage(input);
+    } catch (Exception e) { // Exception 을 잡는 다는 것은 모든 예외를 다 잡는 다는 것 (공통 예외 처리)
+        exceptionHandler(e);
+    }
+- Exception 을 잡아서 지금까지 해결하지 못한 모든 예외를 여기서 공통으로 처리한다. Exception 을 잡으면 필요한 모든 예외를 잡을 수 있다.
+- 예외도 객체이므로 공통 처리 메서드인 exceptionHandler(e) 에 예외 객체를 전달한다.
+
+#### exceptionHandler( )
+- 해결할 수 없는 예외가 발생하면 사용자에게는 시스템 내에 알 수 없는 문제가 발생했다고 알리는 것이 좋다.
+  - 사용자가 디테일한 오류 코드나 오류 상황까지 모두 이해할 필요는 없다. 예를 들어서 사용자는 데이터베이스 연결이 안되서 오류가 발생한 것인지,  
+    네트워크에 문제가 있어서 오류가 발생한 것인지 알 필요는 없다.
+  - 개발자는 빨리 문제를 찾고 디버깅 할 수 있도록 오류 메시지를 남겨두어야 한다.
+  - 예외도 객체이므로 필요하면 instanceof 와 같이 예외 객체의 타입을 확인해서 별도의 추가 처리를 할 수 있다.
+
+#### e.printStackTrace( )
+- 예외 메시지와 스택 트레이스를 출력할 수 있다.
+- 이 기능을 사용하면 예외가 발생한 지점을 역으로 추적할 수 있다.
+- 참고로 예제에서는 e.printStackTrace(System.out)을 사용해서 표준 출력으로 내보냈다.
+- e.printStackTrace( )를 사용하면 System.err 라는 표준 오류에 결과를 출력한다.
+  - IDE 에서는 System.err 로 출력하면 출력 결과를 빨간색으로 보여준다.
+  - 일반적으로 이 방법을 사용한다.
+  
+> !참고 - System.out, System.err 둘다 결국 콘솔에 출력되지만, 서로 다른 흐름을 통해서 출력된다.  
+> 따라서 둘을 함께 사용하면 출력 순서를 보장하지 않는다. 출력 순서가 꼬여서 보일 수 있다.
+
+> !참고 - 실무에서는 System.out 이나 System.err 를 통해 콘솔에 무언가를 출력하기 보다는, 주로 Slf4J, logback 같은 별도의 로그 라이브러리를  
+> 사용해서 콘솔과 특정 파일에 함께 결과를 출력한다. 그런데 e.printStackTrace( )를 직접 호출하면 결과가 콘솔에만 출력된다.  
+> 이렇게 되면 서버에서 로그를 확인하기 어렵다. 서버에서는 파일로 로그를 확인해야 한다. 따라서 콘솔에 바로 결과를 출력하는 e.printStackTrace( )는  
+> 잘 사용하지 않는다. 대신에 로그 라이브러리를 통해서 예외 스택 트레이스를 출력한다. 지금은 로그 라이브러리라는 것이 있다는 정도만 알아두자.  
+> 학습 단계에서는 e.printStackTrace( )를 적극 사용해도 괜찮다.
 
 
 ### 10-10. try-with-resources
+- 애플리케이션에서 외부 자원을 사용하는 경우 반드시 외부 자원을 해제해야 한다.
+- 따라서 finally 구만을 반드시 사용해야 한다.
+- try 에서 외부 자원을 사용하고, try 가 끝나면 외부 자원을 반납하는 패턴이 반복되면서 자바에서는 Try with resources 라는 편의 기능을 도입했다.
+- 이름 그대로 try 에서 자원을 함께 사용한다는 뜻이다. 여기서 자원은 try 가 끝나면 반드시 종료해서 반납해야 하는 외부 자원을 뜻한다.
+- 이 기능을 사용하려면 먼저 AutoCloseable 인터페이스를 구현해야 한다.
+  
+      package java.lang;
+      
+      public interface AutoCloseable {
+          void close() throws Exception;
+      }
+- 이 인터페이스를 구현하면 Try with resource 를 사용할 때 try 가 끝나는 시점에 close( ) 가 자동으로 호출된다.
+- 그리고 다음과 같이 Try with resource 구문을 사용하면 된다.
 
+      try (Resource resource = new Resource()) {
+          // 리소스를 사용하는 코드
+      }
 
-### 10-11. 정리 
+#### NetworkClientV5
+    public class NetworkClientV5 implements AutoCloseable {
+    
+        private final String address;
+        public boolean connectError;
+        public boolean sendError;
+    
+        public NetworkClientV5(String address) {
+            this.address = address;
+        }
+    
+        public void connect() {
+            if (connectError) {
+                throw new ConnectExceptionV4(address, address + " 서버 연결 실패");
+            }
+            // 연결 성공
+            System.out.println(address + " 서버 연결 성공");
+        }
+    
+        public void send(String data) {
+            if (sendError) {
+                throw new SendExceptionV4(data, address + " 서버에 데이터 전송 실패: " + data);
+            }
+            // 전송 성공
+            System.out.println(address + " 서버에 데이터 전송: " + data);
+        }
+    
+        public void disconnect() {
+            // 연결 해제
+            System.out.println(address + " 서버에 연결 해제");
+        }
+    
+        public void initError(String data) {
+            if (data.contains("error1")) {
+                connectError = true;
+            }
+            if (data.contains("error2")) {
+                sendError = true;
+            }
+        }
+    
+        @Override
+        public void close() {
+            System.out.println("NetworkClientV5.close");
+            disconnect();
+        }
+    }
+- implements AutoCloseable 을 통해 AutoCloseable 을 구현한다.
+- close( ): AutoCloseable 인터페이스가 제공하는 이 메서드는 try 가 끝나면 자동으로 호출된다.  
+  종료 시점에 자원을 반납하는 방법을 여기에 정의하면 된다. 참고로 이 메서드에서 예외를 던지지는 않으므로 인터페이스의 메서드에 있는  
+  throws Exception 은 제거했다.
 
+#### NetworkServiceV5
+    public class NetworkServiceV5 {
+    
+        public void sendMessage(String data) {
+            String address = "http://example.com";
+    
+            try (NetworkClientV5 client = new NetworkClientV5(address)) {
+                client.connect();
+                client.send(data);
+            } catch (Exception e) {
+                System.out.println("[예외 확인]: " +e.getMessage());
+                throw e;
+            }
+        }
+    }
+- try with resources 구문은 try 괄호 안에 사용할 자원을 명시한다.
+- 이 자원은 try 블럭이 끝나면 자동으로 AutoCloseable.close( ) 를 호출해서 자원을 해제한다.
+- 참고로 여기서 catch 블럭 없이 try 블럭만 있어도 close( ) 는 호출된다.
+- 여기서 catch 블럭은 단순히 발생한 예외를 잡아서 예외 메시지를 출력하고, 잡은 예외를 throw 를 사용해서 다시 밖으로 던진다.
+
+#### Try with resources 장점
+- 리소스 누수 방지: 모든 리소스가 제대로 닫히도록 보장한다.  
+  실수로 finally 블록을 적지 않거나, finally 블럭 안에서 자원 해제 코드를 누락하는 문제들을 예방할 수 있다.
+- 코드 간결성 및 가독성 향상: 명시적인 close( ) 호출이 필요 없어 코드가 더 간결하고 읽기 쉬워진다.
+- 스코프 범위 한정: 리소스로 사용되는 client 변수의 스코프가 try 블럭 안으로 한정된다.  
+  따라서 코드 유지보수가 더 쉬워진다.
+- 조금 더 빠른 자원 해제: 굳이 finally 까지 가지 않아도 try 만 벗어나면 자원을 반납한다.
+
+> !주의 - AutoCloseable.close( ) 는 try 구문을 빠져나가는 순간 catch 로 가든 finally 로 가든 어디로 가든 바로 호출된다.  
+> 자원은 try 구문 안에서만 사용하고 최대한 빨리 반납한다.
 
 <br>
 
 ## 다음으로
+#### 백엔드 개발자에게 가장 중요한 것은 기본기
+- 백엔드 개발자가 되기 위해서는 공부해야 할 내용이 많다.
+- 이후에 스프링 같은 실무 기술을 제대로 학습하려면?
+  - 백엔드 개발자의 필수 기술인 스프링도 자바로 만든 것
+  - 다른 오픈소스도 대부분 자바로 만든 것 
+  - 결국 자바 기본기가 가장 중요하다
+  - 기본기가 부족하면 제대로 이해가 어렵다
+- 기본기를 확실히 다져야 한다
+- 백엔드 개발자는 공부할 내용이 많으니 꾸준히 노력이 뒷받침 되어야 한다.
+
+#### 좋은 공부 방법
+- 처음에는 코드를 따라한다 생각하고 처음부터 끝까지
+- 복습할 때는 정리하면서 복습(당연히 코딩!)
+- 이렇게 하면 전체적인 그림을 그린 상태에서 공부할 수 있음
+- 많은 개발자가 복습하고 정리하는 단계에서 이해
+
+### 실무 개발자가 되는 학습 방향 
+#### 프로그래밍 언어를 배우는 3단계
+- 기본 문법 및 개념 이해 - 자바 입문편
+  - 기본 문법, 변수, 타입, 조건문, 반복문, 함수 사용법 등
+- 고급 개념과 해당 언어의 라이브러리 활용 - 자바 기본편 ~ 고급편
+  - 객체지향 개념, 고급 문법, 자바의 주요 라이브러리
+- 프레임워크 및 생태계 탐색 -> 백엔드 개발자 로드맵
+  - 스프링 프레임워크를 포함한 다양한 오픈소스 학습
+  - 실제 프로젝트나 업무에서 적용에 중점
+  - 어떤 프레임워크를 사용하고, 어떤 라이브러리를 조합해서 사용하는 것이 좋은지 등등
+  - 개발 생태계 내에서의 베스트 프랙티스 
+
+#### 스프링 학습하기 전에 준비할 것?
+- 자바 로드맵 -> 데이터비이스 로드맵 -> 스프링
+
+#### 스프링 더 빠르게 학습하고 싶으면? 
+- 자바 로드맵 -> 자바 중급 2편까지 학습(자바 컬렉션)
+- 스프링 로드맵 진행
+- 스프링 로드맵 중간에 데이터베이스 관련 부분이 있을 때, 데이터베이스 학습
+- 자바 고급편이 출시되면 자바 고급편 학습
