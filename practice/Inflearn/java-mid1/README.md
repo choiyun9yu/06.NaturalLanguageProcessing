@@ -12,7 +12,8 @@
 - Shift + F6: 소스코드창에서 rename
 - Ctrl + Alt + N: inline variable, 두 줄 코드에 교집합 변수가 있을 때 합치는 단축키
 - Ctrl + Alt + Shift + T: 리팩토링 단축키 
-- Ctrl + Alt + M: 
+- Ctrl + Alt + M:
+
 #### for mac
 - Cmd + n: 제너레이트(생성자, toString ...)
 
@@ -4034,12 +4035,14 @@
     
             String connectResult = client.connect();
             // 결과가 성공이 아니다 -> 오류다. (성공이 아니다보다 오류다가 이해하기 쉬워서 코드 리팩토링)
+            // if (!connectResult.equals("success")) {
             if (isError(connectResult)) {
                 System.out.println("[네트워크 오류 발생] 오류 코드: " + connectResult); // 로그를 남김
                 return; // 리턴으로 나가버려서 다음 진행이 되지 않음
             }
     
             String sendResult = client.send(data);
+            // if (!sendResult.equals("success")) {
             if (isError(sendResult)) {
                 System.out.println("[네트워크 오류 발생] 오류 코드: " + sendResult);
                 return;
@@ -4053,60 +4056,948 @@
         }
 - connect( ) 가 실패한 경우 send( ) 를 호출하면 안된다 -> 해결
 - 사용 후에는 반드시 disconnect( ) 를 호출해서 연결을 해제해야 한다. -> 해결안됨
-  - connect(), send() 호출에는 오류가 있어도 disconnect() 는 반드시 호출해야 한다.
+  - connect( ), send( ) 호출에는 오류가 있어도 disconnect( ) 는 반드시 호출해야 한다.
 
 > !참고 - 자바의 경우 GC 가 있기 때문에 JVM 메모리에 있는 인스턴스는 자동으로 해제할 수 있다.  
 > 하지만 외부 연결과 같은 자바 외부의 자원은 자동으로 해제가 되지 않는다. 따라서 외부 자원을  
 > 사용한 후에는 연결을 해제해서 외부 자원을 반드시 반납해야 한다.
 
 #### NetworkServiceV1_3
+- 이번에는 disconnect( )를 반드시 호출하도록 코드를 수정해보자.
+  public class NetworkServiceV1_3 {
+####
+    public class NetworkServiceV1_3 {
+    
+        public void sendMessage(String data) {
+            String address = "http://example.com";
+            NetworkClientV1 client = new NetworkClientV1(address);
+            client.initError(data);
+    
+            String connectResult = client.connect();
+            if (isError(connectResult)) {
+                System.out.println("[네트워크 오류 발생] 오류 코드: " + connectResult);
+            } else {
+                String sendResult = client.send(data);
+                if (isError(sendResult)) {
+                    System.out.println("[네트워크 오류 발생] 오류 코드: " + sendResult);
+                    return;
+                }   
+            }
+    
+            client.disconnect();
+        }
+    
+        private static boolean isError(String connectResult) {
+            return !connectResult.equals("success");
+        }
+    }
+- 프로그램에서 return 문을 제거하고 if문으로 적절한 분기를 사용했다.
+- connect( ) 에 성공해서 오류가 없는 경우에만 send( )를 호출한다.
+- 중간에 return 하지 않았으므로 마지막에 있는 disconnect( )를 호출할 수 있다.
+  - 연결에 실패해도 disconnect( )를 호출한다.
+  - 데이터 전송에 실패하여도 disconnect( )를 호출한다.
+
+#### 정상 흐름과 예외흐름
+- 그런데 반환 값으로 예외를 처리하는 NetworkServiceV1_2, NetworkServiceV1_3 와 같은 코드들을 보면   
+  정상 흐름과 예외 흐름이 전혀 분리되어 있지 않다. 어떤 부분이 정상 흐름이고, 어떤 부분이 예외 흐름인지  
+  이해하기가 너무 어렵다. 심지어 예외 흐름을 처리하는 부분이 더 많다. 
+
+- 정상 흐름 코드: 정상 흐름은 연결하고, 데이터를 전송하고, 연결을 종료하는 단순한 흐름이다.
+
+      clinet.connect();
+      client.send(data);
+      client.disconnect();
+
+- 정상 흐름 + 예외 흐름 코드 
+  - NetworkServiceV1_2, NetworkServiceV1_3 처럼 복잡한 흐름이다.
+  - 정상 흐름과 예외 흐름이 섞여 있기 때문에 코드를 한눈에 이해하기 어렵다.   
+    쉽게 이야기해서 가장 중요한 정상 흐름이 한눈에 들어오지 않는다.
+  - 심지어 예외 흐름이 더 많은 코드 분량을 차지한다. (실무에서는 예외처리가 더 복잡함)
+
+- 어떻게 하면 정상 흐름과 예외 흐름을 분리할 수 있을까? 
+- 지금과 같이 반환 값을 사용해서 예외 상황을 처리하는 방식으로 해결할 수 없는 것은 확실하다.
+- 이런 문제를 해결하기 위해 바로 예외 처리 메커니즘이 존새한다. 
+- 예외 처리를 사용하면 정상 흐름과 예외 흐름을 명확하게 분리할 수 있다.
+
 
 ### 9-4. 자바 예외 처리1 - 예외 계층 
+- 자바는 프로그램 실행 중에 발생할 수 있는 예상치 못한 상황, 즉 예외(Exception)를 처리하기 위한 메커니즘을 제공한다.
+- 이는 프로그램의 안정성과 신뢰성을 높이는 데 중요한 역할을 한다.
+- 자바의 예외 처리는 다음 키워드를 사용한다 {try, catch, finally, throw, throws}
+- 그리고 예외를 다루기 위한 예외 처리용 객체들을 제공한다.
+
+#### 예외 계층 
+![img_26.png](img_26.png)  
+- Object: 자바에서 기본형을 제외한 모든 것은 객체다. 예외도 객체다. 모든 객체의 최상위 부모는 Object 이므로 예외의 최상위 부모도 같다.
+- Throwable: 최상위 예외이다. 하위에 Exception 과 Error 가 있다.
+- Error: 메모리 부족이나 심각한 시스템 오류와 같이 애플리케이션에서 복구가 불가능한 시스템 예외이다.   
+  애플리케이션 개발자는 이 예외를 잡으려고 해서는 안된다.
+- Exception: 체크 예외
+  - 애플리케이션 로직에서 사용할 수 있는 실질적인 최상위 예외이다.
+  - Exception 과 그 하위 예외는 모두 컴파일러가 체크하는 체크 예외이다. 단 RuntimeException 은 예외로 한다.
+- RuntimeException: 언체크 예외, 런타임 예외
+  - 컴파일러가 체크하지 않는 언체크 예외이다.
+  - RuntimeException 과 그 자식 예외는 모두 언체크 예외이다.
+  - RuntimeException 의 이름을 따라서 RuntimeException 과 그 하위 언체크 예외를 런타임 예외라고 많이 부른다.
+
+#### 체크 예외 vs 언체크 예외(런타임 예외)
+- 체크 예외는 발생한 예외를 개발자가 명시적으로 처리해야 한다. 그렇지 않으면 컴파일 오류가 발생한다.
+- 언체크 예외는 개발자가 발생한 예외를 명시적으로 처리하지 않아도 된다. (하지만 앱 실행중 문제가 생기겠지)
+
+> **!주의** - 상속 관계에서 부모 타입은 자식을 담을 수 있다.   
+> 이 개념이 예외 처리에도 적용되는데, 상위 예외를 catch 로 잡으면 그 하위 예외까지 함께 잡는다. 
+> 따라서 애플리케이션 로직에서는 Throwable 예외를 잡으면 안되는데, 앞서 이야기한 잡으면 안되는 Error 도 함깨 잡을 수 있기 때문이다.  
+> 애플리케이션 로직은 이런 이유로 Exception 부터 필요한 예외로 생각하고 잡으면 된다. 
+
 
 
 ### 9-5. 자바 예외 처리2 - 예외 기본 규칙 
+- 예외는 폭탄돌리기와 같다. 예외가 발생하면 잡아서 처리하거나, 처리할 수 없으면 밖으로 던져야 한다.
+
+#### 예외 처리
+![img_27.png](img_27.png)  
+1. Main 은 Service 를 호출한다.
+2. Service 는 Client 를 호출한다.
+3. Client 에서 예외가 발생했다.
+4. Client 에서 예외를 처리하지 못하고 밖으로 던진다. 여기서 Client 의 밖은 Client 를 호출한 Service 를 뜻한다.
+5. Service 에 예외가 전달된다. Service 에서 예외를 처리했다. 이후에는 애플리케이션 로직이 정상흐름으로 동작한다.
+6. 정상 흐름을 반환한다.
+
+#### 예외 던짐 
+![img_28.png](img_28.png)  
+- 예외를 처리하지 못하면 자신을 호출한 곳으로 예외를 던져야 한다. 
+- 예외에 대해서는 2가지 기본 규칙을 기억하자 
+  1. 예외는 잡아서 처리하거나 밖으로 던져야 한다. 
+  2. 예외를 잡거나 던질 때 지정한 예외뿐만 아니라 그 예외의 자식들도 함께 처리할 수 있다. 
+    - 예를 들어 Exception 을 catch 로 잡으면 그 하위 예외들도 모두 잡을 수 있다.
+    - 예를 들어 Exception 을 throws 로 단지면 그 하위 예외들도 모두 던질 수 있다.
+
+> **!참고** - 예외를 처리하지 못하고 계속 던지면 어떻게 될까?  
+> 자바 main( ) 밖으로 예외를 던지면 예외 로그를 출력하면서 시스템이 종료된다.
 
 
 ### 9-6. 자바 예외 처리3 - 체크 예외
+- Exception 과 그 하위 예외는 모두 컴파일러가 체크하는 체크 예외이다. 단 RuntimeException 은 예외로 한다.
+- 체크 예외는 잡아서 처리하거나, 또는 밖으로 던지도록 선언해야 한다. 그렇지 않으면 컴파일 오류가 발생한다.
+
+#### 체크 예외 전체 코드 
+    /*
+     * Exception 을 상속 받는 예외는 체크 예외가 된다.
+     */
+    public class MyCheckedException extends Exception {
+        public MyCheckedException(String message) {
+            super(message);  // Throwable? 부모 클래스에 메시지 보관?
+        }
+    }
+- MyCheckedException 는 Exception 을 상속 받았다. Exception 을 상속 받으면 체크 예외가 된다.
+- 참골 RuntimeException 을 상속받으면 언체크 예외가 된다. 이런 규칙은 자바 언어에서 문법으로 정한 것이다.
+- 예외가 제공하는 기본 기능이 있는데, 그 중에 오류 메시지를 보관하는 기능도 있다.  
+  예제에서 보는 것 처럼 생성자를 통해서 해당 기능을 그대로 사용하면 편리하다.
+
+![img_29.png](img_29.png)  
+
+- super(message)로 전달한 메시지는 Throwable 에 있는 detailMessage 에 보관된다.
+- 보관된 메시지는 getMessage( )를 통해 조회할 수 있다. 
+
+####
+    public class Client {
+        public void call() throws MyCheckedException {
+            throw new MyCheckedException("ex");
+        }
+    }
+- throw 예외라고 하면 새로운 예외를 발생시킬 수 있다. 
+- 예외도 객체이기 때문에 객체를 먼저 new 로 생성하고 예외를 발생시켜야 한다. 
+- throws 예외는 발생시킨 예외를 메서드 밖으로 던질 때 사용하는 키워드 이다.
+-  throw 와 throws 의 차이에 주의하자.
+
+####
+    public class Service {
+        Client client = new Client();
+        
+        /*
+         * 예외를 잡아서 처리하는 코드
+         */
+        public void callCatch() {
+            
+            try{
+                client.call();
+            } catch (MyCheckedException e){
+                // 예외 처리 로직 
+                System.out.println("예외 처리, message=" + e.getMessage());
+            }
+            System.out.println("정상 흐름");
+        }
+    
+        public void catchThrow() throws MyCheckedException {
+            client.call();
+        }
+    }
+- 예외를 잡아서 처리하려면 try ~ catch(...) 를 사용해서 예외를 잡으면 된다.
+- try 코드 블럭에서 발생하는 예외를 잡아서 catch 로 넘긴다.
+  - 만약 try 에서 잡은 예외가 catch 의 대상에 없으면 예외를 잡을 수 없다.  
+    이때는 예외를 밖으로 던져야 한다.
+- 여기서는  MyCheckedException 예외를 catch 로 잡아서 처리했다.
+####
+- catch 는 해당 타입과 그 하위 타입을 모두 잡을 수 있다.
+- catch 에 MyCheckedException 의 상위 타입인 Exception 을 적어주어도 MyCheckedException 을 잡을 수 있따.
+- catch 에 예외를 지정하면 해당 예외와 그 하위 타입 예외를 모두 잡아준다.
+- 물론 정확하게  MyCheckedException 만 잡고 싶다면 catch 에 MyCheckedException 을 적어주어야 한다.
+- 예외도 객체이기 때문에 다형성이 적용된다.
+
+#### 예외 처리하는 경우 
+    public class CheckedCatchMain {
+    
+        public static void main(String[] args) {
+            Service service  = new Service();
+            service.callCatch();
+            System.out.println("정상 종료");
+        }
+    }
+- 정상 종료
+
+#### 예외 계속 던지는 경우 
+    public class CheckedCatchMain {
+    
+        public static void main(String[] args) throws MyCheckedException {
+            Service service  = new Service();
+            // service.callCatch();
+            service.catchThrow();
+            System.out.println("정상 종료");
+        }
+    }
+- 오류와 함께 애플리케이션 종료
+- Service.callThrow( ) 안에서 예외를 처리하지 않고, 밖으로 던졌기 때문에 예외가 main( ) 메서드까지 올라온다.
+- main( ) 의 service.callThrow( ) 를 호출하는 곳에서 예외를 잡아서 처리하지 못하기 때문에 여기서 예외가 main( ) 밖으로 던져진다.
+- 따라서 main( ) 밖으로 던져지면 예외 정보와 스택 트레이스(Stack Trace)를 출력하고 프로그램이 종료된다.
+  - 스택 트레이스 정보를 활용하면 예외가 어디서 발생했는지, 그리고 어떤 경로를 거쳐서 넘어왔는지 확인할 수 있다.
+#### 
+- 체크 예외를 처리할 수 없을 때는 throws 키워드를 사용해서, method( ) throws 예외와 같이 밖으로 던질 예외를 필수로 지정해줘야 한다.  
+  여기서는 MyCheckedException 을 밖으로 던지도록 지정해주었다.
+- throws 를 지정하지 않으면 컴파일 오류가 발생한다.
+- 체크 예외는 잡아서 직접 처리하거나 또는 밖으로 던지거나 두중 하나를 개발자가 직접 명시적으로 처리해야 한다.
+- 체크 예외는 try ~ catch 로 잡아서 처리하거나 또는 throws 를 지정해서 예외를 밖으로 던진다는 선언을 필수로 해줘야 한다.
+
+#### 참고로 체크 예외르 밖으로 던지는 경우에도 해당 타입과 그 하위 타입을 모두 던질 수 있다.
+    public void callThrow() throws Exception {
+        client.call();
+    }
+- throws 에 MyCheckedException 의 상위 타입인 Exception 을 적어주어도 MyCheckedException 을 던질 수 있다.
+- 예외도 객체이기 때문에 다형성이 적용된다.
+
+#### 체크 예외의 장단점
+- 체크 예외는 예외를 잡아서 처리할 수 없을 때, 예외를 밖으로 던지는 throws 예외를 필수로 선언해야 한다.
+- 그렇지 않으면 컴파일 오류가 발생한다. 이것 땜누에 장점과 단점이 동시에 존재한다.
+  - 장점: 개발자가 실수로 예외를 누락하지 않도록 컴파일러를 통해 문제를 잡아주는 훌륭한 안전 장치이다.  
+    이를 통해 개발자는 어떤 체크 예외가 발생하는지 쉽게 파악할 수 있다.
+  - 단점: 하지만 실제로는 개발자가 모든 체크 예외를 반드시 잡거나 던지도록 처리해야 하기 때문에 너무 번거롭다.  
+    크게 신경쓰고 싶지 않은 예외까지 모드 챙겨야 한다.
+
+#### 정리
+- 체크 예외는 잡아서 직접 처리하거나 또는 밖으로 던지거나 둘중 하나를 개발자가 직접 명시적으로 처리해야 한다.
+- 그렇지 않으면 컴파일 오류가 발생한다. 
 
 
 ### 9-7. 자바 예외 처리4 - 언체크 예외
+- RuntimeException 과 그 하위 예외는 언체크 예외로 분류된다.
+- 언체크 예외는 말 그대로 컴파일러가 예외를 체크하지 않는다는 뜻이다.
+- 언체크 예외는 체크 예외와 기본적으로 동일하다. 차이가 있다면 예외를 던지는 throws 를 선언하지 않고, 생략할 수 있다.  
+  생략한 경우 자동으로 예외를 던진다.
 
+#### 체크 예외 vs 언체크 예외
+- 체크 예외: 예외를 잡아서 처리하지 않으면 항상 throws 키워드를 사용해서 던지는 예외를 선언해야 한다.
+- 언체크 예외: **예외를 잡아서 처리하지 않아도 throws 키워드를 생략할 수 있다.**
 
+#### 언체크 예외 전체 코드 
+
+    public class MyUncheckedException  extends RuntimeException {
+        public MyUncheckedException(String message) {
+            super(message);
+        }
+    }
+####
+    public class Client {
+        public void call() {
+        throw new MyUncheckedException("ex");
+        }
+    }
+
+####
+    public class Service {
+
+        Client client = new Client();
+    
+        /*
+         * 필요한 경우 예외를 잡아서 처리할 수 있다.
+         */
+        public void callCatch() {
+            try {
+                client.call();
+            } catch (MyUncheckedException e) {
+                // 예외 처리 로직
+                System.out.println("예외 처리, message=" + e.getMessage());
+            }
+            System.out.println("정상 로직");
+        }
+    
+        /*
+         * 예외를 잡지 않아도 된다. 자연스럽게 상위로 넘어간다.
+         * 체크 예외와 다르게 throws 예외 선언을 하지 않아도 된다.
+         */
+        public void callThrow() {
+            client.call();
+        }
+    }
+- 언체크 예외도 필요한 경우 예외를 잡아서 처리할 수 있다.
+- 언체크 예외는 체크 예외와 다르게 throws 예외를 선언하지 않아도 된다.
+- 말 그대로 컴파일러가 이런 부분을 체크하지 않기 때문에 언체크 예외이다.
+- 물론 throws 를 사용해서 밖으로 던져도 된다. 명시적으로 코드에 적어두면 해당 메서드를 호출하는 개발자가 인지하기 좋다.
+####
+    public class UncheckedCatchMain {
+    
+        public static void main(String[] args) {
+            Service service = new Service();
+            service.callCatch();
+            System.out.println("정상 종료");
+        }
+    }
+####
+    public class UncheckedThrowsMain {
+    
+        public static void main(String[] args) {
+            Service service = new Service();
+            service.callThrow();
+            System.out.println("정상 종료");
+        }
+    }
+
+#### 언체크 예외의 장단점
+- 언체크 예외는 예외를 잡아서 처리할 수 없을 때, 예외를 밖으로 던지는 throws 를 생략할 수 있다.   
+  이것 때문에 장점과 단점이 동시에 존재한다.
+  - 장점: 신경쓰고 싶지 않은 언체크 예외를 무시할 수 있다. 체크 예외의 경우 처리할 수 없는 예외를 밖으로 던지려면   
+    항상 throws 예외를 선언해야 하지만, 언체크 예외는 이부분을 생략할 수 있다.
+  - 단점: 언체크 예외는 개발자가 실수로 예외를 누락할 수 있다. 반면에 체크 예외는 컴파일러를 통해 예외 누락을 잡아준다.
+
+#### 정리 
+- 체크 예외와 언체크 예외의 차이는 예외를 처리할 수 없을 때 밖으로 던지는 부분에 있다.  
+  이 부분을 필수로 선언해야 하는가 생략할 수 있는가의 차이이다.
+
+  
 <br>
 
 ## 10. 예외 처리 2 - 실습 
 ### 10-1. 예외 처리 도입1 - 시작
+![img_30.png](img_30.png)  
+- 앞서 만든 프로그램은 반환 값을 사용해서 예외를 처리했다. 이런 경우 다음과 같은 문제가 있었다.
+  - 정상 흐름과 예외 흘므이 섞여 있기 때문에 코드를 한눈에 이해하기 어렵다.  
+    쉽게 이야기해서 가장 중요한 정상 흐름이 한눈에 들어오지 않는다.
+  - 심지어 예외 흐름이 더 많은 코드 분량을 차지한다. 실무에서는 예외 처리가 훨씬 더 복잡하다.
+- 우리가 처음 만들었던 프로그램에 자바 예외 처리를 도입해서 이 문제점을 점진적으로 해결해보자.
+  ![img_31.png](img_31.png)
+
+#### 체크 예외 
+    public class NetworkClientExceptionV2 extends Exception {
+    
+        private String errorCode;
+    
+        public NetworkClientExceptionV2(String errorCode, String message) {
+            super(message);
+            this.errorCode = errorCode;
+        }
+    
+        public String getErrorCode() {
+            return errorCode;
+        }
+    }
+- 예외도 객체이다. 따라서 필요한 필드와 메서드를 가질 수 있다.
+- 오류 코드
+  - 이전에는 오류 코드를 반환 값으로 리턴해서, 어떤 오류가 발생했는지 구분했다.
+  - 여기서는 어떤 종류의 오류가 발생했는지 구분하기 위해 예외 안에 오류 코드를 보관한다.
+- 오류 메시지 
+  - 오류 메시지(message)에는 어떤 오류가 발생했는지 개발자가 보고 이해할 수 있는 설명을 담아준다.
+  - 오류 메시지는 상위 클래스인 Throwable 에서 기본으로 제공하는 기능을 사용한다.
+####
+    public class NetworkClientV2 {
+
+        private final String address;
+        public boolean connectError;    // boolean 의 default 는 false
+        public boolean sendError;
+    
+        public NetworkClientV2(String address) {
+            this.address = address;
+        }
+    
+        public void connect() throws NetworkClientExceptionV2 {
+            if (connectError) {
+                throw new NetworkClientExceptionV2("connectError", address+" 서버 연결 실패");
+            }
+            // 연결 성공
+            System.out.println(address + " 서버 연결 성공");
+        }
+    
+        public void send(String message) throws NetworkClientExceptionV2 {
+            if (sendError) {
+                throw new NetworkClientExceptionV2("sendError", address + "서버에 데이터 전송 실패: " + message);
+            }
+            // 전송 성공
+            System.out.println(address + " 서버에 데이터 전송: " + message);
+        }
+    
+        public void disconnect() {
+            // 연결 해제
+            System.out.println(address + " 서버에 연결 해제");
+        }
+    
+        public void initError(String data) {
+            if (data.contains("error1")) {
+                connectError = true;
+            }
+            if (data.contains("error2")) {
+                sendError = true;
+            }
+        }
+    }
+- 기존의 코드와 대부분 같지만, 오류가 발생했을 때 오류 코드를 반환하는 것이 아니라 예외를 던진다.
+- 따라서 반환 값을 사용하지 않아도 된다. 여기서는 반환 값을 void 로 처리한다.
+- 이전에는 반환 값으로 성공, 실패 여부를 확인해야 했지만, 예외 처리 덕분에 메서드가 정상 종료되면 성공이고,  
+  예외가 던져지면 예외를 통해 실패를 확인할 수 있다.
+- 오류가 발생하면, 예외 객체를 만들고 거기에 오류 코드와 오류 메시지를 담아둔다.  
+  그리고 만든 예외 객체를 throw 를 통해 던진다.
+####
+    public class NetworkServiceV2_1 {
+    
+        public void sendMessage(String data) throws NetworkClientExceptionV2 {
+            String address = "http://example.com";
+    
+            NetworkClientV2 client = new NetworkClientV2(address);
+            client.initError(data);
+    
+            client.connect();
+            client.send(data);
+            client.disconnect();
+        }
+    }
+#### 
+    public class MainV2 {
+    
+        public static void main(String[] args) throws NetworkClientExceptionV2 {
+    
+            NetworkServiceV2_1 networkService = new NetworkServiceV2_1();
+    
+            Scanner scanner = new Scanner(System.in);
+            while (true) {
+                System.out.println("전송할 문자: ");
+                String input = scanner.nextLine();
+                if (input.equals("exit")) {
+                    break;
+                }
+                networkService.sendMessage(input);
+                System.out.println();
+            }
+            System.out.println("프로그램을 정상 종료합니다.");
+        }
+    }
+- error1 이면 연결 실패가 발생한다.
+- 모든 곳에서 발생한 예외를 잡지 않았기 때문에 결과적으로 main( ) 밖으로 예외가 던져진다.
+- main( ) 밖으로 예외가 던져지면 예외 메시지와 예외를 추적할 수 있는 스택 트레이스를 출력하고 프로그램을 종료한다. 
+- 남은 문제
+  - 예외 처리를 도입했지만, 아직 예외가 복구되지 않는다. 따라서 예외가 발생하면 프로그램이 종료된다.
+  - 사옹 후에는 반드시 disconnect( ) 를 호출해서 연결을 해제해야 한다.
 
 
 ### 10-2. 예외 처리 도입2 - 예외 복구 
+- 이번에는 예외를 잡아서 예외 흐름을 정상 흐름으로 복구해보자.
+####
+    public class NetworkServiceV2_2 {
+    
+        public void sendMessage(String data) {
+            String address = "http://example.com";
+    
+            NetworkClientV2 client = new NetworkClientV2(address);
+            client.initError(data);
+    
+            try {
+                client.connect();
+            } catch (NetworkClientExceptionV2 e) {
+                System.out.println("[오류] 코드: " + e.getErrorCode() + ", 메시지:" + e.getMessage());
+                return;
+            }
+            try {
+                client.send(data);
+    
+            } catch (NetworkClientExceptionV2 e) {
+                System.out.println("[오류] 코드: " + e.getErrorCode() + ", 메시지:" + e.getMessage());
+                return;
+            }
+            client.disconnect();
+        }
+    }
+- 해결된 문제: 예외를 잡아서 처리했다. 따라서 예외가 복구되고 프로그램도 계속 수행할 수 있다.
+- 남은 문제:
+  - 예외를 처리했찌만 정상 흐름과 예외 흐름이 섞여 있어서 코드를 읽기 어렵다.
+  - 사용 후에는 반드시 disconnect( ) 를 호출해서 연결을 해제해야 한다.
 
 
 ### 10-3. 예외 처리 도입3 - 정상, 예외 흐름 분리 
+- 이번에는 예외 처리의 try ~ catch 기능을 제대로 사용해서 정상 흐름과 예외 흐름이 섞여 있는 문제를 해결해보자.
+####
+    public class NetworkServiceV2_3 {
+    
+        public void sendMessage(String data) {
+            String address = "http://example.com";
+    
+            NetworkClientV2 client = new NetworkClientV2(address);
+            client.initError(data);
+    
+            try {
+                // 정상 흐름 
+                client.connect();
+                client.send(data);
+                client.disconnect();
+            } catch (NetworkClientExceptionV2 e) {
+                // 예외 흐름   
+                System.out.println("[오류] 코드: " + e.getErrorCode() + ", 메시지:" + e.getMessage());
+            }
+
+        }
+    }
+- 하나의 try 안에 정상 흐름을 모두 담는다.
+- 그리고 예외 부분은 catch 블럭에서 해결한다.
+- 이렇게 하면 정상 흐름은 try 블럭에 들어가고, 예외 흘므은 catch 블럭으로 명확하게 분리할 수 있다.
+- 해결된 문제:
+  - 자바의 예외 처리 메커니즘과 try, catch 구조 덕분에 정상 흐름은 try 블럭에 모아서 처리하고,  
+    예외 흐름은 catch 블럭에 모아서 처리할 수 있었다.
+  - 덕분에 정상 흐름과 예외 흐름을 명확하게 분리해서 코드를 더 쉽게 읽ㅇ르 수 있게 되었다.
+- 남은 문제 
+  - 사용 후에는 반드시 disconnect( ) 를 호출해서 연결을 해제해야 한다.
 
 
-### 10-4. 예외 처리 도입4 - 리소스 반환 문제 
+### 10-4. 예외 처리 도입4 - 리소스 반환 문제
+
+    public class NetworkServiceV2_4 {
+    
+        public void sendMessage(String data) {
+            String address = "http://example.com";
+    
+            NetworkClientV2 client = new NetworkClientV2(address);
+            client.initError(data);
+    
+            try {
+                client.connect();
+                client.send(data);
+            } catch (NetworkClientExceptionV2 e) {
+                System.out.println("[오류] 코드: " + e.getErrorCode() + ", 메시지:" + e.getMessage());
+            }
+            client.disconnect();
+        }
+    }
+- 이 코드를 보면 예외 처리가 끝난 다음에 정상 흐름의 마지막에 client.disconnect( ) 를 호출했다.
+- 이렇게 하면 예외가 모두 처리되었기 때문에 client.disconnect( ) 가 항상 호출될 것 같다.
+- 하지만 지금과 같은 방식에는 큰 문제가 있다. catch 에서 잡을 수 없는 언체크 예외가 발생하면  
+  client.disconnect( )가 실행되지 않을 수 있기 때문이다.
+- 사용 후에 반드시 disconnect( ) 를 호출해서 연결 해제를 보장하는 것은 쉽지 않다.
+- 왜냐하면 정상적인 상황, 예외 상황 그리고 어디선가 모르는 예외를 밖으로 던지는 상황까지 모든 것을 고려해야 한다.
+- 하지만 앞서 보았듯이 지금과 같은 구조로는 항상 disconnect( )와 같은 코드를 호출하는 것이 어렵고 실수로 놓칠 가능성이 높다.
 
 
 ### 10-5. 예외 처리 도입5 - finally
+- 자바는 어떤 경우라도 반드시 호출되는 finally 기능을 제공한다.
+
+      try {
+          // 정상 흐름 
+      } catch {
+          // 예외 흐름
+      } finally {
+          // 반드시 호출해야 하는 마무리 흐름
+      }
+- try ~ catch ~ finally 구조는 정상 흐름, 예외 흐름, 마무리 흐름을 제공한다.
+- 여기서 try 를 시작하기만 하면, finally 코드 블럭은 어떤 경우라도 반드시 호출된다.
+- 심지어 try, catch 안에서 잡을 수 없는 예외가 발생해도 finally 는 반드시 호출된다.
+- finally 블럭은 반드시 호출된다. 따라서 주로 try 에서 사용한 자원을 해제할 때 주로 사용한다.
+- 참고로 catch 없이 try ~ finally 만 사용할 수도 있다.
+
+####
+    public class NetworkServiceV2_5 {
+    
+        public void sendMessage(String data) {
+            String address = "http://example.com";
+    
+            NetworkClientV2 client = new NetworkClientV2(address);
+            client.initError(data);
+    
+            try {
+                client.connect();
+                client.send(data);
+            } catch (NetworkClientExceptionV2 e) {
+                System.out.println("[오류] 코드: " + e.getErrorCode() + ", 메시지:" + e.getMessage());
+            } finally {
+                client.disconnect();
+            }
+        }
+    }
+
+#### 정리
+- 자바 예외 처리는 try ~ catch ~ finally 구조를 사용해서 처리할 수 있다. 덕분에 다음과 같은 이점이 있다.
+  - 정상 흐름과 예외 흐름을 분리해서, 코드를 읽기 쉽게 만든다.
+  - 사용한 자원을 항상 반환할 수 있도록 보장해준다.
 
 
 ### 10-6. 예외 계층1 - 시작
+![img_32.png](img_32.png)  
+- 예외를 단순히 오류 코드로 분류하는 것이 아니라, 예외를 계층화해서 다양하게 만들면 더 세밀하게 예외를 처리할 수 있다.
+  - NetworkClientExceptionV3: NetworkClient 에서 발생하는 모든 예외는 이 예외의 자식이다.
+  - ConnectExceptionV3: 연결 실패시 발생하는 예외이다. 내부에 연결을 시도한 address 를 보관한다.
+  - SendExceptionV3: 전송 실패시 발생하는 예외이다. 내부에 전송을 시도한 데이터인 sendData 를 보관한다.
+- 이렇게 예외를 계층화하면 다음과 같은 장점이 있다.
+  - 자바에서 예외는 객체이다. 따라서 부모 예외를 잡거나 던지면, 자식 예외도 함께 잡거나 던질 수 있다. 예를 들어서  
+    NetworkClientExceptionV3 예외를 잡으면 그 하위인 ConnectExceptionV3, SendExceptionV3 예외도 함께 잡을 수 있다.
+  - 특정 예외를 처리하고 싶으면 ConnectExceptionV3, SendExceptionV3 와 같은 하위 예외를 잡아서 처리하면 된다.
+
+#### NetworkClientExceptionV3
+    public class NetworkClientExceptionV3 extends Exception {
+        public NetworkClientExceptionV3(String message) {
+            super(message);
+        }
+    }
+
+#### ConnectExceptionV3
+    public class ConnectExceptionV3 extends NetworkClientExceptionV3 {
+    
+        private final String address;
+    
+        public ConnectExceptionV3(String address, String message) {
+            super(message);
+            this.address = address;
+        }
+    
+        public String getAddress() {
+            return address;
+        }
+    }
+- ConnectExceptionV3: 연결 실패시 발생하는 예외이다. 내부에 연결을 시도한 address를 보관한다.
+- NetworkClientExceptionV3 를 상속했다.
+
+#### SendExceptionV3
+    public class SendExceptionV3 extends NetworkClientExceptionV3{
+    
+        private final String sendData;
+    
+        public SendExceptionV3(String sendData, String message) {
+            super(message);
+            this.sendData = sendData;
+        }
+    
+        public String getSendData() {
+            return sendData;
+        }
+    }
+- SendExceptionV3: 전송 실패시 발생하는 예외이다. 내부에 전송을 시도한 데이터인 sendData 를 보관한다.
+- NetworkClientExceptionV3 를 상속했다.
+
+#### NetworkClientV3
+    public class NetworkClientV3 {
+    
+        private final String address;
+        public boolean connectError;    // boolean 의 default 는 false
+        public boolean sendError;
+    
+        public NetworkClientV3(String address) {
+            this.address = address;
+        }
+    
+        public void connect() throws NetworkClientExceptionV3 {
+            if (connectError) {
+                throw new ConnectExceptionV3("connectError", address+" 서버 연결 실패");
+            }
+            // 연결 성공
+            System.out.println(address + " 서버 연결 성공");
+        }
+    
+        public void send(String message) throws NetworkClientExceptionV3 {
+            if (sendError) {
+                throw new SendExceptionV3("sendError", address + "서버에 데이터 전송 실패: " + message);
+            }
+            // 전송 성공
+            System.out.println(address + " 서버에 데이터 전송: " + message);
+        }
+    
+        public void disconnect() {
+            // 연결 해제
+            System.out.println(address + " 서버에 연결 해제");
+        }
+    
+        public void initError(String data) {
+            if (data.contains("error1")) {
+                connectError = true;
+            }
+            if (data.contains("error2")) {
+                sendError = true;
+            }
+        }
+    }
+- 예외는 별도의 패키지에 정의되어 있다. import 에 중의하자.
+- 오류 코드로 어떤 문제가 발생했는지 이해하는 것이 아니라 예외 그 자체로 어떤 오류가 발생했는지 알 수 있다.
+- 연결 관련 오류가 발 생하면 ConnectExceptionV3 를 던지고, 전송 관련 오류가 발생하면 SendExceptionV3 를 던진다. 
+
+#### NetworkServiceV3_1
+    public class NetworkServiceV3_1 {
+    
+        public void sendMessage(String data) throws NetworkClientExceptionV2 {
+            String address = "http://example.com";
+    
+            NetworkClientV2 client = new NetworkClientV2(address);
+            client.initError(data);
+    
+            client.connect();
+            client.send(data);
+            client.disconnect();
+        }
+    }
+
+#### NetworkServiceV3_1
+    public class NetworkServiceV3_1 {
+    
+        public void sendMessage(String data) {
+            String address = "http://example.com";
+            NetworkClientV3 client = new NetworkClientV3(address);
+            client.initError(data);
+    
+            try {
+                client.connect();
+                client.send(data);
+            } catch (ConnectExceptionV3 e) {
+                System.out.println("[연결 오류] 코드: " + e.getAddress() + ", 메시지:" + e.getMessage());
+            } catch (SendExceptionV3 e) {
+                System.out.println("[전송 오류] 코드: " + e.getMessage() + ", 메시지:" + e.getMessage());
+            } catch (NetworkClientExceptionV3 e) {
+                throw new RuntimeException(e);
+            } finally {
+                client.disconnect();
+            }
+        }
+    }
+- 예외 클래스를 각각의 예외 상황에 맞추어 만들면, 각 필요에 맞는 예외를 잡아서 처리할 수 있다.
+- 예를 들면 e.getAddress(), e.getSendData() 와 같이 각각의 예외 클래스가 가지는 고유의 기능을 활용할 수 있다.
+- catch (ConnectExceptionV3 e): 연결 예외를 잡고, 해당 예외가 제공하는 기능을 사용해서 정보를 출력한다.
+- catch (SendExceptionV3 e): 전송 예외를 잡고, 해당 예외가 제공하는 기능을 사용해서 정보를 출력한다.
+
+#### MainV3
+    public class MainV3 {
+    
+        public static void main(String[] args) throws NetworkClientExceptionV3 {
+    
+            NetworkServiceV3_1 networkService = new NetworkServiceV3_1();
+    
+            Scanner scanner = new Scanner(System.in);
+            while (true) {
+                System.out.println("전송할 문자: ");
+                String input = scanner.nextLine();
+                if (input.equals("exit")) {
+                    break;
+                }
+                networkService.sendMessage(input);
+                System.out.println();
+            }
+            System.out.println("프로그램을 정상 종료합니다.");
+        }
+    }
 
 
 ### 10-7. 예외 계층2 - 활용 
+- NetworkClientV3 에서 수 많은 예외를 발생한다고 가정해보자. 이런 경우 모든 예외를 하나씩 잡아서 처리하는 것은 번거롭다.
+- 그래서 다음과 같이 예외를 처리하도록 구성하려고 한다.
+  - 연결 오류는 중요하다. ConnectExceptionV3 가 발생하면 다음과 같이 메시지를 명확하게 남기도록 하자.  
+    예) [연결 오류] 주소: ...
+  - NetworkClientV3 을 사용하면서 발생하는 나머지 예외(NetworkClientExceptionV3의 자식)는 단순하게 다음과 같이 출력하자.  
+    예) [네트워크 오류] 메시지: ...
+  - 그 외에 예외가 발생하면 다음과 같이 출력하자.  
+    예) [알 수 없는 오류] 메시지: ...
+
+####
+    public class NetworkServiceV3_2 {
+    
+        public void sendMessage(String data) {
+            String address = "http://example.com";
+            NetworkClientV3 client = new NetworkClientV3(address);
+            client.initError(data);
+    
+            try {
+                client.connect();
+                client.send(data);
+            } catch (ConnectExceptionV3 e) {
+                System.out.println("[연결 오류] 주소: " + e.getAddress() + ", 메시지:" + e.getMessage());
+            } catch (NetworkClientExceptionV3 e) {
+                System.out.println("[네트워크 오류]: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("[알 수 없는 오류]: " + e.getMessage());
+            } finally {
+                client.disconnect();
+            }
+        }
+    }
+
+#### 여러 예외를 한번에 잡는 기능 
+- 다음과 같이 | 를 사용해서 여러 예외를 한번에 잡을 수 있다.
+      
+      public class NetworkServiceV3_3 {
+
+          public void sendMessage(String data) {
+              String address = "http://example.com";
+              NetworkClientV3 client = new NetworkClientV3(address);
+              client.initError(data);
+        
+              try {
+                  client.connect();
+                  client.send(data);
+              } catch (ConnectExceptionV3 | SendExceptionV3 e) {
+                  System.out.println("[오류] 메시지:" + e.getMessage());
+              } catch (NetworkClientExceptionV3 e) {
+                  throw new RuntimeException(e);
+              } finally {
+                  client.disconnect();
+              }
+          }
+      }
+- 단점은 ConnectExceptionV3 과 SendExceptionV3 에 공통으로 있는 getMessage( )만 사용할 수 있다.  
+  getAddress( )는 ConnectExceptionV3 에만 있기 때문에 사용할 수 없다.
 
 
 ### 10-8. 실무 예외 처리 방안1 - 설명 
+#### 처리할 수 없는 예외
+- 예를 들어서 상대 네트워크 서버에 문제가 발생해서 통신이 불가능하거나, 데이터베이스 서버에 문제가 발생해서 접속이 안되면,  
+  애플리케이션에서 연결 오류, 데이터베이스 접속 실패와 같은 예외가 발생한다.
+- 이렇게 시스템 오류 때문에 발생한 예외들은 대부분 예외를 잡아도 해결할 수 있는 것이 거의 없다.  
+  예외를 잡아서 다시 호출을 시도해도 같은 오류가 반복될 뿐이다.
+- 이런 경우 고객에게는 "현재 시스템에 문제가 있습니다." 라는 오류 메시지를 보여주고, 만약 웹이라면 오류 페이지를 보여주면 된다.
+- 그리고 내부 개발자가 문제 상황을 빠르게 인지할 수 있도록, 오류에 대한 로그를 남겨두어야 한다.
+
+#### 체크 예외의 부담
+- 체크 예외는 개발자가 실수로 놓칠 수 있는 예외들을 컴파일러가 체크해주기 때문에 오래전부터 많이 사용되었다.
+- 그런데 처리할 수 없는 예외가 많아지고, 또 프로그램이 점점 복잡해지면서 체크 예외를 사용하는 것이 점점 부담스러워졌다.
+
+#### 체크 예외 사용 시나리오 
+![img_33.png](img_33.png)  
+- 실무에서는 수 많은 라이브러리를 사용하고, 또 다양한 외부 시스템과 연동한다.
+- 사용하는 각각의 클래스들이 자신만의 예외를 모두 체크 예외로 만들어서 전달한다고 가정하자.  
+####
+![img_34.png](img_34.png)  
+- 이 경우 Service 는 호출하는 곳에서 던지는 체크 예외들을 처리해야 한다. 만약 처리할 수 없다면 밖으로 던져야 한다. 
+
+#### 모든 체크 예외를 잡아서 처리하는 예시
+    try {
+        ...
+    } catch (NetworkException) {
+        ...
+    } catch (DatabaseException) {
+        ...
+    } catch (XxxException) {
+        ...
+    }
+- 그런데 앞서 설명했듯이 상대 네트워크 서버가 내려갔거나, 데이터베이스 서버에 문제가 발생한 경우 Service 에서 예외를 잡아도 복구할 수 없다.
+- Service 에서는 어차피 본인이 처리할 수 없는 예외들이기 때문에 밖으로 던지는 것이 더 나은 결정이다.
+
+#### 모든 체크 예외를 던지는 예시
+    class Service {
+        void sendMessage(String data) throws NetworkException, DatabaseException, ... {
+            ...
+        }
+    }
+- 이렇게 모든 체크예외를 하나씩 다 밖으로 던져야 한다.
+- 라이브러리가 늘어날 수록 다뤄야하는 예외도 더 많아진다. 개발자 입장에서는 이것은 상당히 번거로운 일이다.
+- 문제는 여기서 끝이 아니다. 만약 중간에 Facade 라는 클래스가 있다고 가정해보자.  
+
+![img_35.png](img_35.png)[img_35]  
+
+- 이 경우 Facade 클래스에서도 이런 예외들을 복구할 수 없다. Facade 클래스도 예외를 밖으로 던져야 한다.
+- 결국 중간에 모든 클래스에서 예외를 계속 밖으로 던지는 지저분한 코드가 만들어 진다.
+- throws 로 발견한 모든 예외를 다 밖으로 던지는 것이다.
+#####
+    class Facade {
+        void send() throws NetworkException, DatabaseException, ... 
+    }
+    
+    class Service {
+        void sendMessage(String data) throws NetworkException, DatabaseException, ...
+    }
+
+#### throws Exception
+- 개발자는 본인이 다룰 수 없는 수 많은 체크 예외 지옥에 빠지게 된다. 결국 다음과 같은 최악의 수를 두게 된다.
+####
+    class Facade {
+        void send() throws  Exception
+    }
+    
+    class Service {
+        void sendMessage(String data) throws NetworkException, DatabaseException, ...
+    }
+- Exception 은 애플리케이션에서 일반적으로 다루는 모든 예외의 부모이다.   
+  따라서 이렇게 한 줄만 넣으면 모든 예외를 다 던질 수 있다.
+- 이렇게 하면 Exception 은 물론이고 그 하위 타입인 NetworkException, DatabaseException 도 함께 던지게 된다.
+- 그리고 이후에 예외가 추가되더라도 throws Exception 은 변경하지 않고 그대로 유지할 수 있다. 
+- 코드가 깔끔해지는 것 같지만 이 방법에는 치명적인 문제가 있다.
+
+#### throws Exception 의 문제
+- Exception 은 최상위 타입이므로 모든 체크 예외를 다 밖으로 던지는 문제가 발생한다.
+- 결과적으로 체크 예외의 최상위 타입인 Exception 을 던지게 되면 다른 체크 예외를 체크할 수 있는 기능이 무효화 되고,  
+  중요한 체크 예외를다 놓치게 된다. 
+- 중간에 중요한 체크 예외가 발생해도 컴파일러는 Exception 을 던지기 때문에 문법에 맞다고 판단해서 컴파일 오류가 발생하지 않는다.
+- 이렇게 하면 모든 예외를 다 던지기 때문에 체크 예외를 의도한 대로 사용하는 것이 아니다.  
+  따라서 꼭 필요한 경우가 아니라면 이렇게 Exception 자체를 밖으로 던지는 것은 좋지 않은 방법이다.
+
+#### 문제 정리
+- 지금까지 알아본 체크 예외를 사용할 때 발생하는 문제들은 다음과 같다.
+  - 처리할 수 없는 예외: 예외를 잡아서 복구할 수 있는 예외보다 복구할 수 없는 예외가 더 많다.
+  - 체크 예외의 부담: 처리할 수 없는 예외는 밖으로 던져야 한다. 체크 예외이므로 throws 에 던질 대상을 일일이 명시해야 한다. 
+- 사실 Service 를 개발하는 개발자 입장에서 수 많은 라이브러리에서 쏟아지는 모든 예외를 다 다루고 싶지는 않을 것이다.  
+  특히 본인이 해결할 수도 없는 모든 예외를 다 다루고 싶지는 않을 것이다. 본인이 해결할 수 있는 예외만 잡아서 처리하고,  
+  본인이 해결할 수 없는 예외에는 신경쓰지 않는 것이 더 나은 선택일 수 있다.
+
+#### 언체크(런타임) 예외 사용 시나리오
+![img_36.png](img_36.png)
+- 이번에는 Service 에서 호출하는 클래스들이 언체크(런타임) 예외를 전달한다고 가정해보자.
+- NetworkException, DatabaseException 은 잡아도 복구할 수 없다. 언체크 예외이므로 이런 경우 무시하면 된다.
+
+#### 언체크 예외를 던지는 예시 
+    class Service {
+        void sendMessage(String data) { 
+            ...
+        }
+    }
+- 언체크 예외이므로 throws 를 선언하지 않아도 된다.
+- 사용하는 라이브러리가 늘어나서 언체크 예외가 늘어도 본인이 필요한 예외만 잡으면 되고, throws 를 늘리지 않아도 된다.
+
+### 일부 언체크 예외를 잡아서 처리하는 예시 
+    try {
+        ...
+    } catch (XxxException) {
+        ...
+    } 
+- 앞서 설명했듯이 상대 네트워크 서버가 내려갔거나, 데이터베이스 서버에 문제가 발생한 경우  Service 에서 예외를 잡아도 복구할 수 없다.
+- Service 에서는 어차피 본인이 처리할 수 없는 예외들이기 때문에 밖으로 던지는 것이 더 나은 결정이다.
+- 언체크 예외는 잡지 않으면 throws 선언이 없어도 자동으로 밖으로 던져진다.
+- 만약 일부 언체크 예외를 잡아서 처리할 수 있다면 잡아서 처리하면 된다.
+
+#### 예외 공통 처리
+- 어렇게 처리할 수 있는 예외들을 중간에 여러곳에서 나누어 처리하기 보다는 예외를 공통으로 처리할 수 있는 곳을 만들어서 한 곳에서 해결하면 된다.
+- 어차피 해결할 수 없는 예외들이기 때문에 이런 경우 고객에게는 현재 시스템에 문제가 있습니다 라고 오류 메시지를 보여주고,  
+  만약 웹이라면 오류 페이지를 보여주면 된다. 그리고 내부 개발자가 지금의 문제 상황을 빠르게 인지할 수 있도록,   
+  오류에 대한 로그를 남겨두면 된다. 이런 부분은 공통 처리가 가능하다. 
 
 
 ### 10-9. 실무 예외 처리 방안2 - 구현 
+![img_37.png](img_37.png)
+- NetworkClientExceptionV4 는 언체크 예외인 RuntimeException 을 상속 받는다.
+- 이제 NetworkClientExceptionV4 와 자식은 모두 언체크(런타임) 예외가 된다.
+
+####
+
 
 
 ### 10-10. try-with-resources
 
 
+
 ### 10-11. 정리 
+
 
 
 <br>
