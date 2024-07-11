@@ -1,12 +1,125 @@
 # JAVA MIDDLE 2
 
-## 1. 제네릭 - Generic1
+### 단축키
+- Shift + F6 : 리네임 단축키
 
+![img.png](./img.png)
+#### 자료구조의 이해
+- 자바 컬렉션의 기능을 아는 것을 넘어 자료 구조 자체의 기본기를 다지고  
+  실무에 필요한 자료 구조를 제대로 활용할 수 있게되는 것이 이 강의 목표이다.
+
+## 1. 제네릭 - Generic1
 ### 1-1. 프로젝트 환경 구성 
+- Eclipse Temurin 21
 
 ### 1-2 제네릭이 필요한 이유
+- 대부분의 최신 프로그래밍 언어는 제네릭(Generic) 개념을 제공한다.
+- 처음 제네릭을 접하는 경우 내용을 이해하기 쉽지 않을 수 있다. 제네릭이 왜 필요한지 지금부터 코드로 알아보자.
+
+#### 
+    public class IntegerBox {
+    
+        private Integer value;
+    
+        public void set(Integer value) {
+            this.value = value;
+        }
+    
+        public Integer get() {
+            return value;
+        }
+    }
+- IntegerBox 는 숫자를 보관하고 꺼낼 수 있는 단순한 기능을 제공한다.
+
+#### 
+    public class StringBox {
+    
+        private String value;
+    
+        public void set(String object) {
+            this.value = object;
+        }
+    
+        public String get(){
+            return this.value;
+        }
+    }
+- StromgBox 는 문자열을 보관하고 꺼낼 수 있는 단순한 기능을 제공한다.
+
+####
+    public class BoxMain1 {
+    
+        public static void main(String[] args) {
+            IntegerBox integerBox = new IntegerBox();
+            integerBox.set(10); // 오토 박싱
+            Integer integer = integerBox.get();
+            System.out.println("integer = " + integer);
+    
+            StringBox stringBox = new StringBox();
+            stringBox.set("hello");
+            String string = stringBox.get();
+            System.out.println("string = " + string);
+        }
+    }
+- 코드를 보면 먼저 숫자를 보관하는 IntegerBox 를 생성하고, 숫자 10을 보관하고, 꺼낸다 음 출력했다.  
+  (참고로 오토 박싱에 의해 int 가 Integer 로 자동 변환 된다.)
+- 다음으로 문자열을 보관하는 StringBox 를 생성하고 그곳에 문자열 "hello" 를 보관하고, 꺼낸 다음 출력했다.
+
+#### 문제
+- 이후에 Double, Boolean 을 포함한 다양한 타입을 담는 박스가 필요하다면 각각의 타입별로 박스를 새로 만들어야 한다.
+- 담는 타입이 수십개라면, 수십개의 XxxBox 클래스를 만들어야 한다. 이 문제를 어떻게 해결할 수 있을까?
 
 ### 1-3. 다형성을 통한 중복 해결 시도 
+- Object 는 모든 타입의 부모이다. 따라서 다형성(다형적 참조)를 사용해서 이 문제를 해결할 수 있을 것 같다.
+####
+    public class ObjectBox {
+    
+        private Object value;
+        
+        public void set(Object object) {
+            this.value = object;
+        }
+        
+        public Object get() {
+            return value;
+        }
+    }
+- 내부에 Object value 를 가지고 있다. Object 는 모든 타입의 부모이다.  
+  부모는 자식을 담을 수 있으므로 세상의 모든 타입을 ObjectBox 에 보관할 수 있다.
+####
+    public class BoxMain2 {
+    
+        public static void main(String[] args) {
+            ObjectBox integerBox = new ObjectBox();
+            integerBox.set(10);
+            Integer integer = (Integer) integerBox.get(); // 다운 캐스팅
+            System.out.println("integer = " + integer);
+    
+            ObjectBox stringBox = new ObjectBox();
+            stringBox.set("hello");
+            String string = (String) stringBox.get();   // 다운 캐스팅
+            System.out.println("string = " + string);
+        }
+    }
+
+#### 문제 
+public class BoxMain2 {
+
+    public static void main(String[] args) {
+        ObjectBox integerBox = new ObjectBox();
+        integerBox.set(10);
+        Integer integer = (Integer) integerBox.get(); // 다운 캐스팅
+        System.out.println("integer = " + integer);
+
+        ObjectBox stringBox = new ObjectBox();
+        stringBox.set("hello");
+        String string = (String) stringBox.get();   // 다운 캐스팅
+        System.out.println("string = " + string);
+
+        // 잘못된 타입의 인수 전달시 
+        integerBox.set("문자100");
+    }
+}
 
 ### 1-4. 제네릭 적용
 
@@ -201,7 +314,6 @@
 ### 10-8. 컬렉션 프레임워크 전체 정리 
 
 ### 10-9. 문제와 풀이
-
 
 <br>
 
