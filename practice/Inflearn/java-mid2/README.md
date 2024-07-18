@@ -3,6 +3,12 @@
 ### 단축키
 - Shift + F6 : 리네임 단축키
 
+### Linux
+- Ctrl + Alt + Shift + T : 인라인 베리어블
+
+### MacOS
+- ^T : 인라이 베리어블
+
 ![img.png](./img.png)
 #### 자료구조의 이해
 - 자바 컬렉션의 기능을 아는 것을 넘어 자료 구조 자체의 기본기를 다지고  
@@ -11,6 +17,7 @@
 ## 1. 제네릭 - Generic1
 ### 1-1. 프로젝트 환경 구성 
 - Eclipse Temurin 21
+
 
 ### 1-2 제네릭이 필요한 이유
 - 대부분의 최신 프로그래밍 언어는 제네릭(Generic) 개념을 제공한다.
@@ -44,7 +51,7 @@
             return this.value;
         }
     }
-- StromgBox 는 문자열을 보관하고 꺼낼 수 있는 단순한 기능을 제공한다.
+- StringBox 는 문자열을 보관하고 꺼낼 수 있는 단순한 기능을 제공한다.
 
 ####
     public class BoxMain1 {
@@ -68,6 +75,10 @@
 #### 문제
 - 이후에 Double, Boolean 을 포함한 다양한 타입을 담는 박스가 필요하다면 각각의 타입별로 박스를 새로 만들어야 한다.
 - 담는 타입이 수십개라면, 수십개의 XxxBox 클래스를 만들어야 한다. 이 문제를 어떻게 해결할 수 있을까?
+- 타입 안정성은 높지만 코드 재사용성(다형성)이 떨어진다.
+
+> !복습 - int 대신 integer 를 사용하는 이유  
+> int 는 기본 자료형이라서 null 을 가질 수 없지만 integer 는 object 의 자식이라 가질 수 있다.
 
 ### 1-3. 다형성을 통한 중복 해결 시도 
 - Object 는 모든 타입의 부모이다. 따라서 다형성(다형적 참조)를 사용해서 이 문제를 해결할 수 있을 것 같다.
@@ -92,6 +103,23 @@
         public static void main(String[] args) {
             ObjectBox integerBox = new ObjectBox();
             integerBox.set(10);
+            Integer integer = (Integer) integerBox.get(); // 그대로 못받으니까 다운 캐스팅
+            System.out.println("integer = " + integer);
+    
+            ObjectBox stringBox = new ObjectBox();
+            stringBox.set("hello");
+            String string = (String) stringBox.get();   // 그대로 못받으니까 다운 캐스팅
+            System.out.println("string = " + string);
+        }
+    }
+
+#### 문제 
+    public class BoxMain2 {
+    
+        public static void main(String[] args) {
+            ObjectBox integerBox = new ObjectBox();
+            integerBox.set(10);
+            // 반환 타입이 Object 라서 다운 캐스팅을 해줘야 한다.
             Integer integer = (Integer) integerBox.get(); // 다운 캐스팅
             System.out.println("integer = " + integer);
     
@@ -99,102 +127,170 @@
             stringBox.set("hello");
             String string = (String) stringBox.get();   // 다운 캐스팅
             System.out.println("string = " + string);
+    
+            // 잘못된 타입의 인수 전달시 다운 캐스팅이 제대로 되지 않는다.
+            // integerBox.set("문자100");
+            // Integer result = (Integer) integerBox.get();
+            // System.out.println("result = " + result);
         }
     }
+- 반환 타입이 맞지 않는 문제: 반환 타입이 Object 라서 다운 캐스팅을 해줘야 한다.
+- 잘못된 타입의 인수 전달 문제: 잘못된 타입의 인수 전달시 다운 캐스팅이 제대로 되지 않는다.
+- 코드 재사용성(다형성)은 높아지지만 타입 안전성이 떨어진다.
 
-#### 문제 
-public class BoxMain2 {
-
-    public static void main(String[] args) {
-        ObjectBox integerBox = new ObjectBox();
-        integerBox.set(10);
-        Integer integer = (Integer) integerBox.get(); // 다운 캐스팅
-        System.out.println("integer = " + integer);
-
-        ObjectBox stringBox = new ObjectBox();
-        stringBox.set("hello");
-        String string = (String) stringBox.get();   // 다운 캐스팅
-        System.out.println("string = " + string);
-
-        // 잘못된 타입의 인수 전달시 
-        integerBox.set("문자100");
-    }
-}
 
 ### 1-4. 제네릭 적용
+- 제네릭을 사용하면 코드 재사용과 타입 안정성이라는 두 마리 토끼를 한 번에 잡을 수 있다.
+####
+    public class GenericBox<T> {
+        private T value;
+    
+        public void set(T value) {
+            this.value = value;
+        }
+    
+        public T get() {
+            return value;
+        }
+    }
+- <>를 사용한 클래스를 제네릭 클래스라고 한다. 이 기호를 보통 다이아몬드라고 한다.
+- 제네릭 클래스를 사용할 때는 Integer, String 같은 타입을 미리 결정하지 않는다.
+- 대신에 클래스명 오른쪽에 <T> 와 같이 선언하면 제네릭 클래스가 된다.  
+  여기서 T를 **타입 매개변수**라 한다. 이 타입 매개변수는 이후에 Integer, String 으로 변환할 수 있다.
+- 그리고 클래스 내부에 T 타입이 필요한 곳에 T value 와 같이 타입 매개 변수를 적어두면 된다.
+####
+    public class BoxMain3 {
+    
+        public static void main(String[] args) {
+            GenericBox<Integer> integerBox = new GenericBox<Integer>(); // 생성 시점에 T의 타입 결정
+            integerBox.set(10); // T의 타입을 integer 로 정의 했기 때문에 inter 만 입력 가능
+            // integerBox.set("10");    // 타입 안정성 상승
+            Integer integer = integerBox.get(); // 더불어 다운 캐스팅 할 필요 없음
+            System.out.println("integer = " + integer);
+    
+            // 원하는 모든 타입 사용 가능
+            GenericBox<Double> doubleBox = new GenericBox<Double>();
+            doubleBox.set(10.5);
+            Double doubleValue = doubleBox.get();
+            System.out.println("doubleValue = " + doubleValue);
+    
+            // 타입 추론: 생성하는 제네릭 타입 생략 가능
+            GenericBox<Integer> integerBox2 = new GenericBox<>();
+        }
+    }
+- 제네릭 클래스는 생성하는 시점에 <> 사이에 원하는 타입을 지정한다.
+- 이렇게 하면 앞서 정의한 GenericBox 의 T 가 다음과 같이 지정한 타입으로 변한 다음 생성된다.
+- 즉 제네릭을 사용하면 재사용과 타입 안정성이라는 두마리 토끼를 모두 잡을 수 있다.
+
+> !참고 - 제네릭을 도입한다고 해서 앞서 설명한 GenericBox<String>, Generic<Integer> 와 같은 코드가  
+> 실제 만들어지는 것은 아니다. 대신에 자바 컴파일러가 우리가 입력한 타입 정보를 기반으로 이런 코드가 있다고  
+> 가정하고 컴파일 과정에서 타입 정보를 반영한다. 이 과정에서 타입이 맞지 않으면 컴파일 오류가 발생한다.
+
+#### 타입 추론 
+    GenericBox<Integer> integerBox = new GenericBox<Integer>();   // 타입 직접 입력
+    GenericBox<Integer> integerBox2 = new GenricBox<>();          // 타입 추론
+- 첫 번째 줄의 코드를 보면 변수를 선언할 때와 객체를 생성할 때 <Integer> 가 두 번 나온다.
+- 자바는 왼쪽에 있는 변수를 선언할 때의 <Integer> 를 보고 오른쪽에 있는 객체를 생성할 때 필요한 타입 정보를 얻을 수 있다.
+- 따라서 두번째 줄의 오른쪽 코드 new GenericBox<>() 와 같이 타입 정보를 생략할 수 있다.  
+  이렇게 자바가 스스로 타입 정보를 추론해서 개발자가 타입 정보를 생략할 수 있는 것을 타입 추론이라 한다.
+    
 
 ### 1-5. 제네릭 용어와 관례
 
+
 ### 1-6. 제네릭 활용 예제 
 
+
 ### 1-7 문제와 풀이1
+
 
 <br>
 
 ## 2. 제네릭 -Generic2
-
 ### 2-1. 타입 매개변수 제한1 - 시작
+
 
 ### 2-2. 타입 매개변수 제한2 - 다형성 시도
 
+
 ### 2-3. 타입 매개변수 제한3 - 제네릭 도입과 실패
+
 
 ### 2-4. 타입 매개변수 제한4 - 타입 매개변수 제한 
 
+
 ### 2-5. 제네릭 메서드
+
 
 ### 2-6. 제네릭 메서드 활용
 
+
 ### 2-7. 와일드카드1
+
 
 ### 2-8. 와일드카드2
 
+
 ### 2-9. 타입 이레이저
 
+
 ### 2-10. 문제와 풀이2
+
 
 <br>
 
 ## 3. 컬렉션 프레임워크 - ArrayList
-
 ### 3-1. 배열의 특징1 - 배열과 인덱스
+
 
 ### 3-2. 빅오 표기법
 
+
 ### 3-3. 배열의 특징2 - 데이터 추가
+
 
 ### 3-4. 직접 구현하는 배열 리스트1 - 시작
 
+
 ### 3-5. 직접 구현하는 배열 리스트2 - 동적 배열 
+
 
 ### 3-6. 직접 구현하는 배열 리스트3 - 기능 추가 
 
+
 ### 3-7. 직접 구현하는 배열 리스트4 - 제네릭1
 
+
 ### 3-8. 직접 구현하는 배열 리스트5 - 제네릭2
+
 
 <br>
 
 ## 4. 컬렉션 프레임워크 - LinkedList
-
 ### 4-1. 노드와 연결1
+
 
 ### 4-2. 노드와 연결2
 
+
 ### 4-3. 노드와 연결3
+
 
 ### 4-4. 직접 구현하는 연결 리스트1 - 시작
 
+
 ### 4-5. 직접 구현하는 연결 리스트2 - 추가와 삭제1
+
 
 ### 4-6. 직접 구현하는 연결 리스트3 - 추가와 삭제2
 
+
 ### 4-7. 직접 구현하는 연결 리스트4 - 제네릭 도입 
+
 
 <br>
 
 ## 5. 컬렉션 프레임워크 - List
-
 ### 5-1. 리스트 추상화1 - 인터페이스 도입
 
 ### 5-2. 리스트 추상화2 - 의존관계 주입
