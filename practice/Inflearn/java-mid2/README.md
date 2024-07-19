@@ -2,6 +2,8 @@
 
 ### 단축키
 - Shift + F6 : 리네임 단축키
+- Ctrl + R : 한번에 제거 또는 바꾸기
+- Ctrl + O : 오버라이딩할 메소드 목록
 
 ### Linux
 - Ctrl + Alt + Shift + T : 인라인 베리어블
@@ -196,19 +198,290 @@
     
 
 ### 1-5. 제네릭 용어와 관례
+- 제네릭의 핵심은 사용할 타입을 미리 결정하지 않는다는 점이다. 클래스 내부에서 사용하는 타입을   
+  클래스를 정의하는 시점에서 결정하는 것이 아니라 실제 사용하는 생성 시점에 타입을 결정하는 것이다.
+- 이것을 쉽게 비유하자면 메서드의 매개변수와 인자의 관계와 유사하다.
+
+#### 메서드에 필요한 값을 메서드 정의 시점에 미리 결정 
+    void methoid1() {
+      println("hello");
+    }
+- 메서드에 필요한 값을 이렇게 메서드 정의 시점에 미리 결정하게 되면,  
+  이 메서드는 오직 "hello" 라는 값만 출력할 수 있어 재사용성이 떨어진다.
+
+#### 메서드에 필요한 값을 인자를 통해 매개변수로 전달해서 결정 
+    void method2(String param) {
+      println(param);
+    }
+
+    void main() {
+      method2("hello");
+      method2("hi");
+    }
+- 메서드에 필요한 값을 메서드를 정의하는 시점에 미리 결정하는 것이 아니라, 메서드를 실제 사용하는 시점으로 미룰 수 있다.
+- 메서드에 매개변수를 지정하고, 메서드를 사용할 때 원하는 값을 인자로 전달하면 된다.
+
+#### 다양한 값을 처리하는 메서드
+    // method2("hello") 호출 예 
+    void method2(String param="hello") {
+      println(param); 
+    }
+
+    // moethod2("hi") 호출 예
+    void method2(String param="hi") {
+      println(param); 
+    }
+- 매개 변수를 정의하고, 실행하는 시점에 인자를 통해 원하는 값을 매개변수에 전달했다.
+- 이렇게 하면 이 메서드는 실행 시점에 얼마든지 다른 값을 받아서 처리할 수 있다. 따라서 재사용성이 크게 늘어난다.
+
+#### 매서드의 매개변수와 인자 
+    void method(String param) // 매개변수
+
+    void main() {
+      String arg = "hello";
+      call(arg) // 인수 전달
+    }
+- 매개변수(Parameter): String param (메소드 안에 있는 것으로 어디선가 넘어오는 것)
+- 인자, 인수(Arguemnt): arg (메소드 안에 넣어주는 것)
+
+
+#### 제네릭의 타입 매개변수와 타입 인자
+- 제네릭도 앞서 설명한 메서드의 매개변수와 인자의 관계와 비슷하게 작동한다.
+- 제네릭 클래스를 정의할 때 내부에서 사용할 타입ㅇ르 미리 결정하는 것이 아니라,  
+  해당 클래스를 실제로 사용하는 생성 시점에 내부에서 상요할 타입을 결정하는 것이다.
+- 차이가 있다면 메서드의 매개변수는 사용할 값에 대한 결정을 나중으로 미루는 것이고,  
+  제네릭의 타입 매개변수는 사용할 타입에 대한 결정을 나중으로 미루는 것이다.
+- 정리하면 다음과 같다.
+  - 메서드는 매개변수의 인자를 전달해서 사용할 값을 결정한다.
+  - 제네릭 클래스는 타입 매개변수에 타입 인자를 전달해서 사용할 타입을 결정한다.
+- 제네릭에서 사용하는 용어도 매개변수 인자의 용어를 그대로 가져다 사용한다.  
+  다만 값이 아니라 타입을 결정하는 것이기 때문에 앞에 타입을 붙인다.
+  - 타입 매개변수: GenericBox<T> 에서 T
+  - 타입 인자:  
+      GenericBox<Integer> 에서 Integer  
+      GenericBox<String> 에서 String
+- 제네릭 타입의 타입 매개변수 <T> 에 타입 인자를 전달해서 제네릭의 사용 타입을 결정한다.  
+
+#### 용어 정리
+- 제네릭(Generic) 
+  - 제네릭이라는 단어는 일반적인, 범용적인이라는 영어 단어 뜻이다.
+  - 풀어보면 특정 타입에 속한 것이 아니라 일반적으로, 범용적으로 사용할 수 있다는 뜻이다.
+- 제네릭 타입(Generic Type) 
+  - 클래스나 인터페이스를 정의할 때 타입 매개변수를 사용하는 것을 말한다.
+  - 제네릭 클래스, 제네릭 인터페이스를 모두 합쳐서 제네릭 타입이라 한다.
+    - 타입은 클래스, 인터페이스, 기본형(int 등)을 모두 합쳐서 부르는 말이다.  
+      예: class GenericBox<T> { private T t; }  
+      여기에서 GenericBox<T> 를 제네릭 타입이라 한다. 
+- 타입 매개변수(Type Parameter)
+  - 제네릭 타입이나 메서드에서 사요되는 변수로, 실제 타입으로 대체된다.
+- 타입 인자(Type Argument)
+  - 제네릭 타입을 사용할 때 제공되는 실제 타입니다.
+
+#### 제네릭 명명 관례 
+- 타입 매개변수는 일반적인 변수명처럼 소문자로 사용해도 문제는 없다.
+- 하지만 일반적으로 대문자를 사용하고 용도에 맞는 단어의 첫글자를 사용하는 관례를 따른다.
+- 주로 사용하는 키워드는 다음과 같다
+  - E: Element
+  - K: Key
+  - N: Number
+  - T: Type
+  - V: Value
+  - S,U,V etc.: 2nd, 3rd, 4th types
+
+#### 제네릭 기타
+- 다음과 같이 한 번에 여러 타입 매개변수를 선언할 수 있다.
+        
+      class Data<K, V> {}
+- 타입 인자로 기본형(int, double ...)은 사용할 수 없다. 대신에 래퍼 클래스(Integer, Double ...) 을 사용하면 된다.
+
+####  로 타입(row Type)
+    public class RowTypeMain {
+    
+        public static void main(String[] args) {
+            GenericBox integerBox = new GenericBox(); // 로 타입
+            //  GenericBox<Object> integerBox = new GenericBox<>();  // 권장
+            integerBox.set(10);
+            Integer result = (Integer) integerBox.get();
+            System.out.println("result = " + result);
+        }
+    }
+- 제네릭 타입을 사용할 때는 항상 <> 를 사용해서 사용시점에 원하는 타입을 지정해야 한다.
+- 그런데 다음과 같이 <>를 지정하지 않을 수 있는데, 이것을 로 타입(row type), 또는 원시 타입이라 한다.
+
+      GenericBox integerBox = new GenericBox();
+- 원시 타입을 사용하면 내부의 타입 매개변수가 Object 로 사용된다고 이해하면 된다.
+- 제네릭 타입을 사용할 때는 항상 <> 를 사용해서 사용시점에 타입을 지정해야 한다.  
+  그런데 왜 이런 로 타입을 지원하는 것일까?
+- 자바의 제네릭이 자바가 처음 등장할 때 부터 있던것이 아니라 자바가 오랜기간 사용된 이후에 등장했기 때문에  
+  제네릭이 없던 시절의 과거 코드와의 하위 호환 때문에 어쩔 수 없이 로 타입을 지원하게 되었다.
 
 
 ### 1-6. 제네릭 활용 예제 
+![img_1.png](img_1.png)
 
+    public class Animal {
+        private String name;
+        private int size;
+    
+        public Animal(String name, int size) {
+            this.name = name;
+            this.size = size;
+        }
+    
+        public String getName() {
+            return name;
+        }
+    
+        public int getSize() {
+            return size;
+        }
+    
+        public void sound() {
+            System.out.println("동물 울음 소리");
+        }
+    
+        @Override
+        public String toString() {
+            return "Animal{" +
+                    "name='" + name + '\'' +
+                    ", size=" + size +
+                    '}';
+        }
+    }
 
-### 1-7 문제와 풀이1
+####
+    public class Dog extends Animal {
+    
+    
+        public Dog(String name, int size) {
+            super(name, size);
+        }
+    
+        @Override
+        public void sound() {
+            System.out.println("멍멍");
+        }
+    }
+
+#### 
+    public class Cat extends Animal {
+    
+        public Cat(String name, int size) {
+            super(name, size);
+        }
+    
+        @Override
+        public void sound() {
+            System.out.println("냐옹");
+        }
+    }
+
+#### 
+    public class Box<T> {
+    
+        private T value;
+    
+        public void set(T value) {
+            this.value = value;
+        }
+    
+        public T get() {
+            return value;
+        }
+    }
+
+#### 
+    public class AnimalMain1 {
+    
+        public static void main(String[] args) {
+            Animal animal = new Animal("동물", 0);
+            Dog dog = new Dog("멍멍이", 100);
+            Cat cat = new Cat("냐옹이", 50);
+    
+            Box<Dog> dogBox = new Box<>();
+            dogBox.set(dog);
+            Dog findDog = dogBox.get();
+            System.out.println("findDog = " + findDog);
+            
+            Box<Cat> catBox = new Box<>();
+            catBox.set(cat);
+            Cat findCat = catBox.get();
+            System.out.println("findCat = " + findCat);
+    
+            Box<Animal> animalBox = new Box<>();
+            animalBox.set(animal);
+            Animal findAnimal = animalBox.get();
+            System.out.println("findAnimal = " + findAnimal);
+        }
+    }
+- Box 제네릭 클래스에 각각의 타입에 맞는 동물을 보관하고 꺼낸다.
+- Box<Dog> dogBox: Dog 타입을 보관할 수 있다.
+- Box<Cat> catBox: Cat 타입을 보관할 수 있다.
+- Box<Animal> animalBox: Animal 타입을 보관할 수 있다.
+
+여기서 Box<Animal> 의 경우 타입 매개변수 T 에 타입 인자 Animal 을 대입하면 다음 코드와 같다.
+
+    public class Box<Animal> {
+    
+        pirvate Animal value;
+    
+        public void set(Animal value) {
+            this.value = value;
+        }
+    
+        public Animal get() {
+            return value;
+        }
+    }
+- 따라서 set(Animal value) 이므로 set( )에 Animal 의 하위 타입인 Dog, Cat 도 전달할 수 있따.
+- 물론 이 경우 꺼낼 때는 Animal 타입으로만 꺼낼 수 있다.
+####
+    public class AnimalMain2 {
+
+        public static void main(String[] args) {
+            Animal animal = new Animal("동물", 0);
+            Dog dog = new Dog("멍멍이", 100);
+            Cat cat = new Cat("냐옹이", 50);
+    
+            Box<Animal> animalBox = new Box<>();
+            animalBox.set(animal);
+            animalBox.set(dog);
+            animalBox.set(cat);
+    
+            Animal findAnimal = animalBox.get();
+            System.out.println("findAnimal = " + findAnimal);
+        }
+    }
 
 
 <br>
 
-## 2. 제네릭 -Generic2
+## 2. 제네릭 - Generic2
 ### 2-1. 타입 매개변수 제한1 - 시작
+- 요구사항: 개 병원은 개만 받을 수 있고, 고양이 병원은 고양이만 받을 수 있어야 한다.
+####
+    public class DogHospital {
+    
+        private Dog animal;
+    
+        public void set (Dog animal) {
+            this.animal = animal;
+        }
+    
+        public void checkup() {
+            System.out.println("동물 이름: " + animal.getName());
+            System.out.println("동물 크기: " + animal.getSize());
+            animal.sound();
+        }
+    
+        public Dog bigger(Dog target) {
+            return animal.getSize() > target.getSize() ? animal : target;
+        }
+    }
+- 개 병원 내부에 Dog 타입을 가진다.
+- checkup( ): 개의 이름과 크기를 출력하고, 개의 sound( ) 메서드를 호출한다.
 
+      
 
 ### 2-2. 타입 매개변수 제한2 - 다형성 시도
 
