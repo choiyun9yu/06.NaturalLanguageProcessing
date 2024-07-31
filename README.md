@@ -178,6 +178,44 @@ Java 패키징 JAR는 Java 애플리케이션을 배포하고 실행하기 위�
 
 JAR 파일은 Java 개발 및 배포에서 표준적으로 사용되며, 다양한 라이브러리, 프레임워크, 도구 등이 JAR 파일 형식으로 제공된다.
 
+### 2-5. JAR(Java ARchive) vs WAR(Web Application aRchive)
+두 확장자 모두 Java 애플리케이션을 패키징하는 두 가지 주요 방식이다. 주요 차이점은 아래와 같다.
+1. 용도
+    - JAR: 일반적인 Java 애프릴케이션에 사용
+    - WAR: 웹 애플리케이션에 특화됨
+      
+2. 구조
+    - JAR: 자유로운 구조
+    - WAR: 웹 애플리케이션 표준 구조(WEB-INF, classes, lib 등)
+
+3. 실행환경
+    - JAR: Java Runtime Environment (JRE) 에서 직접 실행 가능
+    - WAR: 웹 서버나 애프릴케이션 서버(예: Tomcat) 가 필요
+
+4. 배포
+    - JAR: 독립 실행형 애플리케이션으로 배포 가능
+    - WAR: 웹 서버에 배포해야 함
+
+5. 내용
+    - JAR: Java 클래스, 리소스, 메타데이터
+    - WAR: JAR 의 내용 + 웹 관련 파일(JSP, HTML, JavaScript, CSS 등)
+
+6. 확장성
+    - JAR: 다양한 용도로 사용 가능(라이브러리, 실행 파일 등)
+    - WAR: 주로 웹 애플리케이션 배포에 사용
+
+7. 매니페스트 파일
+    - JAR: 필수(Main-Class 지정 가능)
+    - WAR: 선택적
+
+8. 압축
+    - 둘 다 ZIP 형식으로 압축됨
+
+9. 선택기준
+    - 일반 Java 애플리케이션 또는 라이브러리: JAR 
+    - 웹 애플리케이션: WAR
+
+
 <br>
 <br>
 
