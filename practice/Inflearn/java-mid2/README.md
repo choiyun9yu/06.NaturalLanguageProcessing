@@ -4,6 +4,7 @@
 - Shift + F6 : 리네임 단축키
 - Ctrl + R : 한번에 제거 또는 바꾸기
 - Ctrl + O : 오버라이딩할 메소드 목록
+- Shift + Shift : 모든 항목을 검색할 수 있는 검색 상자 오픈
 
 ### Linux
 - Ctrl + Alt + Shift + T : 인라인 베리어블
@@ -480,16 +481,244 @@
     }
 - 개 병원 내부에 Dog 타입을 가진다.
 - checkup( ): 개의 이름과 크기를 출력하고, 개의 sound( ) 메서드를 호출한다.
+- bigger( ): 다른 개와 크기를 배교한다. 둘 중에 큰 개를 반환한다.
+####
+    public class CatHospital {
+    
+        private Cat animal;
+    
+        public void set (Cat animal) {
+            this.animal = animal;
+        }
+    
+        public void checkup() {
+            System.out.println("동물 이름: " + animal.getName());
+            System.out.println("동물 크기: " + animal.getSize());
+            animal.sound();
+        }
+    
+        public Cat bigger(Cat target) {
+            return animal.getSize() > target.getSize() ? animal : target;
+        }
+    }
+####
+    public class AnimalHospitalMain0 {
+    
+        public static void main(String[] args) {
+            DogHospital dogHospital = new DogHospital();
+            CatHospital catHospital = new CatHospital();
+    
+            Dog dog = new Dog("멍멍이1", 100);
+            Cat cat = new Cat("냐옹이1", 300);
+    
+            // 개 병원
+            dogHospital.set(dog);
+            dogHospital.checkup();
+    
+            // 고양이 병원
+            catHospital.set(cat);
+            catHospital.checkup();
+    
+            // 문제1: 개 병원에 고양이 전달
+            // dogHospital.set(cat); // 다른 타입 입력: 컴파일 오류
+    
+            // 문제2: 개 타입 반환
+            Dog biggerDog = dogHospital.bigger(new Dog("멍멍이2", 200));
+            System.out.println("biggerDog = " + biggerDog);
+    
+        }
+    }
+- 이번에 만든 코드는 처음에 제시한 요구사항을 잘 지킨다   
+  (요구사항: 개 병원은 개만 받을 수 있고, 고양이 병원은 고양이만 받을 수 있어야 한다.)
+- 여기서는 개 병원과 고양이 병원을 각각 별도의 클래스로 만들었다.
+- 각 클래스 별로 타입이 명확히기 때문에 개 병원은 개만 받을 수 있고, 고양이 병원은 고양이만 받을 수 있다.
+- 따라서 개 병원에 고양이를 전달하면 컴파일 오류가 발생한다.
+- 그리고 개 병원에서 bigger( )로 다른 개를 비굥하는 경우 더 큰 개를 Dog 타입으로 반환한다.
 
-      
+#### 문제
+- 코드 재사용X: 개 병원과 고양이 병원은 중복이 많이 보인다.
+- 타입 안정성O: 타입 안정성이 명확하게 지켜진다.
+
 
 ### 2-2. 타입 매개변수 제한2 - 다형성 시도
+- Dog, Cat 은 Animal 이라는 명확한 부모 타입이 있다. 다형성을 사용해서 중복을 제거해보자.
+####
+    public class AnimalHospitalV1 {
+    
+        private Animal animal;
+    
+        public void set(Animal animal) {
+            this.animal = animal;
+        }
+    
+        public void checkup() {
+            System.out.println("동물 이름: " + animal.getName());
+            System.out.println("동물 크기: " + animal.getSize());
+            animal.sound();
+        }
+        
+        public Animal bigger(Animal target) {
+            return animal.getSize() > target.getSize() ? animal : target;
+        }
+    }
+- Animal 타입을 받아서 처리한다
+- checkup( ), getBigger( ) 에서 사용하는 animal.getName( ), animal.getSize(), animal.sound( )  
+  메서드는 모두 Animal 타입이 제공하는 메서드이다. 따라서 아무 문제없이 모두 호출할 수 있다.
+####
+    public class AnimalHospitalMainV1 {
+    
+        public static void main(String[] args) {
+            AnimalHospitalV1 dogHospital = new AnimalHospitalV1();
+            AnimalHospitalV1 catHospital = new AnimalHospitalV1();
+    
+            Dog dog = new Dog("멍멍이1", 100);
+            Cat cat = new Cat("냐옹이1", 300);
+    
+            // 개 병원
+            dogHospital.set(dog);
+            dogHospital.checkup();
+    
+            // 고양이 병원
+            catHospital.set(cat);
+            catHospital.checkup();
+    
+            // 문제1: 개 병원에 고양이 전달
+             dogHospital.set(cat); // 매개변수 체크 실패: 컴파일 오류가 발생하지 않아 코드 재사용성이 상승
+    
+            // 문제2: 개 타입 반환
+            Dog biggerDog = (Dog) dogHospital.bigger(new Dog("멍멍이2", 200)); // 인위적으로 다운캐스팅을 하기 때문에 안정성이 떨어짐
+            System.out.println("biggerDog = " + biggerDog);
+    
+        }
+    }
+#### 문제
+- 코드 재사용O: 다형성을 통해 AnimalHostpitalV1 하나로 개와 고양이를 모두 처리한다.
+- 타입 안정성X: 
+  - 개 병원에 고양이를 전달하는 문제가 발생한다.
+  - Animal 타입을 반환하기 때문에 다운 캐스팅을 해야 한다.
+  - 실수로 고양이를 입력했는데, 개를 반환하는 상황이라면 캐스팅 예외가 발생한다.
 
 
 ### 2-3. 타입 매개변수 제한3 - 제네릭 도입과 실패
+- 이제 앞서 배운 제네릭을 도입해서 코드 재사용은 늘리고, 타입 안정성 문제도 해결해보자.
+####
+    public class AnimalHospitalV2<T> {
+    
+        private T animal;
+    
+        public void set (T animal) {
+            this.animal = animal;
+        }
+    
+        public void checkup() {
+            // T의 타입을 정의하는 시점에는 알 수 없다. 모든 객체의 부모인 Object 의 기능만 사용 가능
+            animal.toString();
+            animal.equals(null);
+    
+            // 컴파일 오류
+            // System.out.println("동물 이름: " + animal.getName());
+            // animal.sound();
+        }
+    
+        public T getBigger(T target){
+            // 컴파일 오류
+            // return animal.getSize() > target.getSize() ? animal : target;
+            return null;
+        }
+    }
+- 제네릭 타입을 선언하면 자바 컴파일러 입장에서 T 에 어떤 값이 들어올지 예측할 수 없다.
+- 우리는 Animal 타입의 자식이 들어오기를 기대했지만, 여기 코드 어디에도 Animal 에 대한 정보는 없다.
+- T 에는 타입 인자로 Integer 가 들어올 수도 있고, Dog 가 들어올 수도 있다. 물론 Object 가 들어올 수도 있다.
+- 자바 컴파일러는 어떤 타입이 들어올지 알 수 없기 때문에 T 를 어떤 타입이든 받을 수 있는 Object 타입으로 가정한다. 
+- 따라서 Object 가 제공하는 메서드만 호출할 수 있다.
+- 원하는 기능을 사용하려면 Animal 타입이 제공하는 기능들이 필요한데, 이 기능을 모두 사용할 수 없다.
+- 추가적인 문제는 동물 병원에 Integer, Object 같은 동물과 전혀 관계 없는 타입을 타입 인자로 전달할 수 있다는 것이다.
+- 우리는 최소한 Animal 이나 그 자식을 타입 인자로 제한하고 싶다.
 
+#### 문제 
+- 제네릭에서 타입 매개변수를 사용하면 어떤 타입이든 들어올 수 있다.
+- 따라서 타입 매개변수를 어떤 타입이든 수용할 수 있는 Object 로 가정하고, Object 의 기능만 사용할 수 있다.
+####
+- 발생한 문제들을 생각해보면 타입 매개변수를 Animal 로 제한하지 않았기 때문이다.  
+- 만약 타입 인자가 모두 Animal 과 그 자식만 들어올 수 있게 제한한다면 어떨까?
 
 ### 2-4. 타입 매개변수 제한4 - 타입 매개변수 제한 
+- 타입 매개변수를 특정 타입으로 제한할 수 있다.
+  
+      <T extends 허용할 타입>
+#### 
+    public class AnimalHospitalV3<T extends Animal> {
+    
+        private T animal;
+    
+        public void set (T animal) {
+            this.animal = animal;
+        }
+    
+        public void checkup() {
+            animal.toString();
+            animal.equals(null);
+    
+            System.out.println("동물 이름: " + animal.getName());
+            animal.sound();
+        }
+    
+        public T getBigger(T target){
+            return animal.getSize() > target.getSize() ? animal : target;
+        }
+    }
+- 타입 매개변수 T 를 Animal 과 그 자식만 받을 수 있도록 제한을 두는 것이다. 즉 T 의 상한이 Animal 이 되는 것이다.
+- 이렇게 하면 타입 인자로 들어올 수 있는 값이 Animal 과 그 자식으로 제한된다.
+- 이제 자바 컴파일러는 T 에 입력될 수 있는 값의 범위를 예측할 수 있다.
+- 타입 매개변수 T 에는 타입 인자로 Animal, Dog, Cat 만 들어올 수 있다.
+- 따라서 이를 모두 수용할 수 있는 Animal 을 T 의 타입으로 가정해도 문제가 없다.
+- 이제 Animal 이 제공하는 getName( ), getSize( ) 같은 기능을 사용할 수 있다.
+####
+    public class AnimalHospitalMainV3 {
+    
+        public static void main(String[] args) {
+            AnimalHospitalV3<Dog> dogHospital = new AnimalHospitalV3<>();
+            AnimalHospitalV3<Cat> catHospital = new AnimalHospitalV3<>();
+            // 전혀 관계없는 타입 인자를 컴파일 시점에 막는다.
+            // AnimalHospitalV3<Integer> integerHospital = new AnimalHospitalV3<>();
+    
+            Dog dog = new Dog("멍멍이1", 100);
+            Cat cat = new Cat("냐옹이1", 300);
+    
+            // 개 병원
+            dogHospital.set(dog);
+            dogHospital.checkup();
+    
+            // 고양이 병원
+            catHospital.set(cat);
+            catHospital.checkup();
+    
+            // 문제1: 개 병원에 고양이 전달
+            // dogHospital.set(cat); // 다른 타입 입력: 컴파일 오류
+    
+            // 문제2: 개 타입 반환
+            Dog biggerDog = dogHospital.bigger(new Dog("멍멍이2", 200)); // 다운 캐스팅 필요 없음
+            System.out.println("biggerDog = " + biggerDog);
+    
+        }
+    }
+
+#### 문제 해결 
+- 타입 맥개변수에 입력될 수 있는 상한을 지정해서 문제 해결
+  - AnimalHospitalV3<Integer> 와 같이 동물과 전혀 관계없는 타입 인자를 컴파일 시점에 막는다.
+  - 제니릭 클래스 안에서 Animal 의 기능을 사용할 수 있다.
+- 타입 안정성X 문제:
+  - 개 병원에 고양이를 전달하는 문제가 발생한다. -> 해결
+  - Animal 타입을 반환하기 때문에 다운 캐스팅을 해야 한다. -> 해결
+  - 실수로 고양이를 입력했는데, 개를 반환하는 상화잉라면 캐스팅 예외가 발생한다. -> 해결
+- 제네릭 도입 문제
+  - 제네릭에서 타입 매개변수를 사용하면 어떤 타입이든 들어올 수 있다. -> 해결
+  - 그리고 어떤 타입이든 수용할 수 있는 Object 로 가정하고, Object 의 기능만 사용할 수 있다 -> 해결  
+    여기서는 Animal 을 상한으로 두어서 Animal 의 기능을 사용할 수 있다.
+  
+#### 정리
+- 제네릭에 타입 매ㅐ개변수 상한을 사용해서 타입 안정성을 지키면서 상위 타입의 원하는 기능까지 사용할 수 있었다. 
+- 덕분에 코드 재사용 성과 타입 안정성이라는 두마리 토끼를 동시에 잡을 수 있었다.
 
 
 ### 2-5. 제네릭 메서드
@@ -506,8 +735,6 @@
 
 ### 2-9. 타입 이레이저
 
-
-### 2-10. 문제와 풀이2
 
 
 <br>
