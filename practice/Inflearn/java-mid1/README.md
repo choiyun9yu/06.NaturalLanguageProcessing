@@ -2181,28 +2181,28 @@
 - ZonedDateTime 은 LocalDateTime 에 시간대 정보인 ZoneId 가 합쳐진 것이다.
 
 
-    import java.time.LocalDateTime;
-    import java.time.ZoneId;
-    import java.time.ZonedDateTime;
-    
-    public class ZoneDateTimeMain {
-    
-        public static void main(String[] args) {
-            ZonedDateTime nowZdt = ZonedDateTime.now();
-            System.out.println("now2dt = " + nowZdt);
-    
-            LocalDateTime ldt = LocalDateTime.of(2030, 1, 1, 13, 30, 50);
-            ZonedDateTime zdt1 = ZonedDateTime.of(ldt, ZoneId.of("Asia/Seoul"));
-            System.out.println("zdt1 = " + zdt1);
-    
-            ZonedDateTime zdt2 = ZonedDateTime.of(2030, 1, 1, 13, 30, 50, 0, ZoneId.of("Asia/Seoul"));  // 나노초까지 포함
-            System.out.println("zdt2 = " + zdt2);
-    
-            // 존 바꾸기
-            ZonedDateTime utcZdt = zdt2.withZoneSameInstant(ZoneId.of("UTC"));
-            System.out.println("utcZdt = " + utcZdt);
-        }
-    }
+      import java.time.LocalDateTime;
+      import java.time.ZoneId;
+      import java.time.ZonedDateTime;
+      
+      public class ZoneDateTimeMain {
+      
+          public static void main(String[] args) {
+              ZonedDateTime nowZdt = ZonedDateTime.now();
+              System.out.println("now2dt = " + nowZdt);
+      
+              LocalDateTime ldt = LocalDateTime.of(2030, 1, 1, 13, 30, 50);
+              ZonedDateTime zdt1 = ZonedDateTime.of(ldt, ZoneId.of("Asia/Seoul"));
+              System.out.println("zdt1 = " + zdt1);
+      
+              ZonedDateTime zdt2 = ZonedDateTime.of(2030, 1, 1, 13, 30, 50, 0, ZoneId.of("Asia/Seoul"));  // 나노초까지 포함
+              System.out.println("zdt2 = " + zdt2);
+      
+              // 존 바꾸기
+              ZonedDateTime utcZdt = zdt2.withZoneSameInstant(ZoneId.of("UTC"));
+              System.out.println("utcZdt = " + utcZdt);
+          }
+      }
 - 생성
   - now( ): 현재 날짜와 시간을 기준으로 생성한다. 이때 ZoneId 는 현재 시스템을 따른다.
   - of(...): 특정 날짜와 시간을 기준으로 생성한다. ZoneId 를 추가해야 한다.
