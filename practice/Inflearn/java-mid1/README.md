@@ -2157,21 +2157,21 @@
 - 자바는 타임존을 ZoneId 클래스로 제공한다.
 
 
-    public class ZoneIdMain {
-    
-        public static void main(String[] args) {
-            for (String availableZoneId : ZoneId.getAvailableZoneIds()) {
-                ZoneId zoneId = ZoneId.of(availableZoneId);
-                System.out.println(zoneId + "|" + zoneId.getRules());
-            }
-    
-            ZoneId zoneIdSystemDefault = ZoneId.systemDefault();
-            System.out.println("ZoneId.systemDefault = " + zoneIdSystemDefault);
-    
-            ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
-            System.out.println("seoulZoneId = " + seoulZoneId);
-        }
-    }
+      public class ZoneIdMain {
+      
+          public static void main(String[] args) {
+              for (String availableZoneId : ZoneId.getAvailableZoneIds()) {
+                  ZoneId zoneId = ZoneId.of(availableZoneId);
+                  System.out.println(zoneId + "|" + zoneId.getRules());
+              }
+      
+              ZoneId zoneIdSystemDefault = ZoneId.systemDefault();
+              System.out.println("ZoneId.systemDefault = " + zoneIdSystemDefault);
+      
+              ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
+              System.out.println("seoulZoneId = " + seoulZoneId);
+          }
+      }
 - 생성
   - ZoneId.systemDefault( ): 시스템이 사용하는 기본 ZoneId를 반환한다.
   - ZoneId.of( ): 타임존을 직접 제공해서 ZoneId를 반환한다.
