@@ -1,4 +1,4 @@
-# JAVA MIDDLE 1
+따라서 DST 같은 일광 절약 시간대 정보는# JAVA MIDDLE 1
 
 #### 단축어
 - soutm: 클래스명을 출력하는 코드 자동완성
@@ -2217,19 +2217,19 @@
 - 따라서 DST 같은 일광 절약 시간대 정보는 없다.
 
 
-    public class OffsetDateTimeMain {
-    
-        public static void main(String[] args) {
-            OffsetDateTime nowOdt = OffsetDateTime.now();
-            System.out.println("nowOdt = " + nowOdt);
-    
-            LocalDateTime ldt = LocalDateTime.of(2030, 1, 1, 13, 30, 50);
-            System.out.println("ldt = " + ldt);
-            
-            OffsetDateTime odt = OffsetDateTime.of(ldt, ZoneOffset.of("+01:00"));
-            System.out.println("odt = " + odt);
-        }
-    }
+      public class OffsetDateTimeMain {
+      
+          public static void main(String[] args) {
+              OffsetDateTime nowOdt = OffsetDateTime.now();
+              System.out.println("nowOdt = " + nowOdt);
+      
+              LocalDateTime ldt = LocalDateTime.of(2030, 1, 1, 13, 30, 50);
+              System.out.println("ldt = " + ldt);
+              
+              OffsetDateTime odt = OffsetDateTime.of(ldt, ZoneOffset.of("+01:00"));
+              System.out.println("odt = " + odt);
+          }
+      }
 
 #### ZonedDateTime vs OffsetDateTime
 - ZonedDateTime 은 구체적인 지역 시간대를 다룰 때 사용하며, 일광 절약 시간을 자동으로 처리할 수 있다.
