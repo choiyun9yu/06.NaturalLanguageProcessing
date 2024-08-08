@@ -15,6 +15,5 @@ public class MethodMain1 {
         Integer result = GenericMethod.<Integer>genericMethod(i); // 제네릭은 타입 매개변수를 무슨 타입으로 할지 정해줘야 한다.
         Integer integerValue = GenericMethod.<Integer>numberMethod(10);
         Double doubleValue = GenericMethod.<Double>numberMethod(20.0);
-
     }
 }

@@ -746,6 +746,72 @@
         }
     }
 
+####
+    public class MethodMain1 {
+    
+        public static void main(String[] args) {
+            Integer i = 10;
+            Object object = GenericMethod.objMethod(i);
+            // integer 로 받고 싶으면 다운캐스팅 해야한다.
+            // Integer result = (Integer) GenericMethod.objMethod(i);
+    
+            // 타입 인자(Type Argument) 명시적 전달
+            System.out.println("명시적 타입 인자 전달");
+            Integer result = GenericMethod.<Integer>genericMethod(i); // 제네릭은 타입 매개변수를 무슨 타입으로 할지 정해줘야 한다.
+            Integer integerValue = GenericMethod.<Integer>numberMethod(10);
+            Double doubleValue = GenericMethod.<Double>numberMethod(20.0);
+        }
+    }
+
+#### 제네릭 타입
+- 정의: GenericClass<T>
+- 타입 인자 전달: 객체를 생성하는 시점
+  - ex. new GenericClass<String>
+
+#### 제네릭 메서드
+- 정의: <T> T genericMethod(T t)
+- 타입 인자 전달: 메서드를 호출하는 시점 
+  - ex. GenericMethod.<Integer>genericMethod(i)
+- 제네릭 메서드는 클래스 전체가 아니라 특정 메서드 단위로 제네릭을 도입할 때 사용한다.
+- 제네릭 메서드를 정의할 때는 메서드의 반환 타입 왼쪽에 다이아몬드를 사용해서 <T> 와 같이 타입 매개변수를 적어준다.
+- 제네릭 메서드는 메서드를 실제 호출하는 시점에 다이아몬드를 사용해서 <Integer> 와 같이 타입을 정하고 호출한다.
+- 제네릭 메서드의 핵심은 메서드를 호출하는 시점에 타입 인자를 전달해서 타입을 지정하는 것이다.  
+  따라서 타입을 지정하면서 메서드를 호출한다.
+
+#### 인스턴스 메서드, static 메서드
+- 제네릭 메서드는 인스턴스 메서드와 static 메서드에 모두 적용할 수 있다.
+      
+      class Box<T> { // 제네릭 타입
+          static <V> V staticMethod2(V v) { }  // static 메서드에 제네릭 메서드 도입
+          <Z> Z instnaceMethod2(Z z) { }  // 인스턴스 메서드에 제네릭 메서드 도입 가능 
+      }
+
+> **!참고** - 제네릭 타입은 static 메서드에 타입 매개변수를 사용할 수 없다.  
+> 제네릭 타입은 객체를 생성하는 시점에 타입이 정해진다. 그런데 static 메서드는 인스턴스 단위가 아니라  
+> 클래스 단위로 작동하기 때문에 제네릭 타입과는 무관하다.  
+> 따라서 static 메서드에 제네릭을 도입하려면 제네릭 메서드를 사용해야 한다.
+
+    class Box<T> {
+        T instanceMethod(T t) { }  // 인스턴스 메서드는 T 사용 가능       
+        static T staticMethod1(T t) { }  // static 메서드는 T 사용 불가능 
+    }
+
+
+#### 타입 매개변수 제한
+- 제네릭 메서드도 제네릭 타입과 마찬가지로 타입 매개변수를 제한할 수 있다.
+- 다음 코드는 타입 매개변수를 Number 로 제한했다. 따라서 Number 와 그 자식만 받을 수 있다.
+- 참고로 Integer, Double, Long 과 같은 숫자 타입이 Number 의 자식이다.
+
+      public static <T extends Numner> T numberMethod(T t) { }
+      // GenericMethod.numberMethod("Hello"); // 컴파일 오류 Number 의 자식만 입력 가능
+
+#### 제네릭 메서드 타입 추론
+- 제네릭 메서드를 호출할 때 <Integer>와 같이 타입 인자를 계속 전달하는 것은 매우 불편하다.
+  
+      Integer i = 10;
+      Integer result = GenericMethod.<Integer>genericMethod(i);
+- 자바 컴파일러는 genericMethod() 에 전달되는 인자 i 의 타입이 Integer 라는 것을 알 수 있다.
+- 또한 반환 타입이 Integer result 라는 것도 알 수 있다. 이런 정보를 통해 자바 컴파일러는 타입 인자를 추론할 수 있다.
 
 
 
