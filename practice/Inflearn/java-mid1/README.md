@@ -1,4 +1,4 @@
-# JAVA MIDDLE 1
+따라서 DST 같은 일광 절약 시간대 정보는# JAVA MIDDLE 1
 
 #### 단축어
 - soutm: 클래스명을 출력하는 코드 자동완성
@@ -2157,21 +2157,21 @@
 - 자바는 타임존을 ZoneId 클래스로 제공한다.
 
 
-    public class ZoneIdMain {
-    
-        public static void main(String[] args) {
-            for (String availableZoneId : ZoneId.getAvailableZoneIds()) {
-                ZoneId zoneId = ZoneId.of(availableZoneId);
-                System.out.println(zoneId + "|" + zoneId.getRules());
-            }
-    
-            ZoneId zoneIdSystemDefault = ZoneId.systemDefault();
-            System.out.println("ZoneId.systemDefault = " + zoneIdSystemDefault);
-    
-            ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
-            System.out.println("seoulZoneId = " + seoulZoneId);
-        }
-    }
+      public class ZoneIdMain {
+      
+          public static void main(String[] args) {
+              for (String availableZoneId : ZoneId.getAvailableZoneIds()) {
+                  ZoneId zoneId = ZoneId.of(availableZoneId);
+                  System.out.println(zoneId + "|" + zoneId.getRules());
+              }
+      
+              ZoneId zoneIdSystemDefault = ZoneId.systemDefault();
+              System.out.println("ZoneId.systemDefault = " + zoneIdSystemDefault);
+      
+              ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
+              System.out.println("seoulZoneId = " + seoulZoneId);
+          }
+      }
 - 생성
   - ZoneId.systemDefault( ): 시스템이 사용하는 기본 ZoneId를 반환한다.
   - ZoneId.of( ): 타임존을 직접 제공해서 ZoneId를 반환한다.
@@ -2181,28 +2181,28 @@
 - ZonedDateTime 은 LocalDateTime 에 시간대 정보인 ZoneId 가 합쳐진 것이다.
 
 
-    import java.time.LocalDateTime;
-    import java.time.ZoneId;
-    import java.time.ZonedDateTime;
-    
-    public class ZoneDateTimeMain {
-    
-        public static void main(String[] args) {
-            ZonedDateTime nowZdt = ZonedDateTime.now();
-            System.out.println("now2dt = " + nowZdt);
-    
-            LocalDateTime ldt = LocalDateTime.of(2030, 1, 1, 13, 30, 50);
-            ZonedDateTime zdt1 = ZonedDateTime.of(ldt, ZoneId.of("Asia/Seoul"));
-            System.out.println("zdt1 = " + zdt1);
-    
-            ZonedDateTime zdt2 = ZonedDateTime.of(2030, 1, 1, 13, 30, 50, 0, ZoneId.of("Asia/Seoul"));  // 나노초까지 포함
-            System.out.println("zdt2 = " + zdt2);
-    
-            // 존 바꾸기
-            ZonedDateTime utcZdt = zdt2.withZoneSameInstant(ZoneId.of("UTC"));
-            System.out.println("utcZdt = " + utcZdt);
-        }
-    }
+      import java.time.LocalDateTime;
+      import java.time.ZoneId;
+      import java.time.ZonedDateTime;
+      
+      public class ZoneDateTimeMain {
+      
+          public static void main(String[] args) {
+              ZonedDateTime nowZdt = ZonedDateTime.now();
+              System.out.println("now2dt = " + nowZdt);
+      
+              LocalDateTime ldt = LocalDateTime.of(2030, 1, 1, 13, 30, 50);
+              ZonedDateTime zdt1 = ZonedDateTime.of(ldt, ZoneId.of("Asia/Seoul"));
+              System.out.println("zdt1 = " + zdt1);
+      
+              ZonedDateTime zdt2 = ZonedDateTime.of(2030, 1, 1, 13, 30, 50, 0, ZoneId.of("Asia/Seoul"));  // 나노초까지 포함
+              System.out.println("zdt2 = " + zdt2);
+      
+              // 존 바꾸기
+              ZonedDateTime utcZdt = zdt2.withZoneSameInstant(ZoneId.of("UTC"));
+              System.out.println("utcZdt = " + utcZdt);
+          }
+      }
 - 생성
   - now( ): 현재 날짜와 시간을 기준으로 생성한다. 이때 ZoneId 는 현재 시스템을 따른다.
   - of(...): 특정 날짜와 시간을 기준으로 생성한다. ZoneId 를 추가해야 한다.
@@ -2217,19 +2217,19 @@
 - 따라서 DST 같은 일광 절약 시간대 정보는 없다.
 
 
-    public class OffsetDateTimeMain {
-    
-        public static void main(String[] args) {
-            OffsetDateTime nowOdt = OffsetDateTime.now();
-            System.out.println("nowOdt = " + nowOdt);
-    
-            LocalDateTime ldt = LocalDateTime.of(2030, 1, 1, 13, 30, 50);
-            System.out.println("ldt = " + ldt);
-            
-            OffsetDateTime odt = OffsetDateTime.of(ldt, ZoneOffset.of("+01:00"));
-            System.out.println("odt = " + odt);
-        }
-    }
+      public class OffsetDateTimeMain {
+      
+          public static void main(String[] args) {
+              OffsetDateTime nowOdt = OffsetDateTime.now();
+              System.out.println("nowOdt = " + nowOdt);
+      
+              LocalDateTime ldt = LocalDateTime.of(2030, 1, 1, 13, 30, 50);
+              System.out.println("ldt = " + ldt);
+              
+              OffsetDateTime odt = OffsetDateTime.of(ldt, ZoneOffset.of("+01:00"));
+              System.out.println("odt = " + odt);
+          }
+      }
 
 #### ZonedDateTime vs OffsetDateTime
 - ZonedDateTime 은 구체적인 지역 시간대를 다룰 때 사용하며, 일광 절약 시간을 자동으로 처리할 수 있다.
