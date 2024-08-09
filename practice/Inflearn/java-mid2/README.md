@@ -782,20 +782,29 @@
 - 제네릭 메서드는 인스턴스 메서드와 static 메서드에 모두 적용할 수 있다.
       
       class Box<T> { // 제네릭 타입
-          static <V> V staticMethod2(V v) { }  // static 메서드에 제네릭 메서드 도입
           <Z> Z instnaceMethod2(Z z) { }  // 인스턴스 메서드에 제네릭 메서드 도입 가능 
+          static <V> V staticMethod2(V v) { }  // static 메서드에 제네릭 메서드 도입
       }
+- 하지만 제네릭 타입은 static 메서드에 타입 매개변수로 사용할 수 없다.
+
+      class Box<T> { // 제네릭 타입
+          T instanceMethod(T t) { }  // 인스턴스 메서드는 T 사용 가능       
+          static T staticMethod1(T t) { }  // static 메서드는 T 사용 불가능
+      }
+
 
 > **!참고** - 제네릭 타입은 static 메서드에 타입 매개변수를 사용할 수 없다.  
 > 제네릭 타입은 객체를 생성하는 시점에 타입이 정해진다. 그런데 static 메서드는 인스턴스 단위가 아니라  
 > 클래스 단위로 작동하기 때문에 제네릭 타입과는 무관하다.  
 > 따라서 static 메서드에 제네릭을 도입하려면 제네릭 메서드를 사용해야 한다.
 
-    class Box<T> {
-        T instanceMethod(T t) { }  // 인스턴스 메서드는 T 사용 가능       
-        static T staticMethod1(T t) { }  // static 메서드는 T 사용 불가능 
-    }
-
+- 정리
+  - Static 메서드는 클래스 레벨에 속한다 즉, 특정 인스턴스와 연결되지 않는다.
+  - 제네릭 타입은 인스턴스화될 때 결정된다. 
+  - 만약  Static 메서드에서 제네릭 타입을 직접 사용할수 있게 되면,  
+    어떤 타입 매개변수를 사용해야 할지 런타임에 알 수 없게 된다.  
+  - **다시말해, static 메서드는 인스턴스와 연결되지 않으므로,   
+    인스턴스 생성 시 결정되는 타입 매개변수 정보에 접근할 수 없다.**
 
 #### 타입 매개변수 제한
 - 제네릭 메서드도 제네릭 타입과 마찬가지로 타입 매개변수를 제한할 수 있다.
@@ -811,11 +820,49 @@
       Integer i = 10;
       Integer result = GenericMethod.<Integer>genericMethod(i);
 - 자바 컴파일러는 genericMethod() 에 전달되는 인자 i 의 타입이 Integer 라는 것을 알 수 있다.
-- 또한 반환 타입이 Integer result 라는 것도 알 수 있다. 이런 정보를 통해 자바 컴파일러는 타입 인자를 추론할 수 있다.
-
+- 반환 타입이 Integer result 라는 것도 알 수 있다. 이런 정보를 통해 자바 컴파일러는 타입 인자를 추론할 수 있다.
+- 타입 추론 덕분에 타입 인자를 직접 전달하는 불편함이 줄어든다. 
+- 이 경우 타입을 추론해서 컴파일러가 대신 처리하기 때문에 타입을 전달하지 않는 것 처럼 보인다.
+- 하지만 실제로는 타입 인자가 전달된다는 것을 기억하자.
 
 
 ### 2-6. 제네릭 메서드 활용
+- 앞서 제네릭 타입으로 만들었던 AnimalHospitalV3 의 주요 기능을 제네릭 메서드로 다시 만들어보자.
+#### 
+    public class AnimalMethod {
+    
+        public static <T extends Animal> void checkup(T t) {
+            System.out.println("동물 이름: " + t.getName());
+            System.out.println("동물 크기: " + t.getSize());
+            t.sound();
+        }
+    
+        public static <T extends Animal> T getBigger(T t1, T t2) {
+            return t1.getSize() > t2.getSize() ? t1 : t2;
+        }
+    }
+####
+    public class MethodMain2 {
+    
+        public static void main(String[] args) {
+            Dog dog = new Dog("멍멍이", 100);
+            Cat cat = new Cat("냐옹이", 100);
+    
+            AnimalMethod.checkup(dog);
+            AnimalMethod.checkup(cat);
+    
+            Dog targetDog = new Dog("큰 멍멍이", 200);
+            Dog bigger = AnimalMethod.getBigger(dog, targetDog);
+            System.out.println("bigger = " + bigger);
+        }
+    }
+- 기존 코드와 같이 작동하는 것을 확인할 수 있다.
+- 참고로 제네릭 메서드를 호출할 때 타입 추론을 사용했다.
+
+#### 제네릭 타입과 제네릭 메서드의 우선순위
+- 정적 메서드는 제네릭 메서드만 적용할 수 있지만, 인스턴스 메서드는 둘다 적용할 수 있다.
+- 여기에 제네릭 타입과 제네릭 메서드의 타입 매개변수를 같은 이름으로 사용하면 어떻게 될까?
+####
 
 
 ### 2-7. 와일드카드1
