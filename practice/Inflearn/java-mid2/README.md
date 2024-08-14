@@ -863,10 +863,96 @@
 - 정적 메서드는 제네릭 메서드만 적용할 수 있지만, 인스턴스 메서드는 둘다 적용할 수 있다.
 - 여기에 제네릭 타입과 제네릭 메서드의 타입 매개변수를 같은 이름으로 사용하면 어떻게 될까?
 ####
+    public class ComplexBox <T extends Animal> {
+    
+        private T animal;
+    
+        public void set(T animal) {
+            this.animal = animal;
+        }
+    
+        public <Z> Z printAndReturn(Z z) {
+            System.out.println("animal.className: " + animal.getClass().getName());
+            System.out.println("t.className = " + t.getClass().getName());
+            return t;
+        }
+    }
+####
+    public class MethodMain3 {
+    
+        public static void main(String[] args) {
+            Dog dog = new Dog("멍멍이", 100);
+            Cat cat = new Cat("냐옹이", 50);
+    
+            ComplexBox<Dog> hospital = new ComplexBox<>();
+            hospital.set(dog);
+    
+            Cat returnCat = hospital.printAndReturn(cat);
+            System.out.println("returnCat = " + returnCat);
+        }
+    }
+#### 결과
+    animal.className: generic.animal.Dog
+    t.className = generic.animal.Cat
+    returnCat = Animal{name='냐옹이', size=50}
+- 위 코드에서 ComplexBox 의 T 는 다 Dog 로 바뀌고, Z 는 다 Cat 으로 바뀐다.
+  - ComplexBox set 에 Dog 를 넣었으니 T 는 Dog 가 된다.
+  - ComplexBox printAndReturn 에 Cat 을 넣었으니 Z 는 Cat 이 된다.
+- 그런데 만약 Z 도 T 로 표현하면 어떻게 될까?
+
+####
+    public class ComplexBox <T extends Animal> {
+    
+        private T animal;
+    
+        public void set(T animal) {
+            this.animal = animal;
+        }
+    
+        public <T> T printAndReturn(T t) {
+            System.out.println("animal.className: " + animal.getClass().getName());
+            System.out.println("t.className = " + t.getClass().getName());
+            return t;
+        }
+    }
+
+#### 결과 
+    animal.className: generic.animal.Dog
+    t.className = generic.animal.Cat
+    returnCat = Animal{name='냐옹이', size=50}
+- 제네릭 타입 설정 
+    
+      class ComplexBox<T extends Animal>
+- 제네릭 메서드 설정 
+
+      <T> T printAndReturn(T t)
+- 제네릭 타입보다 제네릭 메서드가 높은 웃언순위를 가진다.
+- 따라서 printAndReturn( ) 은 제네릭 타입과는 무관하고 제네릭 메서드가 적용된다.  
+  - 제네릭 타입 설정에서 사용된 T 와 제네릭 메서드 설정에서 사용된 T 는 관련이 없다.
+- 단 여기서 적용된 제네릭 메서드의 타입 매개변수 T 는 상한이 없다.  
+  따라서 Object 로 취급되고 t.getName( ) 과 같은 Animal 에 존재하는 메서드는 호출할 수 없다.
+- 참고로 프로그래밍에서 이렇게 모호한 것은 좋지 않다.
+- 둘의 이름이 겹치면 둘 중 하나를 다른 이름으로 변경하는 것이 좋다.
 
 
 ### 2-7. 와일드카드1
-
+- 와일드 카드를 사용하면 제네릭 타입을 조금 더 편리하게 사용할 수 있다.
+- 참고로 와일드 카라드는 뜻은 컴퓨터프로그래밍에서 *, ? 와 같이 하나 이상의 문자들을 상징하는 특수문자를 뜻한다.  
+  쉽게 이야기해서 여러 타입이 들어올 수 있다는 뜻이다.
+- 아래에 단순히 데이터를 넣고 반환할 수 있는 제네릭 타입을 하나 만들어 보자.
+####
+    public class Box<T> {
+    
+        private T value;
+    
+        public void set(T value) {
+            this.value = value;
+        }
+    
+        public T get() {
+            return value;
+        }
+    }
 
 ### 2-8. 와일드카드2
 

@@ -13,9 +13,6 @@ public class MethodMain3 {
         hospital.set(dog);
 
         Cat returnCat = hospital.printAndReturn(cat);
-
+        System.out.println("returnCat = " + returnCat);
     }
-
-
-
 }
