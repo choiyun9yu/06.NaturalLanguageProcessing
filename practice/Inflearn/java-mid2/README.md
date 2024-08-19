@@ -1230,6 +1230,7 @@
 - 제네릭에 사용한 타입 매개변수가 모두 사라지는 것이다.
 - 쉽게 말해 컴파일 전인 .java 에는 제네릭의 타입 매개변수가 존재하지만,  
   컴파일 이후의 자바 바이트코드 .class 에는 타입 매개변수가 존재하지 않는 것이다.
+* 아래 코드는 정확한 예는 아니고 이해를 돕기위한 코드이다.
 
 #### 제네릭 타입 선언 
     // GenericBox.java
@@ -1244,9 +1245,146 @@
         public T get() {
             return value;
         }
+#### 제네릭 타입에 Integer 타입 인자 전달
+    // Main.java
+    void main() {
+        GenericBox<Integer> box = new GenericBox<Integer>();
+        box.set(10);
+        Integer result = box.get();
+    }
+- 이렇게 하면 자바 컴파일러는 컴파일 시점에 타입 매개변수와 타입 인자를 포함한 제네릭 정보를 활용해서  
+  new GenericBox<Integer>( ) 에 대해 다음과 같이 애해하고 컴파일 한다.
+#### 
+    public class GenericBox<Integer> {
+        
+        private Integer value;
+
+        public void set(Integer value) {
+            this.value = value;
+        }
+
+        public Integer get() {
+            return value;
+        }
+    }
+- 컴파일이 모두 끝나면 자바는 제네릭과 관련된 정보를 삭제한다.
+- 이때 .class 에 생성되는 정보는 다음과 같다.
+#### 컴파일 후
+    // GenericBox.class
+    public class GenericBox {
+  
+        private Object value;
+
+        public void set(Object value) {
+            this.value = value;
+        }
+
+        public Object get() {
+            return value;
+        }
+    }
+- 상한 제한 없이 선언한 타입 매개변수 T 는 Object 로 변환된다.
+
+####
+    // Main.class
+    void main() {
+        GenericBox box = new GenericBox()'
+        box.set(10);
+        Integer result = (Integer) box.get(); // 컴파일러가 캐스팅 추가
+    }
+- 값을 반환 받는 부분을 Object 로 받으면 안된다. 
+- 자바 컴파일러는 제네릭에서 타입 인자로 지정한 Integer 로 캐스팅하는 코드를 추가해준다.
+- 이렇게 추가된 코드는 자바 컴파일러가 이미 검증하고 추가했기 때문에 문제가 발생하지 않는다.
+
+### 타입 매개변수 제한의 경우
+#### 컴파일 전
+    public class AnimalHospitalV3 <T extends Animal> {
     
+        private T animal;
+    
+        public void set(T animal) {
+            this.animal = animal;
+        }
+    
+        public void checkup() {
+            System.out.println("동물 이름: " + animal.getName()); 
+            System.out.println("동물 크기: " + animal.getSize()); 
+        }
+     
+        public T getBigger(T target) {
+            return animal.getSize() > target.getSizez() ? animal : target;
+        }
+    }
+#### 
+    AniamlHospitalV3<Dog> hospital = new AnimalHospitalV3();
+    ...
+    Dog dog = animalHospitalV3.getBigger(new Dog());
+#### 컴파일 후 
+    // AnimalHospitalV3.class
+    public class AnimalHospitalV3 {
+    
+        private Animal animal;
+    
+        public void set(Animal animal) {
+            this.animal = animal;
+        }
+    
+        public void checkup() {
+            System.out.println("동물 이름: " + animal.getName()); 
+            System.out.println("동물 크기: " + animal.getSize()); 
+        }
+     
+        public Animal getBigger(Animal target) {
+            return animal.getSize() > target.getSizez() ? animal : target;
+        }
+    }
+- T의 타입 정보가 제거되어도 상한으로 지정한 Animal 타입으로 대체되기 때문에   
+  Animal 타입의 메서드를 사용하는데 아무런 문제가 없다.
+####
+    AniamlHospitalV3<Dog> hospital = new AnimalHospitalV3();
+    ...
+    Dog dog = (Dog) animalHospitalV3.getBigger(new Dog());
+- 반환 받는 부분을 Animal 로 받으면 안되기 때문에 자바 컴파일러가 타입 인자로 지정한 Dog 로 캐스팅하는 코드를 넣어준다.
+####
+- 자바의 제네릭은 단순하게 생각하면 개발자가 직접 캐스팅 하는 코드를 컴파일러가 대신 처리해주는 것이다.
+- 자바는 컴파일 시점에 제네릭을 사용한 코드에 문제가 없는지 완벽하게 검증하기 떄문에  
+  자바 컴파일러가 추가하는 다운 캐스팅에는 문제가 발생하지 않는다.
+- 자바의 제네릭 타입은 컴파일 시점에만 존재하고, 런터임 시에는 제네릭 정보가 지워지는데  
+  이것을 타입 이레이저라 한다.
 
+### 타입 이레이저 방식의 한계
+- 컴파일 이후에는 제네릭의 타입 정보가 존재하지 않는다. .class 로 자바를 실행하는 런타임에는   
+  우리가 지정한 Box<Integer>, Box<String> 의 타입 정보가 모두 제거도니다.
+- 따라서 런타임에 타입을 활용하는 다음과 같은 코드는 작성할 수 없다.
+#### 
+    // 소스 코드
+    class EraserBox<T> {
 
+        public boolean instanceCheck(Object param) {
+            return param instanceof T; // 오류
+        }
+ 
+        public void create() {
+            return new T();   // 오류
+        }
+    }
+#### 
+    // 런타임 
+    class EraserBox {
+        
+        public boolean instanceCheck(Object param) {
+            return param instanceof Object; // 오류
+        }
+
+        public void create() {
+            return new Object(); // 오류
+        }
+    }
+- 여기서 T 는 런타임에 모두 Object 가 되어버린다.
+- instanceof 는 항상 Object 와 비교하게 된다. 이렇게 되면 항상 참이 반환되기 때문에 문제가 발생한다.
+- 자바는 이런 문제 때문에 타입 매개변수에 instanceof 를 허용하지 않는다.
+- new T 는 항상 new Object 가 되어버린다. 개발자가 의도한 것과는 다르다.  
+  따라서 자바는 타입 매개변수에 new 를 허용하지 않는다.
 
 <br>
 
