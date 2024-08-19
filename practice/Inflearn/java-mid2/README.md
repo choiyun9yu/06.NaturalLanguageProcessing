@@ -937,10 +937,10 @@
 
 ### 2-7. 와일드카드1
 - 와일드 카드를 사용하면 제네릭 타입을 조금 더 편리하게 사용할 수 있다.
-- 참고로 와일드 카라드는 뜻은 컴퓨터프로그래밍에서 *, ? 와 같이 하나 이상의 문자들을 상징하는 특수문자를 뜻한다.  
+- 와일드 카드라는 뜻은 컴퓨터프로그래밍에서 *, ? 와 같이 하나 이상의 문자들을 상징하는 특수문자를 뜻한다.  
   쉽게 이야기해서 여러 타입이 들어올 수 있다는 뜻이다.
 - 아래에 단순히 데이터를 넣고 반환할 수 있는 제네릭 타입을 하나 만들어 보자.
-####
+### Generic method 사용
     public class Box<T> {
     
         private T value;
@@ -953,11 +953,277 @@
             return value;
         }
     }
+####
+    public class WildcardEx {
+    
+        static <T> void printGenericV1(Box<T> box) {
+            System.out.println("T = " + box.get());
+        }
+    
+        static <T extends Animal> void printGenericV2(Box<T> box) {
+            T t = box.get();
+            System.out.println("이름 = " + t.getName());
+        }
+    
+        static <T extends Animal> T printAndReturnGeneric(Box<T> box) {
+            T t = box.get();
+            System.out.println("이름 = " + t.getName());
+            return t;
+        }
+    }
+####
+    public class WildcardMain1 {
+    
+        public static void main(String[] args) {
+            Box<Object> objBox = new Box<>();
+            Box<Dog> dogBox = new Box<>();
+            Box<Cat> catBox = new Box<>();
+    
+            dogBox.set(new Dog("멍멍이", 100));
+    
+            WildcardEx.printGenericV1(dogBox);
+    
+            WildcardEx.printGenericV2(dogBox);
+    
+            Dog dog = WildcardEx.printAndReturnGeneric(dogBox);
+    
+        }
+    }
+### Wildcard 사용
+    public class WildcardEx {
+    
+        // 제네릭 메서드1
+        static <T> void printGenericV1(Box<T> box) {
+            System.out.println("T = " + box.get());
+        }
 
-### 2-8. 와일드카드2
+        // 일반 메서드 + 와일드카드1
+        static void printWildcardV1(Box<?> box) {
+            System.out.println("? = " + box.get());
+        }
+    
+        // 제네릭 메서드2
+        static <T extends Animal> void printGenericV2(Box<T> box) {
+            T t = box.get();
+            System.out.println("이름 = " + t.getName());
+        }
+
+        // 일반 메서드 + 와일드 카드2
+        static void printWildcardV2(Box<? extends Animal> box) {
+            // Animal 까지 확장되어 Animal 의 자식들은 다 들어 올 수 있으니 Animal 로 받을 수 있다.
+            Animal animal = box.get();
+            System.out.println("이름 = " + animal.getName());
+        }
+    
+        // 제네릭 메서드3
+        static <T extends Animal> T printAndReturnGeneric(Box<T> box) {
+            T t = box.get();
+            System.out.println("이름 = " + t.getName());
+            return t;
+        }
+
+        // 일반 메서드 + 와일드 카드3
+        static Animal printAndReturnWildcard(Box<? extends Animal> box) {
+            Animal animal = box.get();
+            System.out.println("이름 + " + animal.getName());
+            return animal;
+        }
+    }
+####
+    public class WildcardMain1 {
+    
+        public static void main(String[] args) {
+            Box<Object> objBox = new Box<>();
+            Box<Dog> dogBox = new Box<>();
+            Box<Cat> catBox = new Box<>();
+    
+            dogBox.set(new Dog("멍멍이", 100));
+    
+            WildcardEx.printGenericV1(dogBox);
+            WildcardEx.printWildcardV1(dogBox);
+    
+            WildcardEx.printGenericV2(dogBox);
+            WildcardEx.printWildcardV2(dogBox);
+    
+            Dog dog = WildcardEx.printAndReturnGeneric(dogBox);
+            Animal dog2 = WildcardEx.printAndReturnWildcard(dogBox);  // 반환 타입이 Animal
+        }
+    }
+- 제네릭 메서드와 와일드 카드를 비교할 수 있게 같은 기능을 각각 하나씩 배치해두었다.
+- 와일드 카드는 ?를 사용해서 정의한다.
+
+> **!참고** - 와일드 카드는 제네릭 타입이나, 제네릭 메서드를 선언하는 것이 아니다.   
+> 와일드카드는 이미 만들어진 제네릭 타입을 활용할 때 사용한다.
+> 위 예제에서는 Box<T> 라는 제네릭 타입을 편하게 가져다 쓰기 위해 사용했다.
+
+#### 2-7-1. 비제한 와일드 카드
+    // 이것은 제네릭 메서드이다.
+    // Box<Dog> dogBox 를 전달한다. 타입 추론에 의해 타입 T 가 Dog 가 된다.
+    static <T> void printGenericV1(Box<T> box) {
+        System.out.println("T = " + box.get());
+    } 
+
+    // 이것은 제네릭 메서드가 아니다. 일반적인 메서드이다.
+    // Box<Dog> dogBox 를 전달한다. 와일드카드 ? 는 모든 타입을 받을 수 있다.
+    static void printWildcardV1(Box<?> box) {
+        System.out.println("? = " + box.get());
+    }
+- 두 메서드는 비슷한 기능을 하는 코드이다. 하나는 제네릭 메서드를 사용하고,   
+  다른 하나는 일반적인 메서드에 와일드카드를 사용했다.
+- 와일드카드는 제네릭 타입이나 제네릭 메서드를 정의할 때 사용하는 것이 아니다.  
+  Box<Dog>, Box<Cat> 처럼 타입 인자가 정해진 제네릭 타입을 전달 받아서 사용할때 사용한다.
+- 와일드카드인 ? 는 모든 타입을 다 받을 수 있다는 뜻이다.
+  - 다음과 같이 해설할 수 있다. ? == <? extends Object>
+- 이렇게 ? 만 사용해서 제한 없이 모든 타입을 다 받을 수 있는 와일드카드를 비제한 와일드카드라고 한다.
+  - 여기에는 Box<Dog> dogBox, Box<Cat> catBox, Box<Object> objBox 가 모두 입력될 수 있다.
+
+#### 제네릭 메서드 실행 예시
+    // 1. 전달
+    printGenericV1(dogBox)
+
+    // 2. 제네릭 타입 결정 dogBox 는 Box<dog> 타입, 타입 추론 -> T 의 타입은 Dog
+    static <T> void printGenericV1(Box<T> box) {
+        System.out.println("T = " + box.get());
+    }
+
+    // 3. 타입 인자 결정 
+    static <Dog> void printGenericV1(Box<Dog> box) {
+        System.out.println("T = " + box.get());
+    }
+
+    // 4. 최종 실행 메서드
+    static void printGenericV1(Box<Dog> box) {
+        System.out.println("T = " + box.get());
+    }
+- 복잡한 과정을 거친다. 제네릭 타입이 있고 그 제네릭 타입이 어떤 타입으로 지정돼야 하고   
+  타입 인자 결정이 돼야 하고 등등 이런 과정을 다 거쳐야 한다.
+
+#### 와일드카드 실행 예시
+    // 1. 전달 
+    printWildcardV1(doxBox)
+
+    // 2. 최종 실행 메서드, 와일드카드 ? 는 모든 타입을 받을 수 있다.
+    static void printWildcardV1(Box<?> box) {
+        System.out.println("? = " + box.get());
+    }
+- 와일드카드는 제네릭 메서드가 아닌 일반 메서드이기 때문에 간단한 절차를 따른다.
+
+#### 제네릭 메서드 vs 와일드카드
+- printGenericV1( ) 제네릭 메서드를 보자. 제네릭 메섣드에는 타입 매개변수가 존재한다.  
+  그리고 특정 시점에 탕비 매개변수에 타입 인자를 전달해서 타입ㅇ르 경정해야 한다. 이런 과정은 복잡하다.
+- 반면에 printWildcardV1( ) 메서드를 보자. 와일드카드는 일반적인 메서드에 사용할 수 있고,  
+  단순히 매개변수로 제네릭 타입을 받을 수 있는 것 뿐이다. 제네릭 메서드처럼 타입을 결정하거나   
+  복잡하게 작동하지 안흔다. 단순히 일반 메서드에 제네릭 타입을 받을 수 있는 매개변수가 하나 있는 것 뿐이다.
+- 제네릭 타입이나 제네릭 메서드를 정의하는게 꼭 필요한 상황이 아니라면, 더 단순한 와일드카드 사용을 권장한다.
+
+#### 제네릭 메서드를 반드시 써야하는 경우?
+1. 같은 타입을 여러 매개변수 또는 리턴 타입으로 사용해야 하는 경우
+   - 와일드카드는 불특정 타입을 나타내기 때문에, 여러 매개변수나 리턴 타입에서 동일한 타입을 보장할 수 없다.  
+   - 제네릭 메서드에서는 메서듣 내에서 동일한 타입 파라미터를 여러곳에서 사용할 수 있다.
+   - 아래 코드는 제네릭 메서드를 사용하여 source 와 destination 이 동일한 타입이어야 함을 보장한다.
+
+          public <T> void copy(List<T> source, List<T> destination) {
+               for (T item: source) {
+                   destination.add(item)
+               }
+           }
+2. 리턴 타입이 호출 시점에서 결정되어야 하는 경우 
+  - 제네릭 메서드를 사용할 때, 메서드를 호출하는 쪽에서 타입을 명시할 수 있다.
+  - 와일드카드는 이와 같은 기능을 제공하지 않는다.  
+    (위 예제에서도 상한을 Animal 로 정해두고 반환을 미리 정해뒀어야 했다.)
+
+        public <T> T getFirstElement(List<T> list) {
+            if (list.isEmpty()) return null;
+            return list.get(0);
+        }
+
+        List<String> strings = List.of("a", "b", "c");
+        String firstString = getFirstElement(strings);    // 반환 타입이 String 으로 추론됨 
+
+        List<Integer> integers = List.of(1, 2, 3);
+        Integer firstInteger = getFirstElement(integers); // 반환 타입이 Integer 로 추론됨
+3. 메서드에 넣은 타입으로 반환받고 싶을 때는 제네릭 메서드를 사용해야 한다.
+   - 제네릭 메서드는 메서드 호출 시 타입이 정해지고 반환 타입 까지 변경이 가능하다.
+   - 그러나 와일드 카드는 일반 메서드라서 반환타입을 컴파일 과정에서 미리 정해야하기 때문에 불가능하다.
+4. 상한 경계(extends)와 하한 경계(super)는 와일드 카드에서도 가능은 하다.
+
+#### 2-7-2. 상한 와일드카드 
+    static <T extends Animal> void printGenericV2(Box<T> box) {
+        T t = box.get();
+        System.out.println("이름 = " + t.getName());
+    }
+
+    static void printWildcardV2(Box<? extends Animal> box) {
+        Animal animal = box.get();
+        System.out.println("이름 = " + animal.getName());
+    }
+- 제네릭 메서드와 마찬가지로 와일드카드에도 상한 제한을 둘 수 있다.
+- 여기서는 ? extends Animal 로 지정했다.
+- Animal 과 그 하위 타입만 입력 받는다. 만약 다른 타입을 입력하면 컴파일 오류가 발생한다.
+- box.get() 을 통해서 꺼낼 수 있는 타입의 최대 부모는 Animal 이 된다.  
+  따라서 Animal 타입으로 조회할 수 있다.
+- 결과적으로 Animal 타입의 기능을 호출할 수 있다.
+
+#### 2-7-3. 타입 매개변수가 꼭 필요한 경우 
+- 와일드카드는 제네릭을 정의할 때 사용하는 것이 아니다. Box<Dog>, Box<Cat> 처럼   
+  타입 인자가 전달된 제네릭 타입을 활용할 때 사용한다.  
+- 따라서 다음과 같은 경우에는 제네릭 타입이나 제네릭 메서드를 사용해야 문제를 해결할 수 있다.  
+- 입력한 타입 그대로 받고 싶은 경우, Dog 입력하고 Dog 로 받고 싶으면 제네릭 메서드를 써야한다.  
+  제네릭 메서드는 메서드 호출 시 타입이 정해지기고 그것으로 반환타입까지 바꿀 수 있어서 가능하다.
+####
+    static <T extends Animal> T printAndReturnGeneric(Box<T> box) {
+        T t = box.get();
+        System.out.println("이름 = " + t.getName());
+        return t;
+    }
+
+    static Animal printAndReturnWildcard(Box<? extends Animal> box) {
+        Animal animal = box.get();
+        System.out.println("이름 = " + t.getName());
+        reuturn animal;
+    }
+- printAndReturnGeneric( )은 전달한 타입을 명확하게 반환할 수 있다.
+
+      Dog dog = WildcardEx.prtinAndReturnGeneric(dogBox);
+- 반면에 printAndReturnWildcard( )의 경우 전달한 타입을 명확하게 반환할 수 없다. 
+  
+      Animal animal = WildcardEx.printAndReturnWildcard(dogBox);
+- **메서드의 타입들을 특정 시점에 변경하려면 제네렉 타입이나 제네렉 메서드를 사용해야 한다.**
+- 와일드카드는 이미 만들어진 제네릭 타입을 전달 받아서 활용할 때 사용한다.
+- 따라서 메서드의 타입들을 타입 인자를 통해 변경할 수 없다.
+- 정리하면 제네릭 타입이나 제네릭 메서드가 꼭 필요한 상황이면 <T> 를 사용하고  
+  그렇지 않은 상황이면 와일드카드를 사용하는 것을 권장한다.
+
+#### 2-7-4. 하한 와일드카드
+- 와일드카드는 상한 뿐만아니라 하한도 지정할 수 있따.
+####
+    public class WildcardMain2 {
+    
+        public static void main(String[] args) {
+            Box<Object> objBox = new Box<>();
+            Box<Animal> animalBox = new Box<>();
+            Box<Dog> dogBox = new Box<>();
+            Box<Cat> catBox = new Box<>();
+    
+            // Animal 포함 상위 타입 전달 가능
+            writeBox(objBox);
+            writeBox(animalBox);
+            // Animal 미만 하위 타입 전달 불가능 
+            //writeBox(dogBox);   
+            //writeBox(catBox); 
+            
+            Animal animal = animalBox.get();
+            System.out.println("animal = " + animal);
+        }
+    
+        static void writeBox(Box<? super Animal> box) {
+            box.set(new Dog("멍멍이", 100));
+        }
+    }
 
 
-### 2-9. 타입 이레이저
+
+### 2-8. 타입 이레이저
 
 
 
