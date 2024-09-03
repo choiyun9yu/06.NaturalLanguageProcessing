@@ -457,15 +457,392 @@
 
 
 ### 3-6. 직접 구현하는 배열 리스트3 - 기능 추가
+- MyArrayList 를 더 가치있게 만들기 위해 다음 기능을 추가하자.
+  - add(index, data): index 위치에 데이처를 추가한다.
+  - remove(index): index 위치의 데이터를 삭제한다.
+- 앞서 만든 add( ) 메서드는 리스트의 마지막에 데이터를 추가하기 때문에 배열에 들어 있는 기존 데이터는 이동하지 않는다.  
+  하지만 앞이나 중간에 데이터를 추가하면 배열에 들어 있는 기존 데이터를 이동하고 데이터를 추가해야한다. 
+- 삭제의 경우도 마찬가지다. 마지막에 있는 데이터를 삭제하면 기존 데이터를 이동하지 않아도 된다.   
+  하지만 앞이나 중간에 있는 데이터를 삭제하면 빈자리를 채우기 위해 데이터를 한 칸씩 왼쪽으로 이동해야 한다.
 
+#### 코드 구현
+    public class MyArrayListV3 {
+    
+        private static final int DEFAULT_CAPACITY = 5;
+    
+        private Object[] elementData;
+        private int size = 0;
+    
+        public MyArrayListV3() {
+            elementData = new Object[DEFAULT_CAPACITY];
+        }
+    
+        public MyArrayListV3(int initialCapacity) {
+            elementData = new Object[initialCapacity];
+        }
+    
+        public int size() {
+            return size;
+        }
+    
+        public void add(Object e) {
+            if (size == elementData.length) {
+                grow();
+            }
+            elementData[size] = e;
+            size++;
+        }
+    
+        // 코드추가
+        public void add(int index, Object e) {
+            if (size == elementData.length) {
+                grow();
+            }
+            // 데이터 이동(인덱스를 기준으로 오른쪽으로 한칸씩 이동)
+            shiftRightFrom(index);
+            // 데이터 삽입
+            elementData[index] = e;
+            size++;
+        }
+    
+        // 코드 추가, 요소의 마지막부터 index 까지 오른쪽으로 밀기
+        private void shiftRightFrom(int index) {
+            for (int i = size; i > index; i--) {
+                elementData[i] = elementData[i - 1];
+            }
+        }
+    
+        private void grow() {
+            int oldCapacity = elementData.length;
+            int newCapacity = oldCapacity * 2;
+            elementData = Arrays.copyOf(elementData, newCapacity);
+        }
+    
+        public Object get(int index) {
+            return elementData[index];
+        }
+    
+        public Object set(int index, Object element) {
+            Object oldValue = get(index);
+            elementData[index] = element;
+            return oldValue;
+        }
+    
+        // 코드 추가
+        public Object remove(int index) {
+            Object oldValue = get(index);
+            // 데이터 이동
+            shiftLeftFrom(index);
+            // 사이즈 줄이기
+            size--;
+            elementData[size] = null;
+            // 제거한 값 반환
+            return oldValue;
+        }
+    
+        // 코드 추가, 요소의 index 부터 마지막까지 왼쪽으로 밀기
+        private void shiftLeftFrom(int index) {
+            for (int i = index; i < size - 1; i++) {
+                elementData[i] = elementData[i + 1];
+            }
+        }
+    
+        public int indexOf(Object o) {
+            for (int i = 0; i < size; i++) {
+                if (elementData[i].equals(o)) {
+                    return i;
+                }
+            }
+            return -1;  // 못찾은 경우
+        }
+    
+        public String toString() {
+            // [1, 2, 3, null, null] size=3
+            // [1, 2, 3] size=3
+            return Arrays.toString(Arrays.copyOf(elementData, size)) +
+                    " size=" + size + ", capacity=" + elementData.length;
+        }
+    }
+####
+    public class MyArrayListV3Main {
+    
+        public static void main(String[] args) {
+            MyArrayListV3 list = new MyArrayListV3();
+    
+            // 마지막에 추가 O(1)
+            list.add("a");
+            list.add("b");
+            list.add("c");
+            System.out.println(list);
+    
+            // 원하는 위치에 추가 O(n)
+            System.out.println("addLast");
+            list.add(3, "addLast"); // 0(1)
+            System.out.println(list);
+    
+            System.out.println("addFirst");
+            list.add(0, "addFirst"); // O(n)
+            System.out.println(list);
+    
+            // 원하는 위치 삭제
+            Object removed1 = list.remove(4); // O(1)
+            System.out.println("remove(4) = " + removed1);
+            System.out.println(list);
+    
+            Object removed2 = list.remove(0); // O(n)
+            System.out.println("remove(0) = " + removed2);
+            System.out.println(list);
+        }
+    }
+
+#### 배열 리스트의 빅오
+- 데이터 추가 
+  - 마지막에 추가: O(1)
+  - 앞, 중간에 추가: O(n)
+- 데이터 삭제
+  - 마지막에 삭제: O(1)
+  - 앞, 중간에 삭제: O(n)
+- 인스턴스 조회: O(1)
+- 데이터 검색: O(n)
+
+#### 정리
+- 지금까지 우리가 만든 자료 구조를 배열 리스트(ArrayList)라 한다.
+- 리스트(List) 자료 구조를 사용하는데, 내부의 데이터는 배열(Array)에 보관하는 것이다.
+- 배열 리스트는 마지막에 데이터를 추가하거나 마지막에 있는 데이터를 삭제할 때는 O(1)로 매우 빠르지만,  
+  중간에 데이터를 추가하거나 삭제하는 경우에는 O(n)으로 느리다.
+- 배열 리스트는 보통 데이터를 중간에 추가하고 삭제하는 변경 보다는,  
+  데이터를 순서대로 입력하고(데이터를 마지막에 추가하고), 순서대로 출력하는 경우에 가장 효율적이다.
 
 
 ### 3-7. 직접 구현하는 배열 리스트4 - 제네릭1
+- 앞서 만든 MyArrayList 들은 Object 를 입력받기 때문에 아무 데이터나 입력할 수 있고, 또 결과로 Object 를 반환한다. 
+- 따라서 필요한 경우 다운 캐스팅을 해야하고, 또 타입 안정성이 떨어지는 단점이 있다.
 
+#### 다운 캐스팅 시 오류 발생, ClassCastException 
+    public class MyArrayListV3BadMain {
+    
+        public static void main(String[] args) {
+            MyArrayListV3 numberList = new MyArrayListV3();
+    
+            // 숫자만 입력 하기를 기대
+            numberList.add(1);
+            numberList.add(2);
+            numberList.add("문자3");  // 문자를 입력
+            System.out.println(numberList);
+    
+            // Object 를 반환하므로 다운 캐스팅 필요
+            Integer num1 = (Integer) numberList.get(0);
+            Integer num2 = (Integer) numberList.get(1);
+    
+            // ClassCastException 발생, 문자를 Integer 로 캐스팅
+            Integer num3 = (Integer) numberList.get(2);
+            
+        }
+    }
+- numberList 에는 숫자만 입력하기를 기대했지만, Object 를 받아서 저장하기 때문에 자바의 몸든 타입을 다 저장할 수 있다.
+- 따라서 숫자를 입력하다가 실수로 문자를 입력해도 알아차리지 못한다.
+- 값을 꺼낼 때 Object 를 반환하기 때문에 원래 입력한 타입으로 받으려면 다운 캐스팅 해야 한다.
+- 이때 입력한 데이터 타입을 정확하게 알고 있지 않으면 예외가 발생한다. 지금 처럼 중간에 문자가 들어가면 문제가 될 수 있다.
+- 제네릭을 도입하면 타입 안정성을 확보하면서 이런 문제를 한 번에 해결할 수 있다. 
+- 제네릭은 자료를 보관하는 자료 구조에 가장 어울린다. 
+
+> **!참고** - 하나의 자료 구조에 숫자와 문자처럼 서로 관계없는 여러 데이터 타입을 섞어서 보관하는 일은 거의 없다.  
+> 일반적으로 같은 데이터 타입을 보관하고 관리한다.
+
+#### 제네릭을 적용한 ArrayList
+    public class MyArrayListV4<E> {
+    
+        private static final int DEFAULT_CAPACITY = 5;
+    
+        private Object[] elementData;
+        private int size = 0;
+    
+        public MyArrayListV4() {
+            // 생성자에는 제네릭 타입을 사용하지 못한다.
+            elementData = new Object[DEFAULT_CAPACITY];
+        }
+    
+        public MyArrayListV4(int capacity) {
+            elementData = new Object[capacity];
+        }
+    
+        public int size() {
+            return size;
+        }
+    
+        public void add(E e) {
+            if (size == elementData.length) {
+                grow();
+            }
+            elementData[size] = e;
+            size++;
+        }
+        
+        public void add(int index, E e) {
+            if (size == elementData.length) {
+                grow();
+            }
+            shiftRightFrom(index);
+            elementData[index] = e;
+            size++;
+        }
+        
+        private void shiftRightFrom(int index) {
+            for (int i = size; i > index; i--) {
+                elementData[i] = elementData[i - 1];
+            }
+        }
+    
+        private void grow() {
+            int oldCapacity = elementData.length;
+            int newCapacity = oldCapacity * 2;
+            elementData = Arrays.copyOf(elementData, newCapacity);
+        }
+    
+        @SuppressWarnings("unchecked")  // 경고를 무시하겠다.
+        public E get(int index) {
+            // E 로 다운 캐스팅 필요
+            return (E) elementData[index];
+        }
+    
+        public E set(int index, E element) {
+            E oldValue = get(index);
+            elementData[index] = element;
+            return oldValue;
+        }
+    
+        public E remove(int index) {
+            E oldValue = get(index);
+            shiftLeftFrom(index);
+            size--;
+            elementData[size] = null;
+            return oldValue;
+        }
+        
+        private void shiftLeftFrom(int index) {
+            for (int i = index; i < size - 1; i++) {
+                elementData[i] = elementData[i + 1];
+            }
+        }
+    
+        public int indexOf(E o) {
+            for (int i = 0; i < size; i++) {
+                if (elementData[i].equals(o)) {
+                    return i;
+                }
+            }
+            return -1; 
+        }
+    
+        public String toString() {
+            return Arrays.toString(Arrays.copyOf(elementData, size)) +
+                    " size=" + size + ", capacity=" + elementData.length;
+        }
+    }
+- MyArrayListV4<E> 로 제네릭 타입을 선언한다. E 는 Element 로 요소의 줄임말이다.
+- Object 로 입력받고 출력했던 곳을 타입 매개변수 E 로 변경한다.
+- 생성자의 Object[] elementData 는 그대로 유지한다. 이 부분은 바로 뒤에서 설명한다.
+
+#### 
+    public class MyArrayListV4Main {
+    
+        public static void main(String[] args) {
+            MyArrayListV4<String> stringList = new MyArrayListV4<>();
+            stringList.add("a");
+            stringList.add("b");
+            stringList.add("c");
+            String string = stringList.get(0);
+            System.out.println("str = " + string);
+    
+            MyArrayListV4<Integer> integerList = new MyArrayListV4<>();
+            integerList.add(1);
+            integerList.add(2);
+            integerList.add(3);
+            Integer integer = integerList.get(0);
+            System.out.println("integer = " + integer);
+        }
+    }
+- 이제 stringList 에는 String 문자열만 보관 및 조회하고, integerList에는 Integer 숫자만 보관 및 조회할 수 있다.
+- 다른 타입의 값을 저장하면 컴파일 오류가 발생한다. 
+- 추가로 값을 조회할 때도 위험한 다운 캐스팅 없이 지정한 타입으로 안전하게 조회할 수 있다.
+- 제네릭을 사용한 덕분에 타입 인자로 지정한 타입으로만 안전하게 데이터를 저장하고, 조회할 수 있게 되었다.
+- 제네릭의 도움으로 타입 안정성이 높은 자료 구조를 만들 수 있었다.
 
 
 ### 3-8. 직접 구현하는 배열 리스트5 - 제네릭2
+#### Object 배열을 사용한 이유
+- Object[] elementsData 를 그대로 사용하는 이유
+  - **제네릭은 런타임에 이레이저에 의해 타입 정보가 사라진다. 따라서 런타임에 타입 정보가 필요한 생성자에 사용할 수 없다**.
+  - 제네릭을 기반으로 배열을 생성하는 다음 코드는 작동하지 않고, 컴파일 오류가 발생한다.  
+    참고로 이것은 자바가 제공하는 제네릭의 한계이다.
+  - 대신에 다음과 같이 모든 데이터를 담을 수 있는 Object 를 그대로 사용해야 한다.  
+    
+        new Object[DEFAULT_CAPACITY]
+- 이렇게 Object[ ] 을 생성해서 사용해도 문제가 없는, 이 부분을 조금 더 살펴보자.
+- new MyArrayListV4<String> 을 사용한 경우 E 가 다음과 같이 처리된다.
 
+#### 제네릭 타입 인자 적용 전
+    Object[] elementData;
+    
+    void add(E e) {
+        elementData[size] = e;
+        ...
+    }
+    String get(int index) {
+        return (E) elementData[index];
+    }
+
+#### 제네릭 타입 인자 적용 후 
+    Object [] elementData;
+    
+    void add(String e) {
+        elementData[size] = e;
+        ...
+    }
+    
+    String get(int index) {
+        return (String) elementData[index]
+    }
+
+- elementData[ ] 에 데이터를 보관하는 add(E e) 메서드를 보자. E 타입으로 데이터를 입 력한다.
+- elementData[ ] 에 데이터를 조회하는 get( ) 메서드를 보자. 보관할 때와 같은 E 타입으로 데이터를 다운 캐스팅해서 반환한다.
+- 따라서 배열의 모든 데이터는 E 타입으로 보관된다. 
+- 그리고 get( ) 으로 배열에서 데이터를 꺼낼 때 (E) 로 다운 캐스팅해도 보관한 E 타입으로 다운 캐스팅하기 때문에 문제가 되지 않는다.
+-  구체적인 예시
+   - MyArrayListV4 를 생성할 때 타입 매개변수 E 를 String 으로 지정했다면 elementData 에는 항상 String 이 저장된다.
+   - add(String e) 에서 배열의 모든 데이터는 String 타입으로 보관된다.
+   - get( ) 에서 데이터를 꺼낼 때 항상 (String) 로 다운 캐스팅 한다.   
+   - 저장한 String 타입으로 다운 캐스팅 하기 때문에 아무런 문제가 되지 않는다.
+   - Object 는 모든 데이터를 담을 수 있기 때문에 데이터를 담는데는 아무런 문제가 없다.
+   - 다만 데이터를 조회할 때 문제가 될 수 있는데, 이때는 조회한 Object 타입을 지정한 타입 매개변수로 다운 캐스팅 해준다.
+- 정리하자면 
+   - 생성자에는 제네릭의 타입 매개변수를 사용할 수 없는 한계가 있다.
+   - 따라서 배열을 생성할 때 대안으로 Object 배열을 사용해야 한다.
+   - 하지만 제네릭이 리스트의 데이터를 입력 받고 반환하는 곳의 타입을 고정해준다.
+   - 따라서 고정된 타입으로 Object 배열에 데이터를 보관하고, 꺼낼 때도 같은 고정된 타입으로 안전하게 다운 캐스팅 할 수 있다.
+
+#### MyArrayList의 단점
+- 배열을 사용한 리스트인 MyArrayList 는 다음과 같은 단점이 있다.
+  - 정확한 크기를 미리 알지 못하면 메모리가 낭비된다.   
+    배열을 사용하므로 배열의 뒷 부분에 사용되지 않고, 낭비되는 메모리가 있다.
+  - 데이터를 중간에 추가하거나 삭제할 때 비효율적이다.
+    - 이 경우 데이터를 한 칸씩 밀어야 한다. 이것은 O(n) 으로 성능이 좋지 않다.
+    - 만약 데이터의 크기가 1,000,000 건 이라면 최악의 경우 데이터를 추가할 때 마다 1,000,000 건의 데이터를 밀어야 한다.
+  
+#### ArrayList 의 빅오 정리
+- 데이터 추가
+  - 마지막에 추가: O(1)
+  - 앞,중간에 추가: O(n)
+- 데이터 삭제
+  - 마지막에 삭제: O(1)
+  - 앞,중간에 삭제: O(n)
+- 인덱스 조회: O(1) 
+- 데이터 검색: O(n)
+
+####
+- 배열 리스트는 순서대로 마지막에 데이터를 추가하거나 삭제할 때는 성능이 좋지만,  
+  앞이나 중간에 데이터를 추가하거나 삭제할 때는 성능이 좋지 않다.
+- 다음 시간에는 이런 단점을 해결한 자료 구조인 연결 리스트(LinkedList)에 대해 알아보자.
 
 <br>
 
