@@ -928,7 +928,104 @@
 
 
 ### 4-2. 노드와 연결2
+#### toString( ) - IDE
+- 노드의 연결 상태를 더 편하게 보기 위해 toString( ) 을 오버라이딩 해보자.
+- 먼저 IDE 의 도움을 받아서 구현해보자.
+####
+    public class Node {
+    
+        Object item;
+        Node next;
+    
+        public Node(Object item) {
+            this.item = item;
+        }
+    
+        // 코드 추가, IDE 생성 toString()
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "item=" + item +
+                    ", next=" + next +
+                    '}';
+        }
+    }
+####
+    public class NodeMain2 {
+    
+        public static void main(String[] args) {
+            // 노드 생성하고 연결하기: A -> B -> C
+            Node first = new Node("A"); // x01
+            first.next = new Node("B"); // x02
+            first.next.next = new Node("C");  // x03
+    
+            System.out.println("연결된 노드 출력하기");
+            System.out.println(first);  // Node{item=A, next=Node{item=B, next=Node{item=C, next=null}}}
+    
+            // Node{item=A, next=x02}
+            // Node{item=A, next=Node{item=B, next=x03}}
+            // Node{item=A, next=Node{item=B, next=Node{item=C, next=null}}}
+        }
+    }
+- IDE 의 도움을 받아서 만든 toString( ) 으로 필요한 정보를 확인할 수는 있지만, 한둔에 보기에는 좀 복잡하다.
+- 대신에 [A -> B -> C] 와 같이 필요한 정보만 편리하게 확인할 수 있게 toString( ) 을 직접 구현해보자.
 
+#### toString( ) - 직접 구현
+    public class Node {
+    
+        Object item;
+        Node next;
+    
+        public Node(Object item) {
+            this.item = item;
+        }
+    
+        /* Generate 로 IDE 자동 생성 toString()
+        @Override
+        public String toString() {
+                return "Node{" +
+                    "item=" + item +
+                    ", next=" + next +
+            '}';
+        } */
+    
+        // [A -> B -> C]
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder(); // 루프에서 문자를 더해야 되기 때문에 스트링빌더 사용
+            Node x = this;
+            sb.append("[");
+            while (x != null) {
+                sb.append(x.item);
+                if (x.next != null) {
+                    sb.append("->");
+                }
+                x = x.next;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+    }
+####
+    public class NodeMain2 {
+    
+        public static void main(String[] args) {
+            // 노드 생성하고 연결하기: A -> B -> C
+            Node first = new Node("A"); // x01
+            first.next = new Node("B"); // x02
+            first.next.next = new Node("C");  // x03
+    
+            System.out.println("연결된 노드 출력하기");
+            System.out.println(first);  // Node{item=A, next=Node{item=B, next=Node{item=C, next=null}}}
+    
+            Node modeB = first.next;
+            System.out.println(modeB);
+    
+            // Node{item=A, next=x02}
+            // Node{item=A, next=Node{item=B, next=x03}}
+            // Node{item=A, next=Node{item=B, next=Node{item=C, next=null}}}
+        }
+    }
 
 
 ### 4-3. 노드와 연결3
