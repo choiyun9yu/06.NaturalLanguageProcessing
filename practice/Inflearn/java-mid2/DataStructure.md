@@ -848,9 +848,87 @@
 
 ## 4. 컬렉션 프레임워크 - LinkedList
 ### 4-1. 노드와 연결1
+#### 배열 리스트의 단점
+- 배열 리스트는 내부에 배열을 사용해서 데이터를 보관하고 관리한다. 이로 인해 다음과 같은 단점을 가진다.
+  - 배열은 필요한 배열의 크기를 미리 확보해야 한다. 데이터가 얼마나 추가될지 예측할 수 없는 경우 나머지 공간은 낭비된다.
+  - 배열의 중간 데이터 추가/삭제 시 기존 데이터들을 이동시켜야 해서 성능이 좋지 않다.
+
+#### 노드와 연결
+- 낭비되는 메모리 없이 딱 필요한 만큼만 메모리를 확보해서 사용하고,  
+  또 앞이나 중간에 데이터를 추가하거나 삭제할 때도 효율적인 자료구조가 있다.
+- 바로 노드를 만들고 각 노드를 서로 연결하는 방식이다.
+- 노드 클래스 
+
+      public class Node {
+          Object item;
+          Node next;
+      }
+  - 노드 클래스는 내부에 저장할 데이터인 Item 과, 다음으로 연결한 노드의 참조인 next 를 가진다.
+  - 이 노드 클래스를 사용해서 데이터 A, B, C 를 순서대로 연결해보자.
+- 노드에 데이터 A 추가  
+    ![img_20.png](img_20.png)   
+    - Node 인스턴스를 생성하고, item 에 "A" 를 넣어준다.   
+  
+    ![img_21.png](img_21.png)
+    - Node 인스턴스를 생성하고, item 에 "B" 를 넣어준다.
+    - 처음 만든 노드의 Node next 필드에 새로 만든 노드의 참조값을 넣어준다.
+    - 이렇게 하면 첫 번째 노드와 두 번째 노드가 서로 연결된다.
+    - 첫 번째 노드의 node.next 를 호출하면 두 번째 노드를 구할 수 있다.  
+
+    ![img_22.png](img_22.png) 
+    - Node 인슽너스를 생성하고, item 에 "C" 를 넣어준다.
+    - 두 번째 만든 노드의 Node next 필드에 새로 만든 노드의 참조값을 넣어준다.
+    - 이렇게하면 두 번째 노드와 세 번째 노드가 서로 연결된다.
+    - 첫 번째 노드의 node.next 를 호출하면 두 번째 노드를 구할 수 있다.
+    - 두 번째 노드의 node.next 를 호출하면 세 번째 노드를 구할 수 있다.
+    - 첫 번째 노드의 node.next.next 를 호출하면 세 번째 노드를 구할 수 있다.
+  
+#### 코드 예제 
+    public class Node {
+    
+        Object item;
+        Node next;
+    
+        public Node(Object item) {
+            this.item = item;
+        }
+    }
+- 필드의 접근 제어자는 private 으로 선언하는 것이 좋지만, 이 예제에서는 설명을 단순하게 하기 위해 디폴트 접근 제어자를 사용했다.
+####
+    public class NodeMain1 {
+    
+        public static void main(String[] args) {
+            // 노드 생성하고 연결하기:  A -> B -> C
+            Node first = new Node("A");
+            first.next = new Node("B");
+            first.next.next = new Node("C");
+
+            Node x = first;
+            while (x != null) {
+                System.out.println(x.item);
+                x = x.next;
+            }
+        }
+    }
+
+#### 연결된 노드를 찾는 방법
+- Node first 를 통해 첫 번째 노드를 구할 수 있다.
+- 첫 번째 노드의 node.next 를 호출하면 두 번째 노드를 구할 수 있다.
+- 두 번째 노드의 node.next 를 호출하면 세 번째 노드를 구할 수 있다.
+- 첫 번째 노드의 node.next.next 를 호출하면 세 번째 노드를 구할 수 있다.
+
+#### 모든 노드 탐색하기
+![img_23.png](img_23.png)
+    
+    Node x = first;
+    while (x != null) {
+        System.out.println(x.item);
+        x = x.next;
+    }
 
 
 ### 4-2. 노드와 연결2
+
 
 
 ### 4-3. 노드와 연결3
