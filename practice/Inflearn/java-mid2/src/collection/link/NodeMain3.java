@@ -19,8 +19,18 @@ public class NodeMain3 {
         System.out.println("lastNode = " + lastNode);
 
         // 특정 index 의 노드 조회하기
+        int index = 2;
+        Node index2Node = getNode(first, index);
+        System.out.println("index2Node = " + index2Node.item);
 
-
+        // 데이터 추가하기
+        System.out.println("데이터 추가하기");
+        add(first, "D");
+        System.out.println(first);
+        add(first, "E");
+        System.out.println(first);
+        add(first, "F");
+        System.out.println(first);
     }
 
     private static void printAll(Node node) {
@@ -29,7 +39,6 @@ public class NodeMain3 {
             System.out.println(x.item);
             x = x.next;
         }
-
     }
 
     private static Node getLastNode(Node node) {
@@ -39,6 +48,21 @@ public class NodeMain3 {
             x = x.next;
         }
         return x;
+    }
+
+    private static Node getNode(Node node, int index) {
+        Node x = node;
+        // next 를 인덱스 번호만큼 호출하하기 위해서 루프문 사용
+        for (int i = 0; i < index; i++) {
+            x = x.next;
+        }
+        return x;
+    }
+
+    private static void add(Node node, String item) {
+        // 데이터 추가는 마지막 노드에 연결하는 것이기 때문에 마지막을 먼저 찾아야 한다.
+        Node lastNode = getLastNode(node);
+        lastNode.next = new Node(item);
     }
 
 }

@@ -1029,16 +1029,322 @@
 
 
 ### 4-3. 노드와 연결3
+    public class NodeMain3 {
+    
+        public static void main(String[] args) {
+            // 노드 생성하고 연결하기: A -> B -> C
+            Node first = new Node("A"); // x01
+            first.next = new Node("B"); // x02
+            first.next.next = new Node("C");  // x03
+    
+            System.out.println(first);
+    
+            // 모든 노드 탐색하기
+            System.out.println("모든 노드 탐색하기");
+            printAll(first);
+    
+            // 마지막 노드 조회하기
+            Node lastNode = getLastNode(first);
+            System.out.println("lastNode = " + lastNode);
+    
+            // 특정 index 의 노드 조회하기
+            int index = 2;
+            Node index2Node = getNode(first, index);
+            System.out.println("index2Node = " + index2Node.item);
+    
+            // 데이터 추가하기
+            System.out.println("데이터 추가하기");
+            add(first, "D");
+            System.out.println(first);
+            add(first, "E");
+            System.out.println(first);
+            add(first, "F");
+            System.out.println(first);
+        }
+    
+        private static void printAll(Node node) {
+            Node x = node;
+            while (x != null) {
+                System.out.println(x.item);
+                x = x.next;
+            }
+        }
+    
+        private static Node getLastNode(Node node) {
+            Node x = node;
+            // 다음 노드가 null 이면, 현재 노드가 마지막 노드임을 알 수 있음
+            while (x.next != null) {
+                x = x.next;
+            }
+            return x;
+        }
+    
+        private static Node getNode(Node node, int index) {
+            Node x = node;
+            // next 를 인덱스 번호만큼 호출하하기 위해서 루프문 사용
+            for (int i = 0; i < index; i++) {
+                x = x.next;
+            }
+            return x;
+        }
+    
+        private static void add(Node node, String item) {
+            // 데이터 추가는 마지막 노드에 연결하는 것이기 때문에 마지막을 먼저 찾아야 한다.
+            Node lastNode = getLastNode(node);
+            lastNode.next = new Node(item);
+        }
+    
+    }
+#### 모든 노드 탐색하기
+- printAll(Node node): 다음 노드가 없을 때 까지 반복해서 노드의 데이터를 출력한다.
 
+#### 마지막 노드 조회하기
+- Node getLastNode(Node node): 마지막 노드를 조회한다.
+- Node.next 의 참조값이 null 이면 노드의 끝이다.
+- getLastNode( ) 는 노드를 순서대로 탐색하면서 Node.next 의 참조값이 null 인 노드를 찾아서 반환한다.
+
+#### 특정 index 의 노드 조회하기
+- getNode(Node node, int index): index 로 특정 위치의 노드를 찾는다.
+- x = x.next 를 호출할 때마다 x 가 참조하는 노드의 위치가 순서대로 하나씩 증가한다.
+- index 의 수 만큼 반복해서 이동하면 원하는 위치의 노드를 찾을 수 있다.
+
+#### 데이터 추가하기
+- 데이터를 추가할 때는 새로운 노드를 만들고, 마지막 노드에 새로 만든 노드를 연결하면 된다.
+- 순서대로 설명하면 먼저 마지막 노드를 찾고, 마지막 노드의 next 에 새로운 노드를 연결하면 된다.
+
+#### 정리 
+- 노드는 내부에 데이터와 다음 노드에 대한 참조를 가지고 있다.
+- 지금까지 설명한 구조는 각각의 노드가 참조를 통해 연결(Link, 링크)되어 있다.
+- 데이터를 추가할 때 동적으로 필요한 만큼의 노드만 만들어서 연결하면 된다. 따라서 배열과 다르게 메모리를 낭비하지 않는다.
+  - 물론 next 필드를 통해 참조값을 보관해야 하기 때문에 배열과 비교해서 추가적인 메모리 낭비도 발생한다.
+- 노드와 연결 구조를 처음 공부하면 이해하기 쉽지 않다. 하지만 반복해서 학습하고 또 코드도 직접 만들어 보면서 반드시 이해해야 한다.  
+  이해가 어렵다면 코드를 따라서 종이에 천천히 노드를 그려보면 이해가 될 것이다.
+- 이렇게 각각의 노드를 연결(링크)해서 사용하는 자료 구조로 리스트를 만들 수 있는데, 이것을 연결 리스트라 한다.
 
 
 ### 4-4. 직접 구현하는 연결 리스트1 - 시작
+- 우리는 앞서 배열을 통해서 리스트를 만들었는데 이것을 배열 리스트(ArrayList)라 한다.
+- 이번에는 배열이 아닌 학습한 노드와 연결 구조를 통해서 리스트를 만들어 보자. 이런 자료 구조를 연결 리스트(LinkedList)라 한다.
+- 연결 리스트는 배열 리스트의 단점인, 메모리 낭비, 중간 위치의 데이터 추가에 대한 성능 문제를 어느정도 극복할 수 있다.
 
+#### 리스트 자료 구조
+- 순서가 있고, 중복을 허용하는 자료 구조를 리스트(List)라고 한다.
+- 우리는 앞서 MyArrayList 시리즈를 만들어 보았다. 배열 리스트도, 연결 리스트도 모두 같은 리스트이다.
+- 리스트의 내부에서 배열을 사용하는가 아니면 노드와 연결 구조를 사용하는가의 차이가 있을 뿐이다.
+- 배열 리스트를 사용하든 연결리스트를 사용하든 둘다 리스트 자료 구조이기 때문에 리스트를 사용하는 개발자 입장에서는  
+  거의 비슷하게 느껴져야 한다. 
+- 쉽게 이야기해서 리스트를 사용하는 개발자 입장에서 MyArrayList 를 사용하든 MyLinkedList 를 사용하든 내부를 몰라도,   
+  그냥 순서가 있고, 중복을 허용하는 자료 구조구나 생각하고 사용할 수 있어야 한다.
+
+#### 연결 리스트 직접 구현 
+    public class MyLinkedListV1 {
+    
+        private Node first;
+        private int size = 0;
+    
+        public void add(Object o) {
+            Node newNode = new Node(o);
+            if (first == null) {
+                first = newNode;
+            } else {
+                Node lastNode = getLastNode();
+                lastNode.next = newNode;
+            }
+            size++;
+        }
+    
+        private Node getLastNode() {
+            Node x = first;
+            while (x.next != null) {
+                x = x.next;
+            }
+            return x;
+        }
+    
+        public Object set(int index, Object e) {
+            // 값을 세팅하고 이전 값 반환
+            Node x = getNode(index);
+            Object oldValue = x.item;
+            x.item = e;
+            return oldValue;
+        }
+    
+        public Object get(int index) {
+            Node node = getNode(index);
+            return node.item;
+        }
+    
+        private Node getNode(int index) {
+            Node x = first;
+            for (int i = 0; i < index; i++) {
+                x = x.next;
+            }
+            return x;
+        }
+    
+        public int indexOf(Object o) {
+            int index = 0;
+            for(Node x = first; x != null; x = x.next) {
+                if(x.item.equals(o)) {
+                    return index;
+                }
+                index++;
+            }
+            return -1;
+        }
+    
+        public int size() {
+            return size;
+        }
+    
+        @Override
+        public String toString() {
+            return "MyLinkedListV1{" +
+                    "first=" + first +
+                    ", size=" + size +
+                    '}';
+        }
+    }
+- Node first: 첫 노드의 위치를 가리킨다.
+- size: 자료 구조에 입력된 데이터의 사이즈, 데이터가 추가될 때 마다 하나씩 증가한다.
+- void add(Object)
+  - 마지막에 데이터를 추가한다.
+  - 새로운 노드를 만들고, 마지막 노드를 찾아서 새로운 노드를 마지막에 연결한다.
+  - 만약 노드가 하나도 없다면 새로운 노드를 만들고 first 에 연결한다.
+- Object set(int index, Object element)
+  - 특정 위치에 있는 데이터를 찾아서 변경한다. 그리고 기존 값을 반환한다.
+  - getNode(index) 를 통해 특정 위치에 있는 노드를 찾고, 단순히 그 노드에 있는 item 데이터를 변경한다.
+- Object get(int index)
+  - 특정 위치에 있는 데이터를 반환한다.
+  - getNode(index) 를 통해 특정 위치에 있는 노드를 찾고, 해당 노드에 있는 값을 반환한다.
+- int indexOf(Object o)
+  - 데이터를 검색하고, 검색된 위치를 반환한다.
+  - 모든 노드를 순회하면서 equals( )를 사용해서 같은 데이터가 있는지 찾는다.
+
+####
+    public class MyLinkedListV1Main {
+    
+        public static void main(String[] args) {
+            MyLinkedListV1 list = new MyLinkedListV1();
+            System.out.println(list);
+            System.out.println("==데이터 추가==");
+            list.add("a");
+            System.out.println(list);
+            list.add("b");
+            System.out.println(list);
+            list.add("c");
+            System.out.println(list);
+    
+            System.out.println("==기능 사용==");
+            System.out.println("list.size() = " + list.size());
+            System.out.println("list.get(1) = " + list.get(1));
+            System.out.println("list.indexOf(\"c\") = " + list.indexOf("c"));
+            System.out.println("list.set(2, \"z\") = " + list.set(2, 'z'));
+            System.out.println(list);
+
+            list.add("d");
+            System.out.println(list);
+            list.add("e");
+            System.out.println(list);
+            list.add("f");
+            System.out.println(list);
+        }
+    }
+- MyArrayListV1Main 에 있는 코드를 거의 그대로 사용했다.
+- 연결 리스트는 데이터를 추가할 때마다 동적으로 노드가 늘어나기 때문에 범위를 초과하는 문제는 발생하지 않는다.
+
+#### 연결 리스트와 빅오 
+![img_24.png](img_24.png)
+- **Object get(int index)**
+  - 특정 위치에 있는 데이터를 반환한다.
+  - O(n)
+    - 배열은 인덱스로 원하는 데이터를 즉시 찾을 수 있다. 
+    - 따라서 배열을 사용하는 배열 리스트(ArrayList)도 인덱스로 조회시 O(1)의 빠른 성능을 보장한다.  
+    - 하지만 연결 리스트에서 사용하는 노드들은 배열이 아니다. 단지 다음 노드에 대한 참조가 있을 뿐이다.
+    - 인덱스로 원하는 위치의 데이터를 찾으려면 인덱스 숫자만큼 다음 노드를 반복해서 찾아야 한다.
+    - 따라서 인덱스 조쇠 성능이 나쁘다.
+    - 특정 위치의 노드를 찾는데 O(n) 이 걸린다.
+- **void add(Object e)**
+  - 마지막에 데이터를 추가한다.
+  - O(n)
+    - 마지막 노드를 찾는데 O(n)이 소요된다. 
+    - 마지막 노드에 새로운 노드를 추가하는데 O(1) 이 걸린다.
+- **Object set(int index, Object e)**
+  - 특정 위치에 있는 데이터를 찾아서 변경한다. 그리고 기존 값을 반환한다.
+  - O(n)
+    - 특정 위치의 노드를 찾는데 O(n)이 걸린다.
+- **int indexOf(Object o)**
+  - 데이터를 검색하고, 검색된 위치를 반환한다.
+  - O(n)
+    - 모든 노드를 순회하면서 equals( )를 사용해서 같은 데이터가 있는지 찾는다.
+  
+#### 정리
+- 연결 리스트를 통해 데이터를 추가하는 방식은 꼭 필요한 메모리만 사용한다. 
+- 따라서 배열 리스트의 단점인 메모리 낭비를 해결할 수 있었다.
+  - 물론 연결을 유지하기 위한 추가 메모리가 사용되는 단점도 함께 존재한다.
+  
 
 ### 4-5. 직접 구현하는 연결 리스트2 - 추가와 삭제1
+- 배열 리스트는 중간에 데이터를 추가하거나 삭제할 때 기존 데이터를 한 칸씩 이동해야 하는 문제가 있었다.
+- 연결 리스트는 이 문제를 어떻게 해결하는지 알아보기 위해 다음 두 기능을 추가해보자.
+- **void add(int index, Object e)**
+  - 특정 위치에 데이터를 추가한다.
+  - 내부에서 노드도 함께 추가된다.
+- **Object remove(int index)**
+  - 특정 위치에 있는 데이터를 제거한다.
+  - 내부에서 노드도 함께 제거된다.
+
+#### 첫 번째 위치에 데이터 추가
+![img_25.png](img_25.png)  
+![img_26.png](img_26.png)  
+![img_27.png](img_27.png)
+- 노드를 추가했으므로 오른족 노드의 index 가 하나씩 뒤로 밀려난다. (물리적으로가 아니라 논리적으로 밀려난다.)
+  - 연결 리스트는 배열처럼 실제 index 가 존재하는 것이 아니다. 처음으로 연결된 노드를 index 0,  
+    그 다음으로 연결된 노드를 index 1 로 가정할 뿐이다. 연결 리스트에서 index 는 연결된 순서를 뜻한다.
+- 배열의 경우 첫 번재 항목에 데이터가 추가되면 모든 데이터를 오른쪽으로 하나씩 밀어야 하지만  
+  연결 리스트는 새로 생성한 노드의 참조만 변경하면 된다. 나머지 노드는 어떤 일이 일어난지도 모른다.
+- 연결 리스트의 첫 번째 항목에 값을 추가하는 것은 매우 빠르다. O(1)로 표현할 수 있다.  
+  (실제로는 한 번이 아니어도 상수로 나오는 연산은 O(1)로 표현한다.)
+
+#### 첫 번째 위치의 데이터 삭제 
+![img_28.png](img_28.png)  
+![img_29.png](img_29.png)   
+![img_30.png](img_30.png)  
+- 더는 삭제 노드를 참조하는 곳이 없다. 이후 삭제 노드는 GC 의 대상이 되어서 제거된다.
+- 노드를 삭제했으므로 오른족 노드의 index 가 하나씩 당겨진다.
+- 배열의 경우 첫 번재 항목이 삭제되면 모든 데이터를 왼쪽으로 하나씩 밀어야 하지만  
+  연결 리스트는 일부 참조만 변경하면 된다. 나머지 노드는 어떤 일이 일어난지도 모른다.
+- 연결 리스트의 첫 번째 항목에 값을 삭제하는 것은 매우 빠르다. O(1)로 표현할 수 있다.
+
+#### 중간 위치에 데이터 추가
+![img_31.png](img_31.png)  
+![img_32.png](img_32.png)   
+![img_33.png](img_33.png)  
+- 노드를 추가했으므로 추가한 노드 오른쪽에 있는 노드들의 index 가 하나씩 뒤로 밀려난다.
+- 배열의 경우 첫 번째 항목에 데이터가 추가되면 모든 데이터를 오른쪽으로 하나씩 밀어야 하지만  
+  연결 리스트는 새로 생성한 노드의 참조만 변경하면 된다. 나머지 노드는 어떤 일이 일어난지 모른다.
+- O(n)
+  - 연결 리스트는 인덱스를 사욕해서 노드를 추가할 위치를 찾는데 O(n)이 걸린다.
+  - 위치를 찾고 노드를 추가하는데 O(1)이 걸린다.
+  - 따라서 둘을 합치면 O(n)이 걸린다.
+
+#### 중간 위치의 데이터 삭제
+![img_34.png](img_34.png)  
+![img_35.png](img_35.png)  
+![img_36.png](img_36.png)  
+- 노드를 삭제했으므로 오른쪽 노드의 index 가 하나씩 당겨진다.
+- O(n)의 성능이다.
+  - 연결 리스트에서 인덱스로 삭제할 항목을 찾는데 O(n)이 걸린다.
+  - 연결 리스트에서 항목을 삭제하는 것은 매우 빠르다. O(1)로 표현할 수 있다.
+- 연결 리스트와 배열 리스트 둘다 중간에 있는 항목을 추가하거나 삭제하는 경우 같은 O(n)이다.
+- 배열 리스트는 찾는데 O(1) 이지만 추가하거나 삭제한 뒤 O(n) 이고,  
+  연결 리스트는 찾는데 O(n) 이지만 추가하거나 삭제할 땐 O(1) 이다.  
 
 
 ### 4-6. 직접 구현하는 연결 리스트3 - 추가와 삭제2
+- 특정 위치에 있는 데이터를 추가하고, 삭제하는 기능을 코드로 구현해보자.
+####
+
 
 
 ### 4-7. 직접 구현하는 연결 리스트4 - 제네릭 도입
