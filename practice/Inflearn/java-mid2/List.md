@@ -1452,8 +1452,174 @@
 
 
 ### 4-7. 직접 구현하는 연결 리스트4 - 제네릭 도입
+- 지금까지 만든 연결 리스트에 제네릭을 도입해서 타입 안정성을 높여보자.
+- 추가로 여기서 사용하는 Node 는 외부에서 사용되는 것이 아니라 연결 리스트 내부에서만 사용된다. 
+- 따라서 중첩 클래스로 만들자.
 
+####
+    public class MyLinkedListV3<E> {
+    
+        private Node<E> first;
+        private int size = 0;
+    
+        public void add(E o) {
+            Node<E> newNode = new Node<>(o);
+            if (first == null) {
+                first = newNode;
+            } else {
+                Node<E> lastNode = getLastNode();
+                lastNode.next = newNode;
+            }
+            size++;
+        }
+    
+        private Node<E> getLastNode() {
+            Node<E> x = first;
+            while (x.next != null) {
+                x = x.next;
+            }
+            return x;
+        }
+    
+        // 추가 코드
+        public void add(int index, E o) {
+            Node<E> newNode = new Node<>(o);
+            if (index == 0) {   // 처음에 추가
+                newNode.next = first;
+                first = newNode;
+            } else {            // 중간에 추가
+                // 직전 노드를 찾기 위해서 -1
+                Node<E> prev = getNode(index - 1);
+                newNode.next = prev.next;
+                prev.next = newNode;
+            }
+            size++;
+        }
+    
+        public E set(int index, E e) {
+            // 값을 세팅하고 이전 값 반환
+            Node<E> x = getNode(index);
+            E oldValue = x.item;
+            x.item = e;
+            return oldValue;
+        }
+    
+        // 추가 코드
+        public E remove(int index) {
+            Node<E> removeNode = getNode(index);
+            E removedItem = removeNode.item;
+            if (index == 0) {   // 첫 노드 삭제
+                first = removeNode.next;
+            } else {            // 중간 노드 삭제
+                Node<E> prev = getNode(index - 1);
+                prev.next = removeNode.next;
+            }
+            removeNode.item = null;
+            removeNode.next = null;
+            size--;
+    
+            return removedItem;
+        }
+    
+    
+        public E get(int index) {
+            Node<E> node = getNode(index);
+            return node.item;
+        }
+    
+        private Node<E> getNode(int index) {
+            Node<E> x = first;
+            for (int i = 0; i < index; i++) {
+                x = x.next;
+            }
+            return x;
+        }
+    
+        public int indexOf(E o) {
+            int index = 0;
+            for(Node<E> x = first; x != null; x = x.next) {
+                if(x.item.equals(o)) {
+                    return index;
+                }
+                index++;
+            }
+            return -1;
+        }
+    
+        public int size() {
+            return size;
+        }
+    
+        @Override
+        public String toString() {
+            return "MyLinkedListV1{" +
+                    "first=" + first +
+                    ", size=" + size +
+                    '}';
+        }
+    
+        private static class Node<E> {
+            E item;
+            Node<E> next;
+    
+            public Node(E item) {
+                this.item = item;
+            }
+    
+            // [A -> B -> C]
+            @Override
+            public String toString() {
+                StringBuilder sb = new StringBuilder(); // 루프에서 문자를 더해야 되기 때문에 스트링빌더 사용
+                Node<E> x = this;
+                sb.append("[");
+                while (x != null) {
+                    sb.append(x.item);
+                    if (x.next != null) {
+                        sb.append("->");
+                    }
+                    x = x.next;
+                }
+                sb.append("]");
+                return sb.toString();
+            }
+        }
+    }
+- MyLinkedListV3<E> 로 제네릭 클래스를 선언했다.
+- Object 로 처리하던 부분을 타입 매개변수 <E> 로 변경했다.
+- 정적 중첩 클래스로 새로 선언한 Node<E> 도 제네릭으로 선언했다.
 
+#### 중첩 클래스 예시
+    class OuterClass {
+        ...
+        static class StaticnestedClass {
+            ...
+        }
+    }
+- 이렇게 클래스 안에서 클래스를 선언하는 것을 중첩 클래스라고 한다.
+- 중첩 클래스는 특정 클래스 안에서만 사용될 때 주로 사용한다.
+- Node 클래스는 MyLinkedList 안에서만 사용된다. 외부에서는 사용할 이유가 없다.
+- 이럴 때 중첩 클래스를 사용하면 특정 클래스 안으로 클래스 선언을 숨길 수 있다.
+- 중첩 클래스를 사용하면 MyLinkedListV3 입장에서 외부에 있는 Node 클래스보다 내부에 선언한 Node 클래스를 먼저 사용한다.
+
+#### 
+    public class MyLinkedListV3Main {
+    
+        public static void main(String[] args) {
+            MyLinkedListV3<String> stringList = new MyLinkedListV3<>();
+            stringList.add("a");
+            stringList.add("b");
+            stringList.add("c");
+            String string = stringList.get(0);
+            System.out.println("string = " + string);
+    
+            MyLinkedListV3<Integer> integerList = new MyLinkedListV3<>();
+            integerList.add(1);
+            integerList.add(2);
+            integerList.add(3);
+            Integer integer = integerList.get(1);
+            System.out.println("integer = " + integer);
+        }
+    }
 
 <br>
 
