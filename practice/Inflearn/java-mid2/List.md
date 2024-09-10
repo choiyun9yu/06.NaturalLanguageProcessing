@@ -1698,7 +1698,31 @@
 - BatchProcessor 의 내부 코드도 MyArrayList 에서 MyLinkedList 를 사용하도록 함께 변경해야 한다.
 
 #### 구체적인 MyLinkedList 에 의존하는 BatchProcessor 예시 
-public class BatchPro
+    public class BatchProcessor {
+        private final MyLinkedList<Integer> list = new MyLinkedList<>();    // 코드 변경
+        
+        public void logic(int size) {
+            for (int 1 = 0; 1 < size; i++) {
+                list.add(0, i); // 앞에 추가
+            }
+        }
+    }
+- BatchProcessor 는 구체적인 MyArrayList 또는 MyLinkedList 를 사용하고 있다.
+- 이것을 BatchProcessor 가 구체적인 클래스에 의존한다고 표현한다.
+- 이렇게 구체적인 클래스에 직접 의존하면 MyArrayList 를 MyLinkedList 로 변경할 때마다   
+  여기에 의존하는 BatchProcessor 의 코드도 함께 수정해야 한다.
+- BatchProcessor 가 구체적인 클래스에 의존하는 대신 추상적인 MyList 인터페이스에 의존하는 방법도 있다.
+
+#### 추상적인 MyList 에 의존하는 BatchProcessor 예시
+public class BatchProcessor {
+    
+    private final MyList<Integer> list;
+
+    public BatchProcessor(MyList<Integer> list) {
+        this.list = list;
+    }
+}
+
 
 ### 5-3. 리스트 추상화3 - 컴파일 타임, 런타임 의존관계
 
