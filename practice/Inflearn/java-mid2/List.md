@@ -1624,11 +1624,81 @@
 <br>
 
 ## 5. 컬렉션 프레임워크 - List
-### 5-1. 리스트 추상화1 - 인터페이스 도입
+- 자바 기본편에서 학습한 다형성과 OCP 원칙을 가장 잘 활용할 수 있는 곳 중 하나가 자료구조이다.
+- 자료 구조에서 다형성과 OCP 원칙이 어떻게 적용되는지 알아보자.### 5-1. 리스트 추상화1 - 인터페이스 도입
+
+> **!참고** - OCP 원칙   
+> Open/Clos Principle, 개방- 폐쇄 원칙으로 객체지향 설계 원칙 중 하나이다.  
+> 확장에는 열려있고, 수정에는 닫혀 있어야 한다는 개념을 의미한다.
+> - Open: 새로운 기능이나 요구사항이 추가될 때, 기존 코드를 변경하지 않고도 새로운 기능을 추가할 수 있어야 한다.
+> - Close: 기존 코드가 잘 작동하고 있다면, 그 코드를 수정하지 않아야 한다.   
+>   즉, 기존 코드의 안정성을 유지하면서 새로운 기능을 추가할 수 있어야 한다.
+
+### 5-1. 리스트 추상화1 - 인터페이스 도입 
+#### List 자료 구조
+- 순서가 있고, 중복을 허용하는 자료 구조를 리스트(List)라 한다.
+- 우리가 지금까지 만든 MyArrayList 와 MyLinkedList 는 내부 구현만 다를 뿐 같은 기능을 제공하는 리스트이다.  
+- 물론 내부 구현이 다르기 때문에 상황에 따라 성능은 달라질 수 있다.
+- 핵심은 사용자 입장에서 보면 같은 기능을 제공한다는 것이다.
+- 이 둘의 공통 기능을 인터페이스로 봅아서 추상화하면 다형성을 활용한 다양한 이득을 어얻을 수 있다. 
+####
+![img_37.png](img_37.png)
+
+    public interface MyList<E> {
+    
+        int size();
+    
+        void add(E e);
+    
+        void add(int index, E e);
+    
+        E get(int index);
+    
+        E set(int index, E e);
+    
+        E remove(int index);
+    
+        int indexOf(E e);
+    }
+
+####
+    public class MyArrayList<E> implements MyList<E> {
+        ...
+    }
+
+####
+    public class MyLinkedList<E> implements MyList<E> {
+        ...
+    }
+- 기존의 작성한 코드와 메서드 이름이 같기 때문에 문제가 발생하지는 않을 것이다.
+- 만약 메서드 정보가 다르다면 오류가 발생할 수 있다. 이때는 MyList 인터페이스 맞추면 된다.
+- 추가로 재정의한 메서드에 @Override 어노테이션을 넣어주자.
 
 
 ### 5-2. 리스트 추상화2 - 의존관계 주입
+- MyArrayList 를 활용해서 많은 데이터를 처리하는 BatchProcessor 클래스를 개발하고 있다고 가정하자.
+- 그런데 막상 프로그램을 개발하고 보니 데이터를 앞에서 추가하는 일이 많은 상황이라고 가정해보자.
+- 데이터를 앞에서 추가하거나 삭제하는 일이 많다면 MyArrayList 보다는 MyLinkedList 를 사용하는 것이 훨씬 효율적이다.
 
+#### 데이터를 앞에서 추가하거나 삭제할 때 빅오 비교 
+- MyArrayList: O(n)
+- MyLinkedList: O(1)
+
+#### 구체적인 MyArrayList 에 의존하는 BatchProcessor 예시 
+    public class BatchProcessor {
+        private final MyArrayList<Integer> list = new MyArrayList<>();  // 코드 변경
+    
+        public void logic(int size) {
+            for (int i = 0; i < size; i++) {
+                list.add(0, i); // 앞에 추가 
+            }
+        }
+    }
+- MyArrayList 를 사용해보니 성능이 너무 느려서 MyLinkedList 를 사용하도록 코드를 변경해야 한다면  
+- BatchProcessor 의 내부 코드도 MyArrayList 에서 MyLinkedList 를 사용하도록 함께 변경해야 한다.
+
+#### 구체적인 MyLinkedList 에 의존하는 BatchProcessor 예시 
+public class BatchPro
 
 ### 5-3. 리스트 추상화3 - 컴파일 타임, 런타임 의존관계
 
