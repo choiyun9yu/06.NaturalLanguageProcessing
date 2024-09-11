@@ -1789,24 +1789,240 @@
     (for 문으로 O(n) 만큼 돌고, 배열 리스트 앞에 추가라서 O(n) 만큼 돌아서 O(n^2)) 
 #### MyLinked - 실행 결과
     크기: 50000, 계산 시간: 3ms
-    (for 문으로 O(n) 만큼 돌고, 연결 리스트 앞에 추가라서 O(n) 만큼 돌아서 O(n))
+    (for 문으로 O(n) 만큼 돌고, 연결 리스트 앞에 추가라서 O(1) 만큼 돌아서 O(n))
+- MyLinkedList 를 사용한 덕분에 O(n) -> O(1) 성능이 개선된 것을 확인할 수 있다.
+- 이러한 성능 차이는 데이터 양이 증가할수록 더 벌어진다.
+
 
 ### 5-3. 리스트 추상화3 - 컴파일 타임, 런타임 의존관계
+- 의존관계는 크게 컴파일 타임 의존관계와 런타임 의존관계로 나눌 수 있다.
+  - 컴파일 타임(compile time): 코드 컴파일 시점을 뜻한다. 
+  - 런 타임(runtime): 프로그램 실행 시점을 뜻한다.
+
+#### 컴파일 타임 의존관계 vs 런타임 의존관계
+![img_38.png](img_38.png)
+- 컴파일 타임 의존관계는 자바 컴파일러가 보는 의존관계이다. 클래스에 모든 의존관계가 다 나타난다.
+- 쉽게 이야기해서 클래스에 바로 보이는 의존관계이다. 그리고 실행하지 않은 소스 코드에 정적으로 나타나는 의존관계이다.
+- BatchProcessor 클래스는 MyList 인터페이스만 사용한다. 코드 어디에서 MyArrayList 나 MyLinkedList 같은 정보는 보이지 않는다.
+- 따라서 BatchProcessor 는 MyList 인터페이스에만 의존한다.
+- 화살표의 의미는 이 클래스가 화살표로 가리키는 클래스의 정보를 알고 있다는 것이다.   
+  (자식은 부모를 알지만, 부모는 자식을 모른다.)
+####
+![img_39.png](img_39.png)  
+![img_40.png](img_40.png)
+- 런타임 의존관계는 실제 프로그램이 작동할 때 보이는 의존관계다. 주로 생성된 인스턴스와 그것을 참조하는 의존관계다.
+- 쉽게 이야기해서 프로그램이 실행될 때 인스턴스 간에 의존관계로 보면 된다.
+- 런타임 의존관계는 프로그램 실행 중에 계속 변할 수 있다.
+- 다음과 같이 코드를 작성하고 실행한다고 가정해보자
+
+      MyArrayList<Integer> list = new MyArrayList<>();
+      BatchProcessor processor = new BatchProcessor(list);
+      processor.logic(50_000);
+
+    - BatchProcessor 인스턴스의 MyList list 는 생성자를 통해 MyArrayList(x001) 인스턴스를 참조한다.
+    - BatchProcessor 인스턴스에 MyArrayList(x001) 의존관계를 주입한다.
+    - 따라서 이후 logic() 을 호출하면 MyArrayList 인스턴스를 사용하게 된다.
+
+
+#### 정리
+- MyList 인터페이스의 도입으로 같은 리스트 자료구조를 그대로 사용하면서 원하는 구현을 변경할 수 있게 되었다.
+- BatchProcessor 에서 다음과 같이 처음부터 MyArrayList 를 사용하도록 컴파일 타임 의존관계를 지정했다면  
+  이후에 MyLinkedList 로 수정하기 위해서는 BatchProcessor 의 코드를 변경해야 한다.
+
+      public class BatchProcessor {
+          private final MyArrayList,Integer> list = new MyArrayList(); // 코드 변경 ㅂ필요
+      }
+- BatchProcessor 클래스는 구체적인 MyArrayList 나 MyLinkedList 에 의존하는 것이 아니라 추상적인 MyList 에 의존한다.
+- 따라서 런타임에 MyList 의 구현체를 얼마든지 선택할 수 있다.
+- BatchProcessor 에서 리스트의 의존관계를 클래스에서 미리 결정하는 것이 아니라, 런타임에 객체를 생성하는시점으로 미룬다.  
+- 따라서 런타임에 MyList 의 구현체를 변경해도 BatchProcessor 의 코드는 전혀 변경하지 않아도 된다.
+- 이렇게 생성자를 통해 런타임 의존관계를 주입하는 것을 생성자 의존관계 주입 또는 줄여서 생성자 주입이라고 한다.
+- OCP 원칙을 지켰다. 클라이언트 코드의 변경 없이, 구현 알고리즘인 MyList 인터페이스의 구현을 자유롭게 확잦ㅇ할 수 있다.
+- 클라이언트 클래스는 컴파일 타임에 추상적인 것에 의존하고, 의존관계 주입을 통해 구현체를 주입받아 사용했다.
+
+> **!전략 패턴(Strategy Pattern)**  
+> 디자인 패턴 중에 가장 중요한 패턴을 하나 뽑으라고 하면 전략 패턴을 뽑을 수 있다.  
+> 전략 패턴은 클라이언트 코드의 변경 없이 알고리즘을 쉽게 교체할 수 있다. 방금 설명한 코드가 바로 전략 패턴을 사용한 코드이다.  
+> MyList 인터페이스가 전략을 정의하는 인터페이스이고, 각각의 구현체인 MyArrayList, MyLinkedList 가 전략의 구체적인 구현이다.  
+> 그리고 전략을 클라이언트 코드(여기서는 BatchProcessor)의 변경 없이 손쉽게 교체할 수 있다.
+
+####
+- 재사용성을 높이려면 나중으로 미루는 것이 좋다.
+  - 특정 기능을 수행하는 메소드의 재사용성을 높이기 위해 기능을 달라지게하는 요인을 매개변수로 받으면 재사용 성이 높아진다.
+  - 제네릭 역시 타입을 나중에 결정하여 재사용성을 높인다.
+  - 전략적 패턴 역시 전략 인터페이스가 사용할 구체적인 타입 결정을 나중으로 미루는 것이다.
 
 
 ### 5-4. 직접 구현한 리스트의 성능 비교
+####
+    public class MyListPerformanceTest {
+    
+        public static void main(String[] args) {
+            int size = 50_000;
+    
+            System.out.println("==MyArrayList 추가==");
+            addFirst(new MyArrayList<>(), size);
+            addMid(new MyArrayList<>(), size);      // 찾는데 O(1), 데이터 추가(밀기) O(n)
+            MyArrayList<Integer> arrayList = new MyArrayList<>(size); // 조회용 데이터로 사용
+            addLast(arrayList, size);               // 찾는데 O(1), 데이터 추가(밀기) O(1)
+    
+            System.out.println("==MyLinkedList 추가==");
+            addFirst(new MyLinkedList<>(), size);
+            addMid(new MyLinkedList<>(), size);     // 찾는데 O(n), 데이터 추가 O(1)
+            MyLinkedList<Integer> linkedList = new MyLinkedList<>();  // 조회용 데이터로 사용
+            addLast(linkedList, size);              // 찾는데 O(n), 데이처 추가 O(1)
+    
+            int loop = 1000;
+            System.out.println("==MyArrayList 조회==");
+            getIndex(arrayList, loop, 0);
+            getIndex(arrayList, loop, size / 2);
+            getIndex(arrayList, loop, size - 1);
+    
+            System.out.println("==MyArrayList 조회==");
+            getIndex(linkedList, loop, 0);
+            getIndex(linkedList, loop, size / 2);
+            getIndex(linkedList, loop, size - 1);
+    
+            System.out.println("==MyArrayList 검색==");
+            getIndex(arrayList, loop, 0);
+            getIndex(arrayList, loop, size / 2);
+            getIndex(arrayList, loop, size - 1);
+    
+            System.out.println("==MyArrayList 검색==");
+            getIndex(linkedList, loop, 0);
+            getIndex(linkedList, loop, size / 2);
+            getIndex(linkedList, loop, size - 1);
+        }
+    
+        private static void addFirst(MyList<Integer> list, int size) {
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < size; i++) {
+                list.add(0, i);
+            }
+            long endTime = System.currentTimeMillis();
+            System.out.println("앞에 추가 - 크기: " + size + ", 계산 시간: " + (endTime - startTime) + "ms");
+        }
+    
+        private static void addMid(MyList<Integer> list, int size) {
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < size; i++) {
+                list.add(i / 2, i);
+            }
+            long endTime = System.currentTimeMillis();
+            System.out.println("중간에 추가 - 크기: " + size + ", 계산 시간: " + (endTime - startTime) + "ms");
+        }
+    
+        private static void addLast(MyList<Integer> list, int size) {
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < size; i++) {
+                list.add(i);
+            }
+            long endTime = System.currentTimeMillis();
+            System.out.println("뒤에 추가 - 크기: " + size + ", 계산 시간: " + (endTime - startTime) + "ms");
+        }
+    
+        private static void getIndex(MyList<Integer> list, int loop, int index) {
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < loop; i++) {
+                list.get(index);
+            }
+            long endTime = System.currentTimeMillis();
+            System.out.println("index: " + index + ", 반복" + loop + ", 계산 시간: " + (endTime - startTime) + "ms");
+        }
+    
+        private static void search(MyList<Integer> list, int loop, int findValue) {
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < loop; i++) {
+                list.indexOf(findValue);
+            }
+            long endTime = System.currentTimeMillis();
+            System.out.println("findValue: " + findValue + ", 반복" + loop + ", 계산 시간: " + (endTime - startTime) + "ms");
+        }
+    
+    }
+
+#### 실행 결과
+    ==MyArrayList 추가==
+    앞에 추가 - 크기: 50000, 계산 시간: 1302ms
+    중간 추가 - 크기: 50000, 계산 시간: 558ms
+    뒤에 추가 - 크기: 50000, 계산 시간: 1ms
+    ==MyLinkedList 추가==
+    앞에 추가 - 크기: 50000, 계산 시간: 2ms
+    중간 추가 - 크기: 50000, 계산 시간: 787ms
+    뒤에 추가 - 크기: 50000, 계산 시간: 1394ms
+    ==MyArrayList 조회==
+    index: 0, 반복10000, 계산 시간: 1ms
+    index: 25000, 반복10000, 계산 시간: 0ms
+    index: 49999, 반복10000, 계산 시간: 0ms
+    ==MyLinkedList 조회==
+    index: 0, 반복10000, 계산 시간: 1ms
+    index: 25000, 반복10000, 계산 시간: 273ms
+    index: 49999, 반복10000, 계산 시간: 556ms
+    ==MyArrayList 검색==
+    findValue: 0, 반복10000, 계산 시간: 1ms
+    findValue: 25000, 반복10000, 계산 시간: 88ms
+    findValue: 49999, 반복10000, 계산 시간: 177ms
+    ==MyLinkedList 검색==
+    findValue: 0, 반복10000, 계산 시간: 0ms
+    findValue: 25000, 반복10000, 계산 시간: 399ms
+    findValue: 49999, 반복10000, 계산 시간: 807ms
+
+
+#### 직접 만든 배열 리스트와 연결 리스트 - 성능 비교 표
+| 기능       | 배열 리스트        | 연결 리스트          |
+|----------|---------------|-----------------|
+| 앞에 추가(삭제) | O(n) - 1302ms | O(1) - 2ms      |
+| 중간 추가(삭제) | O(n) - 558ms  | O(n) - 787ms    |
+| 뒤에 추가(삭제) | O(1) - 1ms    | O(n) - 1394ms   |
+| 인덱스 조회   | O(1) - 1ms    | O(n) - 평균 277ms |
+| 검색       | O(n) - 평균 89ms | O(n) - 평균 402ms |
+
+#### 추가, 삭제
+- 배열 리스트는 인덱스를 통해 추가나 삭제할 위치를 O(1) 로 빠르게 찾지만, 추가나 삭제 이후에 데이터를 한칸씩 밀어야 한다.  
+  이 부분이 부분이 O(n) 으로 오래 걸린다.
+- 연결 리스트는 인덱스를 통해 추가나 삭제할 위치를 O(n) 으로 느리게 찾지만,  
+  실제 데이터 추가는 간단한 참조 변경으로 빠르게 O(1) 수행한다.
+
+#### 앞에 추가(삭제)
+- 배열 리스트: 추가나 삭제할 위치를 찾는데 O(1), 데이터를 한칸씩 이동 O(n) => O(n)
+- 연결 리스트: 추가나 삭제할 위치를 찾는데 O(1), 노드를 변경하는데 O(1) => O(1)
+
+#### 중간 추가(삭제)
+- 배열 리스트: 추가나 삭제할 위치를 찾는데 O(1), 인덱스 이후의 데이터를 한칸씩 이동 O(n/2) => O(n)
+- 연결 리스트: 추가나 삭제할 위치를 찾는데 O(n), 노드를 변경하는데 O(1) => O(n)
+
+#### 뒤에 추가(삭제)
+- 배열 리스트: 추가나 삭제할 위치를 찾는데 O(1), 인덱스 이후의 데이터를 한칸씩 이동 O(1) => O(1)
+- 연결 리스트: 추가나 삭제할 위치를 찾는데 O(n), 노드를 변경하는데 O(1) => O(n)
+
+#### 인덱스 조회
+- 배열 리스트: 배열의 인덱스를 사용해서 찾음 => O(1)
+- 연결 리스트: 노드를 인덱스 수 만큼 이동 => O(n)
+
+#### 검색
+- 배열 리스트: 데이터를 찾을 때 까지 배열을 순회 => O(n)
+- 연결 리스트: 데이터를 찾을 때 까지 노드를 순회 => O(n)
+
+#### 시간 복잡도와 실제 성능 
+- 이론적으로 MyLinkedList 의 평균 추가(중간 삽입) 연산은 MyArrayList 보다 빠를 수 있다.  
+- 그러나 실제 성능은 요소의 순차적 접근 속도, 메모리 할당 및 해제 비용, CPU 캐시 활용도 등 다양한 요소에 의해 영향을 받는다.
+- MyArrayList 는 요소들이 메모리 상에서 연속적으로 위치하여 CPU 캐시 효율이 좋고, 메모리 접근 속도가 빠르다.
+- 반면, MyLinkedList 는 각 요소가 별도의 객체로 존재하고 다음 요소의 참조를 저장하기 때문에 CPU 효율이 떨어지고,  
+  메모리 접근 속도가 상대적으로 느릴 수 있다.
+- MyArrayList 의 경우 CAPACITY 를 넘어서면 배열을 다시 만들고 복사하는 과정이 추가된다.  
+- 하지만 한 번에 2배씩 늘어나기 때문에 이 과정은 가금 발생하므로, 전체 성능에 큰 영향을 주지는 않는다.
+
+#### 배열 리스트 vs 연결 리스트
+- 대부분의 경우 배열 리스트가 성능상 유리하다. 이런 이유로 실무에서는 주로 배열 리스트를 기본으로 사용한다.
+- 만약 데이터를 앞쪽에서 자주 추가하거나 삭제할 일이 있다면 연결 리스트를 고려하자.
 
 
 ### 5-5. 자바 리스트
 
 
+
 ### 5-6.자바 리스트의 성능 비교
 
-
-### 5-7. 문제와 풀이1
-
-
-### 5-8. 문제와 풀이2
 
 
 
