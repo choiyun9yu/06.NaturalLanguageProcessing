@@ -2018,12 +2018,195 @@
 
 
 ### 5-5. 자바 리스트
+#### List 자료 구조 
+- 순서가 있고, 중복을 허용하는 자료 구조를 리스트라 한다. 
+- 자바의 컬렉션 프레임워크가 제공하는 가장 대표적인 자료 구조가 바로 리스트이다.
+- 리스트와 관련된 컬렉션 프레임 워크는 다음 구조를 가진다.
 
 
+#### 컬렉션 프레임 워크 - 리스트 
+![img_41.png](img_41.png)
+
+#### Collection 인터페이스
+- Collection 인터페이스는 java.util 패키지의 컬렉션 프레임워크의 핵심 인터페이스 중 하나이다.
+- 이 인터페이스는 자바에서 다양한 컬렉션, 즉 데이터 그룹을 다루기 위한 메서드를 정의한다.
+- Collection 인터페이스는 List, Set, Queue 와 같은 다양한 하위 인터페이스와 함께 사용되며,  
+  이를 통해 데이터를 리스트, 세트, 큐 드으이 형태로 관리할 수 있다.
+
+#### List 인터페이스 
+- List 인터페이스는 java.util 패키지에 있는 컬렉션 프레임워크의 일부이다.
+- List 는 객체들의 순서가 있는 컬렉션을 나타내며, 같은 객체의 중복 저장을 허용한다.
+- 이 리스트는 배열과 비슷하지만, 크기가 동적으로 변화하는 컬렉션을 다룰 때 유연하게 사용할 수 있다.
+- List 인터페이스는 ArrayList, LinkedList 와 같은 여러 구현 클래스를 가지고 있으며,  
+  각 클래스는 List 인터페이스의 메서드를 구현한다.
+
+#### 자바 ArrayList 특징 
+- java.util.ArrayList
+- 자바가 제공하는 ArrayList 는 우리가 직접 만든 MyArrayList 와 거의 비슷하다.
+- 배열을 사용해서 데이터를 관리한다.
+- 기본 CAPACITY 는 10이다. (DEFAULT_CAPACITY = 10)
+  - CAPACITY 를 넘어가면 배열을 50% 증가한다.
+  - 10 -> 15 -> 22 -> 33 -> 49 로 증가한다.(최적화는 자바 버전에 따라 달라질 수 있다.)
+- 메모리 고속 복사 연산을 사용한다.
+  - ArrayList 의 중간 위치에 데이터를 추가하면, 추가할 위치 이후의 모든 요소를 한 칸씩 뒤로 이동시켜야 한다.
+  - 자바가 제공하는 ArrayList 는 이 부분을 최적화 하는데, 배열의 요소 이동은 시스템 레벨에서 최적화된   
+    메모리 고속 복사 연산을 사용해서 비교적 빠르게 수행된다. 참고로 System.arraycopy( ) 를 사용한다.
+- 메모리 고속 복사 연산  
+  ![img_42.png](img_42.png)
+  - 시스템 레벨에서 배열을 한 번 아주 빠르게 복사한다. 이 부분은 OS, 하드웨어에 따라 성능이 다르다.
+  - 하지만 한 칸씩 이동하는 방식과 비교하면 보통 수 배 이상의 빠른 성능을 제공한다.
+
+#### 자바 LinkedList 특징
+- java.util.LinkedList
+- 자바가 제공하는 LinkedList 는 우리가 직접 만든 MyLinkedList 와 거의 비슷하다.
+- 이중 연결 트리 구조  
+  ![img_43.png](img_43.png)
+  - 자바가 제공하는 LinkedList 는 이중 연결 구조를 사용한다. 이 구조는 다음 노드 뿐만 아니라 이전 노드로도 이동할 수 있다.
+    - ex) node.next 를 호출하면 다음 노드로, node.prev 를 호출하면 이전 노드로 이동한다.
+  - 마지막 노드에 대한 참조를 제공한다. 따라서 데이터를 마지막에 추가하는 경우에도 O(1)의 성능 제공한다.
+  - 이전 노드로 이동할 수 있기 때문에 마지막 노드부터 앞으로, 그러니까 역방향을 조회할 수 있다.
+    - 덕분에 인덱스 조회 성능ㅇ르 최적화 할 수 있다.
+    - 예를 들어 인덱스로 조회하는 경우 인덱스가 사이즈의 절반 이하라면 처음부터 찾아서 올라가고,  
+      인덱스가 사이지의 절반을 넘으면 마지막 노드 부터 역방향으로 조회해서 성능을 최적화 할 수 있다.
+
+- 첫 번재 노드와 마지막 노드 둘다 참조  
+
+      class Node {
+          E item;
+          Node next;
+          Node prev;
+      }
+
+      class LinkedList {
+          Node first;  // 첫 번째 노드 참조
+          Node last;   // 마지막 노드 참조
+          int size;
+      }
 
 ### 5-6.자바 리스트의 성능 비교
+    import java.util.ArrayList;
+    import java.util.LinkedList;
+    import java.util.List;
+    
+    public class JavaListPerformanceTest {
+    
+        public static void main(String[] args) {
+            int size = 50_000;
+    
+            System.out.println("==ArrayList 추가==");
+            addFirst(new ArrayList<>(), size);
+            addMid(new ArrayList<>(), size);      // 찾는데 O(1), 데이터 추가(밀기) O(n)
+            ArrayList<Integer> arrayList = new ArrayList<>(size); // 조회용 데이터로 사용
+            addLast(arrayList, size);             // 찾는데 O(1), 데이터 추가(밀기) O(1)
+    
+            System.out.println("==LinkedList 추가==");
+            addFirst(new LinkedList<>(), size);
+            addMid(new LinkedList<>(), size);     // 찾는데 O(n), 데이터 추가 O(1)
+            LinkedList<Integer> linkedList = new LinkedList<>();  // 조회용 데이터로 사용
+            addLast(linkedList, size);            // 찾는데 O(1), 데이처 추가 O(1)
+    
+            int loop = 10000;
+            System.out.println("==ArrayList 조회==");
+            getIndex(arrayList, loop, 0);
+            getIndex(arrayList, loop, size / 2);
+            getIndex(arrayList, loop, size - 1);
+    
+            System.out.println("==LinkedList 조회==");
+            getIndex(linkedList, loop, 0);
+            getIndex(linkedList, loop, size / 2);
+            getIndex(linkedList, loop, size - 1);
+    
+            System.out.println("==ArrayList 검색==");
+            search(arrayList, loop, 0);
+            search(arrayList, loop, size / 2);
+            search(arrayList, loop, size - 1);
+    
+            System.out.println("==LinkedList 검색==");
+            search(linkedList, loop, 0);
+            search(linkedList, loop, size / 2);
+            search(linkedList, loop, size - 1);
+        }
+    
+        private static void addFirst(List<Integer> list, int size) {
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < size; i++) {
+                list.add(0, i);
+            }
+            long endTime = System.currentTimeMillis();
+            System.out.println("앞에 추가 - 크기: " + size + ", 계산 시간: " + (endTime - startTime) + "ms");
+        }
+    
+        private static void addMid(List<Integer> list, int size) {
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < size; i++) {
+                list.add(i / 2, i);
+            }
+            long endTime = System.currentTimeMillis();
+            System.out.println("중간 추가 - 크기: " + size + ", 계산 시간: " + (endTime - startTime) + "ms");
+        }
+    
+        private static void addLast(List<Integer> list, int size) {
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < size; i++) {
+                list.add(i);
+            }
+            long endTime = System.currentTimeMillis();
+            System.out.println("뒤에 추가 - 크기: " + size + ", 계산 시간: " + (endTime - startTime) + "ms");
+        }
+    
+        private static void getIndex(List<Integer> list, int loop, int index) {
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < loop; i++) {
+                list.get(index);
+            }
+            long endTime = System.currentTimeMillis();
+            System.out.println("index: " + index + ", 반복" + loop + ", 계산 시간: " + (endTime - startTime) + "ms");
+        }
+    
+        private static void search(List<Integer> list, int loop, int findValue) {
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < loop; i++) {
+                list.indexOf(findValue);
+            }
+            long endTime = System.currentTimeMillis();
+            System.out.println("findValue: " + findValue + ", 반복" + loop + ", 계산 시간: " + (endTime - startTime) + "ms");
+        }
+    
+    }
 
+#### 실행 결과 
+    ==ArrayList 추가==
+    앞에 추가 - 크기: 50000, 계산 시간: 81ms
+    중간 추가 - 크기: 50000, 계산 시간: 41ms
+    뒤에 추가 - 크기: 50000, 계산 시간: 3ms
+    ==LinkedList 추가==
+    앞에 추가 - 크기: 50000, 계산 시간: 3ms
+    중간 추가 - 크기: 50000, 계산 시간: 802ms
+    뒤에 추가 - 크기: 50000, 계산 시간: 2ms
+    ==ArrayList 조회==
+    index: 0, 반복10000, 계산 시간: 1ms
+    index: 25000, 반복10000, 계산 시간: 0ms
+    index: 49999, 반복10000, 계산 시간: 1ms
+    ==LinkedList 조회==
+    index: 0, 반복10000, 계산 시간: 0ms
+    index: 25000, 반복10000, 계산 시간: 287ms
+    index: 49999, 반복10000, 계산 시간: 0ms
+    ==ArrayList 검색==
+    findValue: 0, 반복10000, 계산 시간: 1ms
+    findValue: 25000, 반복10000, 계산 시간: 117ms
+    findValue: 49999, 반복10000, 계산 시간: 228ms
+    ==LinkedList 검색==
+    findValue: 0, 반복10000, 계산 시간: 0ms
+    findValue: 25000, 반복10000, 계산 시간: 409ms
+    findValue: 49999, 반복10000, 계산 시간: 809ms
 
+#### 성능 비교 표 
+![img_44.png](img_44.png)
+- 배열 리스트 앞에 추가(삭제), 중간 추가(삭제)의 경우 고속 복사 덕분에 많이 빨라졌다.  
+  - 메모리 고속 복사는 시스템에 따라 성능이 다르지만 대략 O(n/10) 정도로 추정할 수 있다.
+  - 그러나 상수를 제거하면 O(n)이기 때문에 데이터가 아주 많으면 메모리 고속 복사라도 느려진다.
+- 연결 리스트의 경우 뒤에 추가가 last node 의 참조값을 가고 있어서 빨라졌다.
+- 인덱스 조회와 검색은 같다.
 
 
 <br>
