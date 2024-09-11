@@ -1711,18 +1711,85 @@
 - 이것을 BatchProcessor 가 구체적인 클래스에 의존한다고 표현한다.
 - 이렇게 구체적인 클래스에 직접 의존하면 MyArrayList 를 MyLinkedList 로 변경할 때마다   
   여기에 의존하는 BatchProcessor 의 코드도 함께 수정해야 한다.
-- BatchProcessor 가 구체적인 클래스에 의존하는 대신 추상적인 MyList 인터페이스에 의존하는 방법도 있다.
 
 #### 추상적인 MyList 에 의존하는 BatchProcessor 예시
-public class BatchProcessor {
+- BatchProcessor 가 구체적인 클래스에 의존하는 대신 추상적인 MyList 인터페이스에 의존하는 방법도 있다.
+####
+    public class BatchProcessor {
+        
+        private final MyList<Integer> list;
     
-    private final MyList<Integer> list;
-
-    public BatchProcessor(MyList<Integer> list) {
-        this.list = list;
+        // MyList 는 new MyArrayList 를 받을 수 있다.
+        // MyList 는 new MyLinkedList 도 받을 수 있다.
+        public BatchProcessor(MyList<Integer> list) {
+            this.list = list;
+        }
+    
+        public void logic(int size) {
+            for (int i = 0; i < size; i++) {        
+                list.add(0, i); // 앞에 추가 
+            }
+        }
     }
-}
+####
+    main() {
+        new BatchProcessor(new MyArrayList);    // MyArrayList 를 사용하고 싶을 때
+        new BatchProcessor(new MyLinkedList);    // MyLinkedList 를 사용하고 싶을 때
+    }
+- BatchProcessor 를 생성하는 시점에 생성자를 통해 원하는 리스트 전략(알고리즘)을 선택해서 전달하면 된다.
+- 이렇게 하면 MyList 를 사용하는 클라이언트 코드인 BatchProcessor 를 전혀 변경하지 않고,  
+  원하는 리스트 전략을 런타임에 지정할 수 있다.
 
+####
+    public class BatchProcessor {
+    
+        private final MyList<Integer> list;
+    
+        public BatchProcessor(MyList<Integer> list) {
+            this.list = list;
+        }
+    
+        public void logic(int size) {
+            long startTime = System.currentTimeMillis();
+            for (int i = 0; i < size; i++) {
+                list.add(0, i); // 앞에 추가
+            }
+            long endTime = System.currentTimeMillis();
+            System.out.println("크기: " + size + ", 계산 시간: " + (endTime - startTime) + "ms");
+        }
+    
+    }
+- logic(int size) 메서드는 매우 복잡한 비즈니스 로직을 다룬다고 가정하자. 이 메서드는 list 의 앞 부분에 데이터를 추가한다.
+- 어떤 MyList list 의 구현체를 선택할 지는 실행 시점에 생성자를 통해서 결정한다.
+- 생성자를 통해서 MyList 구현체가 전달된다.
+  - MyArrayList 의 인스턴스가 들어올 수도 있고, MyLinkedList 의 인스턴스가 들어올 수도 있다.
+- 이것은 BatchProcessor 의 외부에서 의존관계가 결정되어 BatchProcessor 인스턴스에 들오는 것 같다.  
+  마치 의존관계가 외부에서 주입되는 것 같다고 해서 이것을 **의존관계 주입**이라 한다.
+- 참고로 생성자를 통해서 의존관계를 주입했기 때문에 **생성자 의존관계 주입**이라 한다.
+
+#### 의존관계 주입 
+- Dependency Injection, 줄여서 DI 라고 부른다. 의존성 주입이라고도 부른다.
+####
+    public class BatchProcessorMain {
+    
+        public static void main(String[] args) {
+            MyArrayList<Integer> list = new MyArrayList<>();
+            // MyLinkedList<Integer> list = new MyLinkedList<>();
+    
+            BatchProcessor processor = new BatchProcessor(list);
+            processor.logic(50_000);
+        }
+    
+    }
+- BatchProcessor 의 생성자에 MyArrayList 를 사용할지, MyLinkedList 를 사용할지 결정해서 넘겨야 한다.
+- 이후에 processor.logic() 을 호출하면 생성자로 넘긴 자료 구조를 사용해서 실행한다.
+
+#### MyArray - 실행 결과
+    크기: 50000, 계산 시간: 1319ms
+    (for 문으로 O(n) 만큼 돌고, 배열 리스트 앞에 추가라서 O(n) 만큼 돌아서 O(n^2)) 
+#### MyLinked - 실행 결과
+    크기: 50000, 계산 시간: 3ms
+    (for 문으로 O(n) 만큼 돌고, 연결 리스트 앞에 추가라서 O(n) 만큼 돌아서 O(n))
 
 ### 5-3. 리스트 추상화3 - 컴파일 타임, 런타임 의존관계
 
