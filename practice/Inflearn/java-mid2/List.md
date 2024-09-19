@@ -2824,16 +2824,345 @@
 
 
 ### 7-2. 문자열 해시 코드
-- 
+- 지금까지 해시 인덱스를 구할 때 숫자를 기반으로 해시 인덱스를 구했다.
+- 해시 인덱스는 배열의 인덱스로 사용해야 하므로 0, 1, 2 같은 숫자(양의 정수)만 사용할 수 있다. 따라서 문자를 사용할 수 없다.
+- 문자 데이터를 기반으로 숫자 해시 인덱스를 구하려면 어떻게 해야 할까?
+- 모든 문자는 본인만의 고유한 숫자로 표현할 수 있다. (ASCII)
+- 그리고 "AB"와 같은 연속된 문자는 각각의 문자를 더하는 방식으로 숫자로 표현하면 된다.
+
+####
+    public class StringHashMain {
+    
+        static final int CAPACITY = 10;
+    
+        public static void main(String[] args) {
+            // char
+            char charA = 'A';
+            char charB = 'B';
+            System.out.println("charA = " + (int)charA);
+            System.out.println("charB = " + (int)charB);
+    
+            // hashCode
+            System.out.println();
+            System.out.println("hashCode('A') = " + hashCode("A"));
+            System.out.println("hashCode('B') = " + hashCode("B"));
+            System.out.println("hashCode('AB') = " + hashCode("AB"));
+    
+            // hashIndex
+            System.out.println();
+            System.out.println("hashIndex('A') = " + hashIndex(hashCode("A")));
+            System.out.println("hashIndex('B') = " + hashIndex(hashCode("B")));
+            System.out.println("hashIndex('AB') = " + hashIndex(hashCode("AB")));
+        }
+    
+        static int hashCode(String str) {
+            char[] charArray = str.toCharArray();   // 문자열을 char 배열로 바꾼다.
+            int sum = 0;
+            // 여러 문자가 오면 단순히 더하기
+            for (char c : charArray) {
+                sum = sum + (int)c;
+            }
+            return sum;
+        }
+    
+        static int hashIndex(int value) {
+            return value % CAPACITY;
+        }
+    }
+
+#### 해시 코드와 해시 인덱스 
+- 여기서는 hashCode( ) 라는 메서드를 통해서 문자를 기반으로 고유한 숫자를 만들었다. 이렇게 만들어진 숫자를 해시 코드라 한다.
+- 여기서 만든 해시 코드는 숫자이기 때문에 배열의 인덱스로 사용할 수 있다. 
+####
+![img_56.png](img_56.png)  
+- hashCode( ) 메서드를 사용해서 문자열을 해시 코드로 변경한다. 그러면 고유한 정수 숫자 값이 나오는데, 이것을 해시 코드라 한다.
+- 숫자 값인 해시코드를 사용해서 해시 인덱스를 생성한다. 이렇게 생성된 해시 인덱스를 배열의 인덱스로 사용하면 된다.
+
+#### 용어 정리
+- **해시 함수(Hash Function)**
+    - 해시 함수는 임의의 길이의 데이터를 입력으로 받아, 고정된 길이의 해시값(해시 코드)을 출력하는 함수이다.
+    - 여기서 의미하는 고정된 길이는 저장 공간의 크기를 뜻한다.  
+    예를 들어 int 형 1, 100 은 둘다 4byte 를 차지하는 고정된 길이를 뜻한다.
+  - 같은 데이터를 입력하면 항상 같은 해시 코드가 출력된다.
+  - 다른 데이터를 입력해도 같은 해시 코드가 출력될 수 있다. 이것을 해시 충돌이라 한다.
+- **해시 코드(Hash Code)**
+  - 해시 코드는 데이터를 대표하는 값을 뜻한다. 보통 해시 함수를 통해 만들어진다.
+  - 데이터 A의 해시 코드는 65 (위 예제에서)
+  - 데이터 B의 해시 코드는 66
+  - 데이터 AB의 해시 코드는 131
+- **해시 인덱스(Hash Index)**
+  - 해시 인덱스는 데이터의 저장 위치를 결정하는데, 주로 해시 코드를 사용해서 만든다.
+  - 보통 해시 코드의 결과에 배열의 크기를 나누어 구한다.
+- 요약하면, 해시 코드는 데이터를 대표하는 값, 해시 함수는 이러한 해시 코드를 생성하는 함수,  
+  그리고 해시 인덱스는 해시 코드를 사용해서 데이터의 저장 위치를 결정하는 값을 뜻한다.
+
+#### 정리 
+- 문자 데이터를 사용할 때도, 해시 함수를 사용해서 정수 기반의 해시 코드로 변환한 덕분에, 해시 인덱스를 사용할 수 있게 되었다.  
+- 따라서 문자의 경우에도 해시 인덱스를 통해 빠르게 저장하고 조회할 수 있다.
+- 세상의 어떤 객체든지 정수로 만든 해시 코드만 정의할 수 있다면 해시 인덱스를 사용할 수 있다.
 
 
 ### 7-3. 자바의 hashCode()
+- 해시 인덱스를 사용하는 해시 자료 구조는 데이터 추가, 검색, 삭제의 성능이 O(1)로 매우 빠르다.
+- 그런데 앞서 학습한 것 처럼 해시 자료 구조를 사용하려면 정수로 된 숫자 값인 해시 코드가 필요하다.
+- 자바에는 정수 int, Integer 뿐만 아니라 char, String, Double, Boolean 등 수 많은 타입이 있다.
+- 뿐만 아니라 개발자가 직접 정의한 Member, User 와 같은 사용자 정의 타입도 있다.
+- 이 모든 타입을 해시 자료 구조에 저장하려면 모든 객체가 숫자 해시 코드를 제공할 수 있어야 한다.
+
+#### Object.hashCode( )
+- 자바는 모든 객체가 자신만의 해시 코드를 표현할 수 있는 기능을 제공한다. 바로 Object 에 있는 hashCode( ) 메서드 이다.
+
+      public class Object {
+          public int hashCode();
+      }
+  - 이 메서드를 그대로 사용하기 보다는 보통 오버라이딩해서 사용한다.
+  - 이 메서드의 기본 구현은 객체의 참조값을 기반으로 해시 코드를 생성한다.
+  - 쉽게 이야기해서 객체의 인스턴스가 다르면 해시 코드도 다르다.
+####
+    public class Member {
+    
+        private String id;
+     
+        public Member(String id) {
+            this.id = id;
+        }
+    
+        public String getId() {
+            return id;
+        }
+    
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Member member = (Member) o;
+            return Objects.equals(id, member.id);
+        }
+    
+        // 해시 코드가 없다면 참조값이 달라져서 해쉬 인덱스가 달라지는 문제가 발생할 수 있다.
+        @Override
+        public int hashCode() {
+            return Objects.hash(id);
+        }
+    
+        @Override
+        public String toString() {
+            return "Member{" +
+                    "id='" + id + '\'' +
+                    '}';
+        }
+    }
+- IDE 가 제공하는 자동 완성 기능을 사용해서 equals(), hashCode() 를 생성하자.
+- 여기서는 Member 의 id 값을 기준으로 equals 비교를 하고, hashCode 도 생성한다.
+####
+    public class JavaHashCodeMain {
+    
+        public static void main(String[] args) {
+            // Object 의 기본 hasCode 는 객체의 참조값을 기반으로 생성 (여기선 참조값 16진수 -> 해시 코드 10진수 변환해서 다르게 보임)
+            Object obj1 = new Object();
+            Object obj2 = new Object();
+            System.out.println("obj1.hashCode() = " + obj1.hashCode());
+            System.out.println("obj2.hashCode() = " + obj2.hashCode());
+    
+            // 각 클래스마다 hashCode 를 이미 오버라이딩 해두었다.
+            Integer i = 10;
+            String strA = "A";
+            String strAB = "AB";
+            System.out.println("i.hashCode() = " + i.hashCode());
+            System.out.println("strA.hashCode() = " + strA.hashCode());
+            System.out.println("strAB.hashCode() = " + strAB.hashCode());
+    
+            // hashCode 에 마이너스 값이 들어올 수 있다.
+            System.out.println("-1.hashCode() = " + Integer.valueOf(-1).hashCode());
+    
+            // 둘은 같을까?, 인스턴스는 다르지만 equals 는 같다. (물리적으론 다르지만 논리적으로 같은 경우 )
+            Member member1 = new Member("idA");
+            Member member2 = new Member("idA");
+    
+            // equals, hashCode를 오버라이딩 하지 않는 경우와, 한 경우를 비교
+            System.out.println("(member1 == member2) = " + (member1 == member2));       // 인스턴스가 다르기 때문에 다르다. (참조하는 주소가 다름)
+            System.out.println("member1.equals(member2) = " + member1.equals(member2)); // 인스턴스가 달라도 논리적으로 같아서 true
+            System.out.println("member1.hashCode() = " + member1.hashCode());   // 해시코드가 있으면 참조값이 같게 나온다.
+            System.out.println("member2.hashCode() = " + member2.hashCode());
+        }
+    }
+#### Object 의 해시 코드 비교
+- Object 가 기본으로 제공하는 hashCode( )는 객체의 참조값을 해시 코드로 사용한다.
+- 따라서 각각의 인스턴스마다 서로 다른 값을 반환한다.
+- 그 결과 obj1, obj2 는 서로 다른 해시 코드를 반환한다.
+
+#### (!중요) 자바의 기본 클래스의 해시 코드 
+- Integer, String 같은 자바의 기본 클래스들은 대부분 내부 값을 기반으로 해시 코드를 구할 수 있도록   
+  hashCode( ) 메서드를 재정의 해두었다.
+- 따라서 데이터의 값이 같으면 같은 해시코드로 반환한다.
+- 해시 코드의 경우 정수를 반환하기 때문에 마이너스 값이 나올 수 있다.
+
+#### 동일성과 동등성 복습 
+- Object 는 동등성 비교를 위한 equals( ) 메서드를 제공한다.
+- 자바는 두 객체가 같다는 표현을 2가지로 분리해서 사용한다.
+  - 동일성(Identity): == 연산자를 사용해서 두 객체의 참조가 동일한 객체를 가리키고 있는지 확인 
+  - 동등성(Equality): equals( )메서드를 사용하여 두 객체가 논리적으로 동등한지 확인
+- 쉽게 이야기해서 동일성(Identity)는 물리적으로 같은 메모리에 있는 객체인지 참조값을 확인하는 것고,  
+  동등성(Equality)은 논리적으로 같은지를 확인하는 것이다.
+- 동일성은 자바 머신 기준이고 메모리의 참조가 기준으로 물리적이다.
+- 동등성은 보통 사람이 생각하는 논리적인 것에 기준을 맞춘다. 따라서 논리적이다.
+
+#### 직접 구현하는 해시 코드
+- Member 의 경우 회원의 id 가 같으면 논리적으로 같은 회원으로 표현할 수 있다.  
+ 따라서 회원 id 를 기반으로 동등성을 비교호도록 equals 를 재정의 해야 한다.
+- 여기에 hashCode( )도 같은 원리가 적용된다. 회원의 id 가 같으면 논리적으로 같은 회원으로 표현할 수 있다.  
+ 따라서 회원 id  를 기반으로 해시 코드를 생성해야 한다.
+
+#### Member 의 hashCode( ) 구현 
+- Member 는 hashCode( ) 를 재정의 했다.
+- hashCode( )를 재정의할 때 Objects.hash( )에 해시 코드로 사용할 값을 지정해주면 쉽게 해시 코드를 생성할 수 있다.
+- hashCode( )를 재정의 하지 않으면 Object 가 기본으로 제공하는 참조 값에 기반한 해시 코드를 생성하는 hashCode( )를 제공한다.  
+  따라서 회원의 id 가 같아도 인스턴스가 다르면 다른 해시 코드를 반환하게 된다.
+
+#### 정리
+- 자바가 기본으로 제공하는 클래스 대부분은 hashCode( )를 재정의 해두었다.
+- 객체를 직접 만들어야 하는 경우에 hashCode( )를 제정의하면 된다.
+- hashCode( )만 재정의하면 필요한 모든 종류의 객체를 해시 자료 구조에 보관할 수 있다.
+- 정리하면 해시 자료 구조에 데이터를 저장하는 경우 hashCode( )를 구현해야 한다.
+- 이제 hashCode( )를 사용해서 모든 데이터 타입을 저장할 수 있는 MyHashSetV2 를 만들어보자.
 
 
 ### 7-4. 직접 구현하는 Set2 - MyHashSetV2
+- MyHashSetV1 은 Integer 숫자만 저장할 수 있었다. 여기서는 모든 타입을 저장할 수 있는 Set 을 만들어 보자.
+- 자바의 hashCode( )를 사용하면 탕비과 관계없이 해시 코드를 편리하게 구할 수 있다.
+####
+    public class MyHashSetV2 {
+    
+        static final int DEFAULT_INITIAL_CAPACITY = 16;
+    
+        private LinkedList<Object>[] buckets;
+    
+        private int size = 0;
+        private int capacity = DEFAULT_INITIAL_CAPACITY;
+    
+        public MyHashSetV2() {
+            initBuckets();
+        }
+    
+        public MyHashSetV2(int capacity) {
+            this.capacity = capacity;
+            initBuckets();
+        }
+    
+        private void initBuckets() {
+            buckets = new LinkedList[capacity];
+            for (int i = 0; i < capacity; i++) {
+                buckets[i] = new LinkedList<>();
+            }
+        }
+    
+        public boolean add(Object value) {
+            int hashIndex = hashIndex(value);
+            LinkedList<Object> bucket = buckets[hashIndex];
+            if (bucket.contains(value)) {
+                return false;
+            }
+            bucket.add(value);
+            size++;
+            return true;
+        }
+    
+        public boolean contains(Object searchValue) {
+            int hashIndex = hashIndex(searchValue);
+            LinkedList<Object> bucket = buckets[hashIndex];
+            return bucket.contains(searchValue);
+        }
+    
+        public boolean remove(Object value) {
+            int hashIndex = hashIndex(value);
+            LinkedList<Object> bucket = buckets[hashIndex];
+            boolean result = bucket.remove(value);
+            if (result) {
+                size--;
+                return true  ;
+            } else {
+                return false;
+            }
+        }
+    
+        private int hashIndex(Object value) {
+            int hashCode = Math.abs(value.hashCode());
+            return hashCode % capacity;
+        }
+    
+        public int getSize() {
+            return size;
+        }
+    
+        @Override
+        public String toString() {
+            return "MyHashSetV2{" +
+                    "buckets=" + Arrays.toString(buckets) +
+                    ", size=" + size +
+                    ", capacity=" + capacity +
+                    '}';
+        }
+    }
+- MyHashSetV1 은 Integer 숫자만 저장할 수 있엇다. 여기서는 모든 타입을 저장할 수 있도록 Object 를 사용한다.
+- 추가로 저장, 검색, 삭제 메서드의 매개변수도 Object 로 변경했다.
+- hashIndex( )
+  - hashIndex( ) 부분이 변경되엇다,
+  - 먼저 Object 의 hashCOde( )를 호출해서 해시 코드를 찾는다. 그리고 찾은 해시 코드를 배열의 크기(capacity)로 나머지 연산을 수행한다.  
+   이렇게 해시 코드를 기반으로 해시 인덱스를 계산해서 반환한다.
+  - Object 의 hasCode( )를 사용한 덕분에 모든 객체의 hashCode( )를 구할 수 있다.   
+    물론 다형성에 의해 오버라이딩 된 hashCode( )가 호출된다.
+  - hashCode( )의 실행 결과로 음수가 나올 수 있는데, 배열의 인덱스로 음수는 사용할 수 없다.  
+    Math.abs( )를 사용하면 마이너스를 제거해서 항상 양수를 얻을 수 있다.
+####
+![img_57.png](img_57.png)  
+- 자바의 String 은 hashCode( )를 재정의 해두었다. 우리는 이 값을 사용하면 된다.
+- hashIndex(Object value)에서 value.hashCode( )를 호출하면 실제로는 String 에서 재정의한 hashCode( )가 호출된다.
+- 이렇게 반환된 해시 코드를 기반으로 해시 인덱스를 생성한다.
+- 참고로 자바의 해시 함수는 단순히 문자들을 더하기만 하는 것이 아니라 더 복잡한 연산을 사용해서 해시 코드를 구한다.
 
 
 ### 7-5. 직접 구현하는 Set3 - 직접 만든 객체 보관
+- MyHashSetV2 는 Object 를 받을 수 있다. 따라서 직접 만든 Member 와 같은 객체도 보관할 수 있다. 
+- 여기서 **주의할 점은 직접 만든 객체가 hashCode( ), equals( ) 두 메서드를 반드시 구현해야 한다는 점이다.**
+####
+    public class MyHashSetV2Main2 {
+    
+        public static void main(String[] args) {
+            MyHashSetV2 set = new MyHashSetV2(10);
+            Member hi = new Member("hi");
+            Member jpa = new Member("JPA");
+            Member java = new Member("java");
+            Member spring = new Member("spring");
+    
+            System.out.println("hi.hashCode() = " + hi.hashCode());
+            System.out.println("jpa.hashCode() = " + jpa.hashCode());
+            System.out.println("java.hashCode() = " + java.hashCode());
+            System.out.println("spring.hashCode() = " + spring.hashCode());
+    
+            set.add(hi);
+            set.add(jpa);
+            set.add(java);
+            set.add(spring);
+            System.out.println("set = " + set);
+    
+            // 검색
+            Member searchValue = new Member("JPA");
+            boolean result = set.contains(searchValue);
+            System.out.println("set.contains(" + searchValue + ") = " + result);
+        }
+    }
+####
+![img_58.png](img_58.png)  
+- Member의 hashCode( )를 id 값을 기반으로 재정의해 두었다.
+- hashIndex(Object value)에서 value.hashCode( )를 호출하면 실제로는 Member 에서 재정의한 hashCode( )가 호출된다.
+- 이렇게 반환된 해시 코드를 기반으로 해시 인덱스를 생성한다.
+
+#### equals( ) 사용처
+- 그렇다면 equals( )는 언제 사용될까?
+- 'JPA' 를 조회할 때 해시 인덱스는 0이다. 따라서 배열의 0번 인덱스를 조회한다.
+- 여기에는 [hi, JPA]라는 회원 두 명이 있다. 이것을 하나하나 비교해야 한다. 이때 equals( )를 사용해서 비교한다.
+- 따라서 해시 자료 구조를 사용할 때는 hashCode( )는 물론이고, equals( )도 반드시 재정의해야 한다.
+- 참고로 자바가 제공하는 기본 클래스들은 대부분 hashCode( ), equals( )를 함께 재정의해 두었다.
 
 
 ### 7-6. equals, hashCode 의 중요성1
