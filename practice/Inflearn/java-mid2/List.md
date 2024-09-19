@@ -2680,15 +2680,151 @@
 - 해시 인덱스를 사용하는 방식은 사실 최악의 경우는 거의 발생하지 않는다.
 - 배열의 크기만 적절하게 잡아주면 대부분 O(1)에 가까운 매우 빠른 성능ㅇ르 보여준다.
 
-
-
 <br>
 
 ## 7. 컬렉션 프레임워크 - HashSet
 ### 7-1. 직접 구현하는 Set1 - MyHashSetV1
+#### 이전까지 학습한 Set 복습
+- Set 은 중복을 허용하지 않고, 순서를 보장하지 않는 자료 구조 이다.
+- 이전에 구현한 성능이 O(n)으로 느린 MyHashSetV)를 다시 확인해 보자.
+  - MyHashSetV0 의 단점은 데이터를 추가할 때 중복 데이터가 있는지 체크하는 부분에서 성능이 O(n)으로 나쁘다는 것이다.
+  - 이렇게 성능이 느린 MyHashSetV0 을 해시알고리즘을 사용해서 평균 O(1)로 개선할 수 있다.
+- Set 을 구현하는 방법은 단순하다. 인덱스가 없기 때문에 단순히 데이터를 저장하고, 데이터가 있는지 확인하고,  
+  데이터를 삭제하는 정도면 충분하다. 그리고 Set 은 중복을 허용하지 않기 때문에 데이터를 추가할 때 중복 여부만 체크하면 된다.
+  - add(value): Set 에 값을 추가한다. 중복 데이터는 저장하지 않는다.
+  - contains(value): 셋에 값이 있는지 확인한다.
+  - remove(value): 셋에 있는 값을 제거한다.
+  
+#### 해시 알고리즘을 사용하도록 개선된 MyHashSetV1
+    public class MyHashSetV1 {
+    
+        static final int DEFAULT_INITIAL_CAPACITY = 16;
+    
+        LinkedList<Integer>[] buckets;
+    
+        private int size = 0;   // 이 Set 에 들어오 전체 데이터가 몇개 인지
+        private int capacity = DEFAULT_INITIAL_CAPACITY;    // 기본 배열의 크기
+    
+        public MyHashSetV1() {
+            initBuckets();
+        }
+    
+        public MyHashSetV1(int capacity) {
+            this.capacity = capacity;
+            initBuckets();
+        }
+    
+        private void initBuckets() {
+            buckets = new LinkedList[capacity];
+            for (int i = 0; i < capacity; i++) {
+                buckets[i] = new LinkedList<>();
+            }
+        }
+    
+        public boolean add(int value) {
+            int hashIndex = hashIndex(value);
+            LinkedList<Integer> bucket = buckets[hashIndex];
+            if (bucket.contains(value)) {
+                return false;
+            }
+            bucket.add(value);
+            size++;
+            return true;
+        }
+    
+        public boolean contains(int searchValue) {
+            int hashIndex = hashIndex(searchValue);
+            LinkedList<Integer> bucket = buckets[hashIndex];
+            return bucket.contains(searchValue);
+        }
+    
+        public boolean remove(int value) {
+            int hashIndex = hashIndex(value);
+            LinkedList<Integer> bucket = buckets[hashIndex];
+            boolean result = bucket.remove(Integer.valueOf(value));
+            // remove 가 2가지 종류가 있다.
+                // 1. 인덱스를 입력하면 인덱스 번호로 지우는 remove(int)
+                // 2. 값을 입력하면 그 값을 지우는 remove(Object) -> 우리는 지울 값이 int 라서 조심해야 한다. -> Object 타입으로 넘기기 위해 래퍼타입으로 감싸줘야함
+            if (result) {
+                size--;
+                return true  ;
+            } else {
+                return false;
+            }
+        }
+    
+        private int hashIndex(int value) {
+            return value % capacity;
+        }
+    
+        public int getSize() {
+            return size;
+        }
+    
+        @Override
+        public String toString() {
+            return "MyHashSetV1{" +
+                    "buckets=" + Arrays.toString(buckets) +
+                    ", size=" + size +
+                    ", capacity=" + capacity +
+                    '}';
+        }
+    }
+- buckets: 연결 리스트를 배열로 사용한다.
+  - 배열 안에 연결 리스트가 들어있고, 연결 리스트 안에 데이터가 저장된다.
+  - 해시 인덱스가 충돌이 발생하면 같은 연결 리스트 안에 여러 데이터가 저장된다.
+- initBuckets()
+  - 연결 리스트를 생성해서 배열을 채운다. 배열의 모든 인덱스 위치에는 연결 리스트가 있다.
+- 초기 배열의 크기를 생성자를 통해 전달할 수 있다.
+  - 기본 생성자를 사용하면 DEFAULT_INITIAL_CAPACITY 의 값인 16이 사용된다.
+- add( ): 해시 인덱스를 사용해서 데이터를 보관한다.
+- contains( ): 해시 인덱스를 사용해서 데이터를 확인한다.
+- remove( ): 해시 인덱스를 사용해서 데이터를 제거한다.
+####
+    public class MyHashSetV1Main {
+    
+        public static void main(String[] args) {
+            // 생성
+            MyHashSetV1 set = new MyHashSetV1(10);
+    
+            // 추가
+            set.add(1);
+            set.add(2);
+            set.add(5);
+            set.add(8);
+            set.add(5);
+            set.add(14);
+            set.add(99);
+            set.add(9); // hashIndex 중복
+            System.out.println(set);
+    
+            // 검색
+            int searchValue = 9;
+            boolean result = set.contains(searchValue);
+            System.out.println("set.contains(" + searchValue + ") = " + result);
+    
+            // 삭제
+            boolean removeResult = set.remove(searchValue);
+            System.out.println("removeResult = " + removeResult);
+            System.out.println("set = " + set);
+        }
+    }
+- MyHashSetV1 은 해시 알고리즘을 사용한 덕분에 등록, 검색, 삭제, 모두 평균 O(1)로 연산 속도를 크게 개선했다.
+- 생성: new MyHashSetV1(10)을 사용해서 배열의 크기를 10으로 지정했다. (여기서는 기본생성자를 사용하지 않았다.)
+- 저장: 실행 결과를 보면 99, 9의 경우 해시 인덱스가 9로 충돌하게 된다. 따라서 같은 9번 인덱스 위치에 저장된 것을 확인할 수 있다.
+- 검색: 9를 검색하는 경우 해시 인덱스가 9 이다. 따라서 배열의 9번 인덱스에 있는 연결 리스트를 면저 찾는다.  
+  해당 연결 리스트에 있는 모든 데이터를 순서대로 비교하면서 9를 찾는다.
+  - 먼저 99와 9를 비교한다 -> 실패
+  - 다음으로 9와 9를 비교한다 -> 성공
+
+#### 남은 문제 
+- 해시 인덱스를 사용하려면 데이터의 값을 배열의 인덱스로 사용해야 한다. 그런데 배열의 인덱스는 0, 1, 2 같은 숫자만 사용할 수 있다.
+- "A", "B"와 같은 문자열은 배열의 인덱스로 사용할 수 없다.
+- 다음 예와 같이 숫자가 아닌 문자열 데이터를 저장할 대, 해시 인덱스를 사용하려면 어떻게 해야할까?
 
 
 ### 7-2. 문자열 해시 코드
+- 
 
 
 ### 7-3. 자바의 hashCode()
