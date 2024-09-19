@@ -2432,13 +2432,253 @@
 - 따라서 연산 결과는 배열의 크기를 넘지 않으므로 안전하게 인덱스로 사용할 수 있다.
 
 #### 해시 인덱스
+- 이렇게 배열의 인덱스로 사용할 수 있도록 원래의 값을 계산한 인덱스를 해시 인덱스(hashIndex)라 한다.
+- 14의 해시 인덱스는 4, 99의 해시 인덱스는 9이다.
+- 이렇게 나머지 연산을 통해 해시 인덱스를 구하고, 해시 인덱스를 배열의 인덱스로 사용해보자.
 
+#### 해시 인덱스와 데이터 저장
+![img_48.png](img_48.png)  
+- 저장할 값의 나머지 연산자를 사용해서 해시 인덱스를 구한다.
+- 해시 인덱스를 배열의 인덱스로 사용해서 데이터를 저장한다.  
+  (인덱스만 해시 인덱스를 사용하고, 값은 원래 값을 저장한다.)
+- 배열의 인덱스를 사용하기 때문에 하나의 값을 저장하는데 O(1)로 빠른 성능을 제공한다.
+
+#### 해시 인덱스와 데이터 조회
+![img_49.png](img_49.png)  
+- 조회할 값에 나머지 연산자를 사용해서 해시 인덱스를 구한다.
+- 해시 인덱스를 배열의 인덱스로 사용해서 데이터를 조회한다.
+- 배열의 인덱스를 사용하기 때문에 하나의 값을 찾는데 O(1)로 빠른 성능을 제공한다.
+
+#### 코드 구현 
+    public class HashStart4 {
+    
+        static final int CAPACITY = 10;
+    
+        public static void main(String[] args) {
+            // {1, 2, 5, 8, 14, 99}
+            System.out.println("hashIndex(1) = " + hashIndex(1));
+            System.out.println("hashIndex(2) = " + hashIndex(2));
+            System.out.println("hashIndex(5) = " + hashIndex(5));
+            System.out.println("hashIndex(8) = " + hashIndex(8));
+            System.out.println("hashIndex(14) = " + hashIndex(14));
+            System.out.println("hashIndex(99) = " + hashIndex(99));
+    
+            Integer[] inputArray = new Integer[CAPACITY];
+            add(inputArray, 1);
+            add(inputArray, 2);
+            add(inputArray, 5);
+            add(inputArray, 8);
+            add(inputArray, 14);
+            add(inputArray, 99);
+            System.out.println("inputArray = " + Arrays.toString(inputArray));
+    
+            // 검색
+            int searchValue = 14;
+            int hashIndex = hashIndex(searchValue);
+            System.out.println("searchValue hashIndex = " + hashIndex);
+            Integer result = inputArray[hashIndex];
+            System.out.println("result = " + result);
+    
+        }
+    
+        private static void add(Integer[] inputArray, int value) {
+            int hashIndex = hashIndex(value);
+            inputArray[hashIndex] = value;
+        }
+    
+        static int hashIndex(int value) {
+            return value % CAPACITY;
+        }
+    }
+- hashIndex( )
+  - 해시 인덱스를 반환한다.
+  - 해시 인덱스는 입력 값을 계산해서 인덱스로 사용하는 것을 뜻한다. 여기서는 입력 값을 배열의 크기로 나머지 연산해서 구한다.
+- add( )
+  - 해시 인덱스를 먼저 구한다.
+  - 구한 해시 인덱스의 위치에 데이터를 저장한다.
+- 조회
+  - 해시 인덱스를 구하고, 배열에 해시 인덱스를 대입해서 값을 조회한다.
+
+#### 정리 
+- 입력 값의 범위가 넓어도 실제 모든 값이 들어오지는 않기 때문에 배열의 크기를 제한하고,  
+  나머지 연산을 통해 메모리가 낭비되는 문제도 해결할 수 있다.
+- 해시 인덱스를 사용해서 O(1)의 성능으로 데이터를 젖아하고, O(1)의 성능으로 데이터를 조회할 수 있게 되었다.  
+  덕분에 자료 구조의 조회 속도를 비약적으로 향상할 수 있게 되었다.
+
+#### 한계 - 해시 충돌
+- 그런데 지금까지 섦여한 내용은 저장할 위치가 충돌할 수 있다는 한계가 있다.
+- 예를 들어 1, 11의 두 값은 이렇게 10으로 나누면 같은 값 1이 된다. 둘다 같은 해시 인덱스가 나와버리는 것이다.
+    
+      9 % 10 = 9 
+      99 % 10 = 9
+- 다음시간에는 해시 충돌에 대해 더 알아보고 어떻게 해시 충돌 문제를 해결할 수 있는지 알아보자.
 
 
 ### 6-7. 해시 알고리즘5 - 해시 충돌 설명
+#### 해시 충돌
+- 9, 99의 두 값은 10으로 나누면 나머지가 9이다. 
+- 이처럼 다른 값을 입력했찌만 같은 해시 코드가 나오게 되는 것을 해시 충돌이라 한다.
+####
+![img_50.png](img_50.png)  
+- 먼저 99의 값을 저장한다. 해시 인덱스는 9이므로 9번 인덱스에 99 값을 저장한다.
+- 다음으로 9의 값을 젖아한다. 해시 인덱스는 9이므로 9번 인덱스에 9 값을 저장한다.
+- 결과정으로 배열 인덱스 9에는 처음에 저장한 99는 사라지고 마지막에 저장한 9만 남는다.
+- 이 문제를 해결하는 가장 단순한 방법은 CAPACITY 를 값의 입력 범위 만큼 키우면 된다.
+- 하지만 이 방법은 메모리 낭비가 심하다.
+
+#### 해시 충돌 해결 
+- 해시 충돌을 인정하면 문제 해결의 실마리가 보인다.
+- 해시 충돌은 낮은 확률로 일어날 수 있다고 가정하는 것이다.
+- 해결 방안은 바로 해시 충돌이 일어났을 때 단순하게 같은 해시 인덱스의 값을 같은 인덱스에 함께 저장해버리는 것이다.
+- 물론 여러 데이터를 배열의 하나의 공간에 함께 저장할 수는 없다. 대신 배열 안에 배열이나 리스트 같은 자료 구조를 사용하면 된다.
+####
+![img_51.png](img_51.png)  
+
+#### 해시 충돌 조회
+- 해시 충돌이 난 경우 내부의 데이터를 하나씩 비교해보면 원하는 결과를 찾을 수 있다.
+#### 99를 조회하는 경우
+![img_52.png](img_52.png)  
+- 99의 해시 인덱스는 9이다. 배열에서 9번 인덱스를 찾는다.
+- 배열 안에 또 배열이 들어 있다. 여기에 있는 모든 값을 검색할 값과 하나씩 비교한다.
+  - [99, 9]의 데이터가 들어 있는데, 첫 비교에서 원하는 데이터를 찾을 수 있다.
+#### 9를 조회하는 경우
+![img_53.png](img_53.png)  
+- 9의 해시 인덱스는 9이다. 배열에서 9번 인덱스를 찾는다.
+- 배열 안에는 또 배열이 들어있다. 여기에 있는 모든 값을 검색할 값과 하나씩 비교한다.
+  - [99, 9]의 데이터가 들어있다. 첫 비교에서 99 equals 9 는 거짓이므로 실패한다. 다음 비교에서 원하는 데이터를 찾을 수 있다.
+  - 비교시 equals 를 사용했지만 기본형이라면 물론 ==을 사용해도 된다.
+#### 최악의 경우
+![img_54.png](img_54.png)  
+- 값을 9, 19, 29, 99 만 저장한다고 가정햅좌. 이 경우 모든 해시 인덱스가 9가 된다.
+- 따라서 9번 인덱스에 데이터가 모두 저장된다.
+- 이렇게 되면 데이터를 찾을 때 결국 9번에 가서 저장한 데이터의 수 만큼 값을 반복해서 비교해야 한다.
+- 따라서 최악의 경우 O(n)의 성능을 보인다.
+
+#### 정리
+- 해시 인덱스를 사용하는 방식은 최악의 경우 O(n)의 성능을 보인다.
+- 하지만 확류 적으로 보면 어느정도 젋게 퍼지기 때문에 평균으로 보면 대부분 O(1)의 성능을 제공한다.
+- 해시 충돌이 가끔 발생해도 내부에서 값을 몇 번만 비교하는 수준이기 때문에 대부분의 경우 매우 빠르게 값을 찾을 수 있다.
 
 
 ### 6-8. 해시 알고리즘6 - 해시 충돌 구현
+    public class HashStart5 {
+    
+        static final int CAPACITY = 10;
+    
+        public static void main(String[] args) {
+            // {1, 2, 5, 8, 14, 99}
+            LinkedList<Integer>[] buckets = new LinkedList[CAPACITY];   // 이건 LinkedList 를 만든게 아니라 LinkedList 를 넣을 수 있는 배열을 만든 것이다.
+            System.out.println("buckets = " + Arrays.toString(buckets));
+    
+            for (int i = 0; i < CAPACITY; i++) {
+                buckets[i] = new LinkedList<>();    // 여기서 LinkedList 를 각 배열에 담아 주었다.
+            }
+            System.out.println("buckets = " + Arrays.toString(buckets));
+    
+            // 데이터 등록
+            add(buckets, 1);
+            add(buckets, 2);
+            add(buckets, 5);
+            add(buckets, 8);
+            add(buckets, 14);
+            add(buckets, 99);
+            add(buckets, 9);    // 중복
+            System.out.println("buckets = " + Arrays.toString(buckets));
+    
+            // 데이터 검색
+            int searchValue = 9;
+            boolean contains = contains(buckets, searchValue);
+            System.out.println("bucket.contains = " + contains);
+        }
+    
+        // 데이터 검색
+        private static boolean contains(LinkedList<Integer>[] buckets, int searchValue) {
+            int hashIndex = hashIndex(searchValue);
+            LinkedList<Integer> bucket = buckets[hashIndex];    // O(1)
+            return bucket.contains(searchValue);    // O(n)
+    
+            //원래는 전체다 도는 코드를 만들어야하지만 LinkedList 에 이미 contains 가 있으니 그것을 사용
+            //for (Integer integer : bucket) {
+            //    if (integer == searchValue) {
+            //        return true;
+            //    }
+            //    return false;
+            //}
+        }
+    
+        // 데이터 등록
+        private static void add(LinkedList<Integer>[] buckets, int value) {
+            int hashIndex = hashIndex(value);
+            LinkedList<Integer> bucket = buckets[hashIndex];    // O(1)
+    
+            // 중복 체크
+            if (!bucket.contains(value)) {
+                bucket.add(value);
+            }
+        }
+    
+        static int hashIndex(int value) {
+            return value % CAPACITY;
+        }
+    }
+####
+![img_55.png](img_55.png)  
+#### 배열 선언 
+    LinkedList<Integer>[] buckets = new LinkedList[CAPACITY];
+- 배열 안에 단순히 값이 들어가는 것이 아니라, 해시 충돌을 고려해서 배열 안에 또 배열이 들어가야 한다.
+- 여기서는 배열 안에 배열 대신 편리하게 사용할 수 있는 연결 리스트를 사용했다. LinkedList 는 하나의 바구니이다.
+- 이런 바구니들을 모아서 배열을 선언했다.
+- 즉 배열안에 연결리스트가 들어 있고, 연결 리스트 안에 데이터가 들어 있는 구조이다.
+
+#### 데이터 등록 
+    private static void add(LinkedList<Integer>[] buckets, int value) {
+        int hashIndex = hashIndex(value);
+        LinkedList<Integer> bucket = buckets[hashIndex];    // O(1)
+
+        // 중복 체크
+        if (!bucket.contains(value)) {
+            bucket.add(value);
+        }
+    }
+- 데이터를 등록할 때 먼저 해시 인덱스를 구한다.
+- 해시 인덱스로 배열의 인덱스를 찾는다. 배열에는 연결 리스트가 들어있다.
+  - 해시 인덱스를 통해 바구니들 사이에서 바구니인 연결 리스트를 하나 찾은 것이다.
+- Set 은 중복된 값을 저장하지 않는다. 따라서 바구니에 저장하기 전에 contains( )를 사용해서 중복 여부를 확인한다.
+  - 연결 리스트의 contains( )는 모든 항목을 다 순회하기 때문에 O(n)의 성능이다.
+  - 하지만 해시 충돌이 발생하지 않으면 데이터가 1개만 들어았기 때문에 O(1)의 성능을 제공한다.
+
+#### 데이터 검색 
+    private static boolean contains(LinkedList<Integer>[] buckets, int searchValue) {
+        int hashIndex = hashIndex(searchValue);
+        LinkedList<Integer> bucket = buckets[hashIndex];    // O(1)
+        return bucket.contains(searchValue);    // O(n)
+    }
+- 해시 인덱스로 배열의 인덱스를 찾는다. 여기에는 연결 리스트가 들어있다.
+- 연결 리스트의 bucket.contains(searchValue) 메서드를 사용해서 찾는 데이터가 있는지 확인한다.
+  - 연결 리스트의 contains( ) 는 모든 항목을 다 순회하기 때문에 O(n) 의 성능이다.
+  - 하지만 해시 충돌이 발생하지 않으면 데이터가 1개만 들어있기 때문에 O(1)의 성능을 제공한다.
+
+#### 해시 인덱스 충돌 확률 
+- 해시 충돌이 발생하면 데이터를 추가하거나 조회할 때, 연결 리스트 내부에서 O(n)의 추가 연산을 해야하므로 성능이 떨어진다.
+- 따라서 해시 충돌은 가급적 발생하지 않도록 해야 한다.
+- 해시 충돌이 발생할 확률은 입력하는 데이터의 수와 배열의 크기와 관련이 있다. 입력하는 데이터의 수와 비교해서  
+  배열의 크기가 클수록 충돌 확률은 낮아진다.
+- 통계적으로 입력한 데이터의 수가 배열 크기의 75%를 넘지 않으면 해시 인덱스는 자주 충돌하지 않는다.
+- 반대로 75% 를 넘으면 자주 충돌하기 시작한다.
+- 배열의 크기를 크게 만들면 해시 충돌은 줄어서 성능은 좋아지지만, 많은 메모리가 낭비된다.
+- 반대로 배열의 크기를 너무 작게 만들면 해시가 자주 충돌해서 성능이 나빠진다.
+- 상황에 따라 다르겠지만 보통 75% 를 적당한 크기로 보고 기준으로 잡는 것이 효과적이다.
+
+#### 정리
+해시 인덱스를 사용하는 경우
+- 데이터 저장
+  - 평균: O(1)
+  - 최악: O(n)
+- 데이터 조회
+  - 평균: O(1)
+  - 최악: O(n)
+- 해시 인덱스를 사용하는 방식은 사실 최악의 경우는 거의 발생하지 않는다.
+- 배열의 크기만 적절하게 잡아주면 대부분 O(1)에 가까운 매우 빠른 성능ㅇ르 보여준다.
 
 
 
