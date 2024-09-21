@@ -970,11 +970,239 @@
 - 클래스를 만들 때 hasCode( ), equals( )를 재정의하지 않으면, 해시 자료 구조에서 Object 가 기본적으로 제공하는  
   hashCode( ), equals( )를 사용하게 된다. 그런데 Object 가 기본으로 제공하는 기능은 단순히 인스턴스의 참조를 기반으로 작동한다.
 
-### 7-7. equals, hashCode 의 중요성2
+#### hashCode, equals 를 모두 구현하지 않은 경우
+    // Object 가 기본으로 구현한 Hash 와 equals 사용
+    public class MemberNoHashNoEq {
+    
+        private String id;
+    
+        public MemberNoHashNoEq(String id) {
+            this.id = id;
+        }
+    
+        @Override
+        public String toString() {
+            return "MemberNoHashNoEq{" +
+                    "id='" + id + '\'' +
+                    '}';
+        }
+    }
+####
+    public class HashAndEqualsMain1 {
+    
+        public static void main(String[] args) {
+            // 중복 등록
+            MyHashSetV2 set = new MyHashSetV2();
+            MemberNoHashNoEq m1 = new MemberNoHashNoEq("A");
+            MemberNoHashNoEq m2 = new MemberNoHashNoEq("A");
+            System.out.println("m1.hashCode() = " + m1.hashCode());
+            System.out.println("m2.hashCode() = " + m2.hashCode());
+            System.out.println("m1.equals(m2) = " + m1.equals(m2));
+    
+            set.add(m1);
+            set.add(m2);
+            System.out.println(set);
+    
+            // 검색 실패
+            MemberNoHashNoEq searchValue = new MemberNoHashNoEq("A");
+            System.out.println("searchValue.hashCode() = " + searchValue.hashCode());
+            boolean contains = set.contains(searchValue);
+            System.out.println("contains = " + contains);
+        }
+    }
+#### 
+    // 실행 결과
+    m1.hashCode() = 1160460865
+    m2.hashCode() = 2061475679
+    m1.equals(m2) = false
+    MyHashSetV2{buckets=[[], [MemberNoHashNoEq{id='A'}], [], [], [], [], [], [], [], [], [], [], [], [], [], [MemberNoHashNoEq{id='A'}]], size=2, capacity=16}
+    searchValue.hashCode() = 1283928880
+    contains = false
+- m1.hashCode( ), m2.hashCode( ) 는 Object 의 기본 기능을 사용하기 때문에 객체의 참조값을 기반으로 해시 코드를 생성한다.   
+  (실행할 때 마다 값이 달라질 수 있다.)
+- m1 과 m2 인스턴스는 다르지만 둘다 "A" 라는 같은 회원 id 를 가지고 있다. 따라서 논리적으로 같은 회원으로 보아야 한다.
+- 데이터 저장 문제 
+  - 그러나 m1 과 m2 의 해시 코드가 서로 다르기 때문에 서로 다른 위치에 각각 저장된다.
+  - 또한 회원 id 가 "A" 로 같은 회원의 데이터가 중복으로 저장된다.
+- 데이터 검색 문제
+  - searchValue 는 새로 생성한 회원 id 가 "A" 인 다른 인스턴스이다.
+  - 따라서 다른 객체 참조값을 가지기 때문에 조회 시 검색에 실패하게 된다.
+
+#### hashCode 는 구현 했지만, equals 는 구현하지 않은 경우
+    public class MemberOnlyHash {
+    
+        private String id;
+    
+        public MemberOnlyHash(String id) {
+            this.id = id;
+        }
+    
+        public String getId() {
+            return id;
+        }
+    
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(id);
+        }
+    
+        @Override
+        public String toString() {
+            return "MemberOnlyHash{" +
+                    "id='" + id + '\'' +
+                    '}';
+        }
+    }
+
+#### 
+    public class HashAndEqualsMain2 {
+    
+        public static void main(String[] args) {
+            // 중복 저장
+            MyHashSetV2 set = new MyHashSetV2();
+            MemberOnlyHash m1 = new MemberOnlyHash("A");
+            MemberOnlyHash m2 = new MemberOnlyHash("A");
+            System.out.println("m1.hashCode() = " + m1.hashCode());
+            System.out.println("m2.hashCode() = " + m2.hashCode());
+            System.out.println("m1.equals(m2) = " + m1.equals(m2));
+    
+            set.add(m1);
+            set.add(m2);
+            System.out.println(set);
+    
+            // 검색 실패
+            MemberOnlyHash searchValue = new MemberOnlyHash("A");
+            System.out.println("searchValue.hashCode() = " + searchValue.hashCode());
+            boolean contains = set.contains(searchValue);
+            System.out.println("contains = " + contains);
+        }
+    }
 
 
-### 7-8. 직접 구현하는 Set4 - 제네릭과 인터페이스 도입
+#### 
+    // 실행 결과 
+    m1.hashCode() = 65
+    m2.hashCode() = 65
+    m1.equals(m2) = false
+    MyHashSetV2{buckets=[[], [MemberOnlyHash{id='A'}, MemberOnlyHash{id='A'}], [], [], [], [], [], [], [], [], [], [], [], [], [], []], size=2, capacity=16}
+    searchValue.hashCode() = 65
+    contains = false
+- 데이터 저장 문제 
+  - hashCode( )를 재정의 했기 때문에 같은 id 를 사용하는 m1, m2 는 같은 해시 코드를 사용한다.
+  - 따라서 같은 해시 인덱스에 데이터가 저장된다.
+  - add( ) 로직은 중복 데이터를 체크하기 때문에 같은 데이터가 저장되면 안된다. 
+  - 하지만 equals( )를 재정의 하지 않았으므로 인스턴스가 서로다른 m1, m2 비교는 실패해서 중복 저장 된다. 
+- 데이터 검색 문제 
+  - 역시 equals( )를 재정의 하지 않았으므로 searchValue 의 인스턴스가 m1, m2 와 달라서 검색에 실패한다.
 
+> **!참고** - 해시 함수는 해시 코드가 최대한 충돌하지 않도록 설계  
+> 다른 데이터를 입력해도 같은 해시코드가 출력될 수 있다. 이것을 해시 충돌이라 한다.  
+> 해시 함수로 해시 코드를 만들 때 단순히 문자의 숫자를 더하기만 해서는 해시가 충돌할 가능성이 높다.  
+> 해시가 충돌하면 결과적으로 같은 해시 인덱스에 보관된다. 따라서 성능이 나빠진다.  
+> 자바의 해시 함수는 이런 문제를 해결하기 위해 문자의 숫자를 단순히 더하기만 하는 것이 아니라  
+> 내부에서 복잡한 추가 연산을 수행한다. 따라서 자바의 해시코드를 사용하면 복잡한 계산 결과가 나온다.  
+> 복잡한 추가 연산으로 다양한 범위의 해시 코드가 만들어지므로 해시가 충돌할 가능성이 낮아지고  
+> 결과적으로 해시 자료 구조를 사용할 때 성능이 개선 된다. 
+
+
+### 7-7. 직접 구현하는 Set4 - 제네릭과 인터페이스 도입
+- 지금까지 만든 해시 셋에 제네릭을 도입해서 타입 안정성을 높여보자.
+####
+    public interface MySet<E> {
+        boolean add(E element);
+
+        boolean remove(E value);
+
+        boolean contains(E value);
+    }
+- 핵심 기능을 인터페이스로 뽑았다.
+- 이 인터페이스를 구현하면 해시 기반이 아니라 다른 자료 구조 기반의 Set 도 만들 수 있다.
+####
+    public class MyHashSetV3<E> implements MySet<E> {
+    
+        static final int DEFAULT_CAPACITY = 16;
+    
+        private LinkedList<E>[] buckets;
+    
+        private int size = 0;
+        private int capacity = DEFAULT_CAPACITY;
+    
+        public MyHashSetV3(int capacity) {
+            this.capacity = capacity;
+            initBuckets();
+        }
+    
+        private void initBuckets() {
+            buckets = new LinkedList[capacity];
+            for (int i = 0; i < capacity; i++) {
+                buckets[i] = new LinkedList<>();
+            }
+        }
+    
+        public boolean add(E value) {
+            int hashIndex = hashIndex(value);
+            LinkedList<E> bucket = buckets[hashIndex];
+            if (bucket.contains(value)) {
+                return false;
+            }
+            bucket.add(value);
+            size++;
+            return true;
+        }
+    
+        public boolean contains(E searchValue) {
+            int hashIndex = hashIndex(searchValue);
+            LinkedList<E> bucket = buckets[hashIndex];
+            return bucket.contains(searchValue);
+        }
+    
+        public boolean remove(E value) {
+            int hashIndex = hashIndex(value);
+            LinkedList<E> bucket = buckets[hashIndex];
+            boolean result = bucket.remove(value);
+            if (result) {
+                size--;
+                return true  ;
+            } else {
+                return false;
+            }
+        }
+    
+        private int hashIndex(E value) {
+            // 음수가 절대값을 씌워 양수로 바꿔준다.
+            int hashCode = Math.abs(value.hashCode());
+            return hashCode % capacity;
+        }
+    
+        public int getSize() {
+            return size;
+        }
+    
+        @Override
+        public String toString() {
+            return "MyHashSetV3{" +
+                    "buckets=" + Arrays.toString(buckets) +
+                    ", size=" + size +
+                    ", capacity=" + capacity +
+                    '}';
+        }
+    }
+####
+    public class MyHashSetMain3 {
+    
+        public static void main(String[] args) {
+            MySet<String> set = new MyHashSetV3<>(10);
+            set.add("A");
+            set.add("B");
+            set.add("C");
+            System.out.println(set);
+    
+            // 검색
+            String searchValue = "A";
+            boolean result = set.contains(searchValue);
+            System.out.println("set.contains(" + searchValue + ") = " + result);
+        }
+    }
 
 <br>
 
