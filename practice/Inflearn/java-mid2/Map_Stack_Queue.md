@@ -500,6 +500,10 @@ public class StackMain {
 - 자료 구조의 구현과 관계 없이 모든 자료 구조를 동일한 방법으로 순회할 수 있는 일관성 있는 방법이 있다면,  
   자료 구조를 사용하는 개발자 입장에서 매우 편리할 것이다.
 - 자바는 이런 문제를 해결하기 위해 Iterable 과 Iterator 인터페이스를 제공한다.
+- 자료 구조에 들어있는 데이터를 처음부터 끝가지 순회하는 방법은 단순하다. 자료 구조에 데이터가 있는지 물어보고,  
+  있으면 다음 요소를 꺼내는 과정을 반복하면 된다. 만약 다음 요소가 없다면 종료하면 된다.
+- 이렇게 하면 자료 구조에 있는 모든 데이터를 순회할 수 있다.
+
 
 #### Iterable, Iterator
 - Iterable: "반복 가능한"이라는 뜻이다.
@@ -512,16 +516,202 @@ public class StackMain {
 - 단순히 Iterator 반복자를 반환한다.
 
 #### Iterator 인터페이스의 주요 메서드
-public interface Iterator<E> {
-}
+    public interface Iterator<E> {
+        boolean hasNext();
+        E next();
+    }
+- hasNext( ): 다음 요소가 있는지 확인한다. 다음 요소가 없으면 false 를 반환한다.
+- next( ): 다음 요소를 반환한다. 내부에 있는 위치를 다음으로 이동한다.
 
-
+#### 예시 - Iterable, Iterator 를 사용하는 자료 구조
+    public class MyArrayIterator implements Iterator<Integer>{
+    
+        private int currentIndex = -1;
+        private int[] targetArr;
+    
+        public MyArrayIterator(int[] targetArr) {
+            this.targetArr = targetArr;
+        }
+    
+        @Override
+        public boolean hasNext() {
+            return currentIndex < targetArr.length - 1;
+        }
+    
+        @Override
+        public Integer next() {
+            return targetArr[++currentIndex];
+        }
+    }
+- 생성자를 통해 반복자가 사용할 배열을 참조한다. 여기서 참조한 배열을 순회할 것이다.
+- currentIndex: 현재 인덱스, next( )를 호출할 때마다 하나씩 증가한다.
+- hasNext( ): 다음 항목이 있는지 검사한다. 배열의 끝에 다다르면 순회가 끝났으므로 false 를 반환한다.
+  - 참고로 인덱스의 길이는 0부터 시작하므로 배열의 길이에 1을 빼야 마지막 인덱스가 나온다.
+- next( ): 다음 항목을 반환한다.
+  - currentIndex 를 하나 증가하고 항목을 반환한다.
+  - 인덱스는 0부터 시작하기 때문에 currentIndex 는 처음에 -1을 가진다.  
+    (이렇게 하면 다음 항목을 조회했을 때 0 이 된다.)
+####
+- Iterator 는 단독으로 사용할 수 없다. Iterator 를 통해 순회의 대상이 되는 자료 구조를 만들어보자.
+- 여기서낸 매우 간단한 자료 구조를 하나 만들자. 내부에는 숫자 배열을 보관한다.
+####
+    public class MyArray implements Iterable<Integer> {
+    // Iterable 인터페이스를 구현하여 반복가능한 객체라는 것을 알 수 있다.
+    
+        private int[] numbers;
+    
+        public MyArray(int[] numbers) {
+            this.numbers = numbers;
+        }
+    
+        // 반복 가능하다는 것은 반복자를 반환하는 것이다.
+        // Iterator 에 대한 구현체는 각 자료 구조마다 다 구현을 해야한다. 하지만 우리는 신경쓸 필요 없이 인터페이스만 가져다 쓰면 된다.
+        @Override
+        public Iterator<Integer> iterator() {
+            return new MyArrayIterator(numbers);
+        }
+    }
+- 배열을 가지는 매우 단순한 자료 구조이다.
+- Iterable 인터페이스를 구현한다.
+  - 이 인터페이스는 이 자료 구조에 사용할 반복자(Iterator)를 반환하면 된다.
+  - 앞서 만든 반복자인 MyArrayIterator 를 반환한다.
+  - 이때 MyArrayIterator 는 생산자를 통해 MyArray 의 내부 배열인 numbers 를 참조한다.
+####
+    public class MyArrayMain {
+    
+        public static void main(String[] args) {
+            MyArray myArray = new MyArray(new int[]{1, 2, 3, 4});
+            Iterator<Integer> iterator = myArray.iterator();
+            System.out.println("iterator 사용");
+    
+            while (iterator.hasNext()) {
+                Integer value = iterator.next();
+                System.out.println("value = " + value);
+            }
+        }
+    }
+####
+![img_86.png](img_86.png)  
+- MyArray 는 Iterable(반복할 수 있는) 인터페이스를 구현한다. 따라서 MyArray 는 반복할 수 있다는 의미가 된다.
+- Iterable 인터페이스를 구현하면 iterator( )메서드를 구현해야 한다. 
+- 이 메서드는 Iterator 인터페이스를 구현한 반복자를 반환한다. 여기서는 MyArrayIterator 를 생성해서 반환했다.
+####
+![img_87.png](img_87.png)
+- MyArrayIterator 의 인터페이스를 생성할 대 순회할 대상을 지정해야 한다. 여기서는 MyArray 의 배열을 지정했다.
+- MyArrayIterator 인스턴스는 내부에서 MyArray 의 배열을 참조한다.
+- 이제 MyArrayIterator 를 통해 MyArray 가 가진 내부 데이터를 순회할 수 있다.
 
 
 ### 10-2. 순회2 - 향상된 for 문
+- Iterable, Iterator 를 사용하면 또 하나의 큰 장점을 얻을 수 있다.
+#### Iterable 과 향상된 for 문 (Enhanced For Loop)
+    // 추가 
+    System.out.println("for-each 사용");
+    for (int value : myArray) {
+        System.out.println("value = " + value);
+    }
+####
+    // 실행 결과
+    for-each 사용 
+    value = 1
+    value = 2
+    value = 3
+    value = 4
+- for-each 문으로 불리는 향상된 for 문은 자료 구조를 순회하는 것이 목적이다.
+- 자바는 Iterable 인터페이스를 구현한 객체에 대해서 향상된 for 문을 사용할 수 있게 해준다.
+- 즉 향상된 for 을 사용하기 위해서는 배열이거나 iterable interface 를 구현해야 한다.
+- iterable 을 가지고 있으면 자바는 컴파일 시점에 다음과 같이 코드를 변경한다.
+####
+    while (iterator.hasNext()) {
+        Integer value = iterator.next();
+        System.out.println("value = " + value);
+    }
+- 따라서 두 코드는 같은 코드이다. 물론 모든 데이터를 순회한다면 둘 중에 깔끔한 향상된 for 문이 좋다.
+- 용어를 보면 Iterable 은 반복 가능한 이라는 뜻이다. 우리가 만든 MyArray 는 Iterable 을 구현 했다.
+- 따라서 MyArray 는 반복 가능하다는 뜻이다.  MyArray 가 반복 가능하기 때문에 Iterator 를 반환하고, for-each 도 작동한다.
+
+#### 정리
+- 만드는 사람이 수고로우면 쓰는 사람이 편하고, 만드는 사람이 편하면 쓰는 사람이 수고롭다.
+- 특정 자료 구조가 Iterable, Iterator 를 구현한다면, 해당 자료 구조를 사용하는 개발자는 단순히 hasNext(), next() 또는   
+  for-each 문을 사용해서 순회할 수 있다.
+- 자료 구조가 아무리 복잡해도 해당 자료 구조를 사용하는 개발자는 동일한 방법으로 매우 쉽게 자료 구조를 순회할 수 있다.  
+  이것이 인터페이스가 주는 큰 장점이다.
+- 물론 자료 구조를 만드는 개발자 입장에서는 구현해야하니 번거롭겠지만, 해당 자료 구조를 사용하는 개발자 입장에선느 매우 편리하다.
 
 
 ### 10-3. 순회3 - 자바가 제공하는 Iterable, Iterator
+![img_88.png](img_88.png)
+- 자바 컬렉션 프레임워크는 배열 리스트, 연결 리스트, 해시 셋, 연결 해시 셋, 트리 셋 등등 다양한 자료 구조를 제공한다.
+- 자바는 컬렉션 프레임워크를 사용하는 개발자가 편리하고 일관된 방법으로 자료 구조를 순회할 수 있도록 Iterable 인터페이스를  
+  제공하고, 이미 각각의 구현체에 맞는 Iterator 도 다 구현해두었다.
+- Collection 인터페이스의 상위에 Iterable 이 있다는 것은 모든 컬렉션을 Iterable 과 Iterator 를 사용해서 순회할 수 있다는 뜻이다.
+- Map 의 경우 Key 뿐만 아니라 Value 까지 있기 때문에 바로 순회를 할 수는 없다. 대신에 Key 나 Value 를 정해서 순회할 수 있는데,  
+  keySet(), values() 를 호출하면 Set, Collection 을 반환하기 때문에 Key 나 Value 를 정해서 순회할 수 있다.  
+- 물론 Entry 를 Set 구조로 반환하는 entrySet() 도 순회가 가능하다.
+####
+    public class JavaIterableMain {
+    
+        public static void main(String[] args) {
+            List<Integer> list = new ArrayList<>();
+            list.add(1);
+            list.add(2);
+            list.add(3);
+    
+            Set<Integer> set = new HashSet<Integer>();
+            set.add(1);
+            set.add(2);
+            set.add(3);
+    
+            printAll(list.iterator());
+            printAll(set.iterator());
+            foreach(list);
+            foreach(set);
+        }
+    
+        private static void printAll(Iterator<Integer> iterator) {
+            System.out.println("iterator = " + iterator.getClass());
+            while (iterator.hasNext()) {
+                System.out.println(iterator.next());
+            }
+        }
+    
+        // Iterable 이 최상위에 있어서 Iterable 객체로 받으면 List, Set 모두 받을 수 있음
+        private static void foreach(Iterable<Integer> iterable) {
+            System.out.println("iterable = " + iterable.getClass());
+            for (Integer i : iterable) {
+                System.out.println(i);
+            }
+        }
+    }
+####
+    // 실행 결과
+    iterator = class java.util.ArrayList$Itr
+    1
+    2
+    3
+    iterator = class java.util.HashMap$KeyIterator
+    1
+    2
+    3
+    iterable = class java.util.ArrayList
+    1
+    2
+    3
+    iterable = class java.util.HashSet
+    1
+    2
+    3
+- Iterator, Iterable 은 인터페이스 이다. 따라서 다형성을 적극 활용할 수 있다.
+- printAll(), foreach() 메서드는 새로운 자료 구조가 추가되어도 해당 자료 구조가 Iterator, Iterable 만 구현하고 있다면  
+  코드 변경 없이 사용할 수 있다.
+- java.util.ArrayList$Itr: ArrayList 의 Iterator 는 ArrayList 의 중첩 클래스이다.
+- java.util.HashMap$KeyIterator: HashSet 자료 구조는 사실은 내부에서 HashMap 자료 구조를 사용한다.  
+  HashMap 자료 구조에서 Value 를 사용하지 않으면 HashSet 과 같다.
+
+> !참고 - Iterator(반복자) 디자인 패턴은 객체 지향 프로그래밍에서 컬렉션의 요소들을 순회할 때 사용되는 디자인 패턴이다.  
+> 이 패턴은 컬렉션의 내부 표현 방식을 노출시키지 않으면서도 그 안의 각 요소에 순차적으로 접근할 수 있게 해준다. Iterator  
+> 패턴은 컬렉션의 구현과는 독립적으로 요소들을 탐색할 수 있는 방법을 제공하며, 이로 인해 코드의 복잡성을 줄이고, 재사용성을  
+> 높일 수 있다.
 
 
 ### 10-4. 정렬1 - Comparable, Comparator
