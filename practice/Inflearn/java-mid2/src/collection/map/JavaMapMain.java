@@ -1,4 +1,4 @@
-package map;
+package collection.map;
 
 import java.util.*;
 
@@ -11,7 +11,7 @@ public class JavaMapMain {
     }
 
     private static void run(Map<String, Integer> map) {
-        System.out.println("map = " + map.getClass());
+        System.out.println("collection.map = " + map.getClass());
         map.put("C", 10);
         map.put("B", 20);
         map.put("A", 30);

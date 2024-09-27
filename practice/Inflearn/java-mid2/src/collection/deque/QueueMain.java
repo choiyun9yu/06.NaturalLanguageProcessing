@@ -1,7 +1,6 @@
-package deque;
+package collection.deque;
 
 import java.util.ArrayDeque;
-import java.util.LinkedList;
 import java.util.Queue;
 
 public class QueueMain {

@@ -192,19 +192,19 @@
             run(new TreeMap<>());
         }
     
-        private static void run(Map<String, Integer> map) {
-            System.out.println("map = " + map.getClass());
-            map.put("C", 10);
-            map.put("B", 20);
-            map.put("A", 30);
-            map.put("1", 40);
-            map.put("2", 50);
+        private static void run(Map<String, Integer> collection.map) {
+            System.out.println("collection.map = " + collection.map.getClass());
+            collection.map.put("C", 10);
+            collection.map.put("B", 20);
+            collection.map.put("A", 30);
+            collection.map.put("1", 40);
+            collection.map.put("2", 50);
     
-            Set<String> keySet = map.keySet();
+            Set<String> keySet = collection.map.keySet();
             Iterator<String> iterator = keySet.iterator();
             while (iterator.hasNext()) {
                 String key = iterator.next();
-                System.out.print(key + "=" + map.get(key) + " ");
+                System.out.print(key + "=" + collection.map.get(key) + " ");
             }
             System.out.println();
         }
@@ -212,11 +212,11 @@
 
 ####
     // 실행 결
-    map = class java.util.HashMap
+    collection.map = class java.util.HashMap
     A=30 1=40 B=20 2=50 C=10
-    map = class java.util.LinkedHashMap
+    collection.map = class java.util.LinkedHashMap
     C=10 B=20 A=30 1=40 2=50
-    map = class java.util.TreeMap
+    collection.map = class java.util.TreeMap
     1=40 2=50 A=30 B=20 C=10
 - HashMap: 입력한 순서를 보장하지 않는다.
 - LinkedHashMap: 키를 기준으로 입력한 순서를 보장한다.
@@ -360,43 +360,43 @@ public class StackMain {
     public class DequeMain {
     
         public static void main(String[] args) {
-            Deque<Integer> deque = new ArrayDeque<>();
+            Deque<Integer> collection.deque = new ArrayDeque<>();
     
             // 데이터 추가
-            deque.offerFirst(1);
-            System.out.println("deque = " + deque);
-            deque.offerFirst(2);
-            System.out.println("deque = " + deque);
-            deque.offerLast(3);
-            System.out.println("deque = " + deque);
-            deque.offerLast(4);
-            System.out.println("deque = " + deque);
+            collection.deque.offerFirst(1);
+            System.out.println("collection.deque = " + collection.deque);
+            collection.deque.offerFirst(2);
+            System.out.println("collection.deque = " + collection.deque);
+            collection.deque.offerLast(3);
+            System.out.println("collection.deque = " + collection.deque);
+            collection.deque.offerLast(4);
+            System.out.println("collection.deque = " + collection.deque);
     
             // 다음 꺼낼 데이터 확인(꺼내지 않고 단순 조회만)
-            System.out.println("deque.peekFirst() = " + deque.peekFirst());
-            System.out.println("deque.peekLast() = " + deque.peekLast());
+            System.out.println("collection.deque.peekFirst() = " + collection.deque.peekFirst());
+            System.out.println("collection.deque.peekLast() = " + collection.deque.peekLast());
     
             // 데이터 꺼내기
-            System.out.println("deque.pollFirst() = " + deque.pollFirst());
-            System.out.println("deque.pollFirst() = " + deque.pollFirst());
-            System.out.println("deque.pollLast() = " + deque.pollLast());
-            System.out.println("deque.pollLast() = " + deque.pollLast());
-            System.out.println("deque = " + deque);
+            System.out.println("collection.deque.pollFirst() = " + collection.deque.pollFirst());
+            System.out.println("collection.deque.pollFirst() = " + collection.deque.pollFirst());
+            System.out.println("collection.deque.pollLast() = " + collection.deque.pollLast());
+            System.out.println("collection.deque.pollLast() = " + collection.deque.pollLast());
+            System.out.println("collection.deque = " + collection.deque);
         }
     }
 #### 
     // 실행 결과 
-    deque = [1]
-    deque = [2, 1]
-    deque = [2, 1, 3]
-    deque = [2, 1, 3, 4]
-    deque.peekFirst() = 2
-    deque.peekLast() = 4
-    deque.pollFirst() = 2
-    deque.pollFirst() = 1
-    deque.pollLast() = 4
-    deque.pollLast() = 3
-    deque = [] 
+    collection.deque = [1]
+    collection.deque = [2, 1]
+    collection.deque = [2, 1, 3]
+    collection.deque = [2, 1, 3, 4]
+    collection.deque.peekFirst() = 2
+    collection.deque.peekLast() = 4
+    collection.deque.pollFirst() = 2
+    collection.deque.pollFirst() = 1
+    collection.deque.pollLast() = 4
+    collection.deque.pollLast() = 3
+    collection.deque = [] 
 
 #### Deque 구현체와 성능 테스트
 - Deque 의 대표적인 구현체는 ArrayDeque, LinkedList 가 있다. 이 둘중 모든 면에서 ArrayDeque 가 더 빠르다.
@@ -422,30 +422,30 @@ public class StackMain {
     public class DequeStackMain {
     
         public static void main(String[] args) {
-            Deque<Integer> deque = new ArrayDeque<>();
+            Deque<Integer> collection.deque = new ArrayDeque<>();
     
             // 데이터 추가
-            deque.push(1);
-            deque.push(2);
-            deque.push(3);
-            System.out.println("deque = " + deque);
+            collection.deque.push(1);
+            collection.deque.push(2);
+            collection.deque.push(3);
+            System.out.println("collection.deque = " + collection.deque);
     
-            System.out.println("deque.peek() = " + deque.peek());
+            System.out.println("collection.deque.peek() = " + collection.deque.peek());
     
-            System.out.println("deque.pop() = " + deque.pop());
-            System.out.println("deque.pop() = " + deque.pop());
-            System.out.println("deque.pop() = " + deque.pop());
-            System.out.println("deque = " + deque);
+            System.out.println("collection.deque.pop() = " + collection.deque.pop());
+            System.out.println("collection.deque.pop() = " + collection.deque.pop());
+            System.out.println("collection.deque.pop() = " + collection.deque.pop());
+            System.out.println("collection.deque = " + collection.deque);
         }
     }
 ####
     // 실행 결과 
-    deque = [3, 2, 1]
-    deque.peek() = 3
-    deque.pop() = 3
-    deque.pop() = 2
-    deque.pop() = 1
-    deque = []
+    collection.deque = [3, 2, 1]
+    collection.deque.peek() = 3
+    collection.deque.pop() = 3
+    collection.deque.pop() = 2
+    collection.deque.pop() = 1
+    collection.deque = []
 - Deque 에서 Stack 을 위한 메서드 이름까지 제공하는 것을 확인할 수 있다.
 - 자바의 Stack 클래스는 성능이 좋지 않고 하위 호환을 위해 남겨져 있다.
 - Stack 자료 구조가 필요하면 Deque 의 ArrayDeque 구현체를 사용하자.
@@ -454,29 +454,29 @@ public class StackMain {
     public class DequeQueueMain {
     
         public static void main(String[] args) {
-            Deque<Integer> deque = new ArrayDeque<>();
+            Deque<Integer> collection.deque = new ArrayDeque<>();
     
-            deque.offer(1);
-            deque.offer(2);
-            deque.offer(3);
-            System.out.println("deque = " + deque);
+            collection.deque.offer(1);
+            collection.deque.offer(2);
+            collection.deque.offer(3);
+            System.out.println("collection.deque = " + collection.deque);
     
-            System.out.println("deque.peek() = " + deque.peek());
+            System.out.println("collection.deque.peek() = " + collection.deque.peek());
     
-            System.out.println("deque.poll() = " + deque.poll());
-            System.out.println("deque.poll() = " + deque.poll());
-            System.out.println("deque.poll() = " + deque.poll());
-            System.out.println("deque = " + deque);
+            System.out.println("collection.deque.poll() = " + collection.deque.poll());
+            System.out.println("collection.deque.poll() = " + collection.deque.poll());
+            System.out.println("collection.deque.poll() = " + collection.deque.poll());
+            System.out.println("collection.deque = " + collection.deque);
         }
     }
 ####
     // 실행 결과
-    deque = [1, 2, 3]
-    deque.peek() = 1
-    deque.poll() = 1
-    deque.poll() = 2
-    deque.poll() = 3
-    deque = []
+    collection.deque = [1, 2, 3]
+    collection.deque.peek() = 1
+    collection.deque.poll() = 1
+    collection.deque.poll() = 2
+    collection.deque.poll() = 3
+    collection.deque = []
 - Deque 에서 Queue 를 위한 메서드 이름까지 제공하는 것을 확인할 수 있다.
 - Deque 인터페이스는 Queue 인터페이스의 자식이기 때문에, 단순히 Queue 의 기능만 필요하면 Queue 인터페이스를 사용하고,  
   더 많은 기능이 필요하다면 Deque 인터페이스를 사용하면 된다.
@@ -619,8 +619,8 @@ public class StackMain {
     value = 4
 - for-each 문으로 불리는 향상된 for 문은 자료 구조를 순회하는 것이 목적이다.
 - 자바는 Iterable 인터페이스를 구현한 객체에 대해서 향상된 for 문을 사용할 수 있게 해준다.
-- 즉 향상된 for 을 사용하기 위해서는 배열이거나 iterable interface 를 구현해야 한다.
-- iterable 을 가지고 있으면 자바는 컴파일 시점에 다음과 같이 코드를 변경한다.
+- 즉 향상된 for 을 사용하기 위해서는 배열이거나 collection.iterable interface 를 구현해야 한다.
+- collection.iterable 을 가지고 있으면 자바는 컴파일 시점에 다음과 같이 코드를 변경한다.
 ####
     while (iterator.hasNext()) {
         Integer value = iterator.next();
@@ -676,9 +676,9 @@ public class StackMain {
         }
     
         // Iterable 이 최상위에 있어서 Iterable 객체로 받으면 List, Set 모두 받을 수 있음
-        private static void foreach(Iterable<Integer> iterable) {
-            System.out.println("iterable = " + iterable.getClass());
-            for (Integer i : iterable) {
+        private static void foreach(Iterable<Integer> collection.iterable) {
+            System.out.println("collection.iterable = " + collection.iterable.getClass());
+            for (Integer i : collection.iterable) {
                 System.out.println(i);
             }
         }
@@ -693,11 +693,11 @@ public class StackMain {
     1
     2
     3
-    iterable = class java.util.ArrayList
+    collection.iterable = class java.util.ArrayList
     1
     2
     3
-    iterable = class java.util.HashSet
+    collection.iterable = class java.util.HashSet
     1
     2
     3
@@ -715,21 +715,452 @@ public class StackMain {
 
 
 ### 10-4. 정렬1 - Comparable, Comparator
+#### 
+    public class SortMain1 {
+    
+        public static void main(String[] args) {
+            Integer[] array = {3, 2, 1};
+            System.out.println(Arrays.toString(array));
+    
+            System.out.println("기본 정렬 후");
+            Arrays.sort(array);
+            System.out.println(Arrays.toString(array));
+        }
+    }
+####
+    // 실행 결과
+    [3, 2, 1]
+    기본 정렬 후
+    [1, 2, 3]
+- Arrays.sort( )를 사용하면 배열에 들어있는 데이터를 순서대로 정렬할 수 있다.
+- 원래 3, 2, 1 순서로 데이터가 들어있었는데, 정렬 후에는 1, 2, 3의 순서로 데이터가 정렬되는 것을 확인할 수 있다.
 
+#### 정렬 알고리즘
+![img_89.png](img_89.png)  
+- 먼저 가장 왼쪽에 있는 데이터와 그 다음 데이터를 비교한다.
+- 3과 2를 비교했을 때 3이 더 크기 때문에 둘을 교환한다.
+####
+![img_90.png](img_90.png)  
+- 다음 차례의 둘을 비교한다.
+- 3과 1을 비교했을 때 3이 더 크기 때문에 둘을 교환한다.
+- 이렇게 처음부터 끝까지 비교하면 마지막 항목은 가장 큰 값이 된다. 여기서는 3이다.
+####
+![img_91.png](img_91.png)  
+- 처음으로 돌아와서 다시 비교를 시작한다.
+- 2와 1을 비교했을 때 2가 더 크기 때문에 둘을 교환한다.
+- 최종적으로 1, 2, 3으로 정렬된다.
+####
+- 위에서 설명한 정렬은 가장 단순한 정렬의 예시이다. 실제로는 정렬 성능을 높이기 위한 다양한 정렬 알고리즘이 존재한다.
+- 자바는 초기 퀵소트를 사용했다가 지금은 데이터가 작을때는 듀얼 피벗 퀵소트를 사용하고, 데이터가 많을 때는 팀소트를 사용한다.  
+  이런 알고리즘은 평균 O(n lon n)의 성넝을 제공한다.
 
+#### 비교자 - Comparator
+- 그런데 정렬을 할 때 1, 2, 3 순서가 아니라 반대로 3, 2, 1로 정렬하고 싶다면 어떻게 해야할까?
+- 이때는 비교자를 사용하면 된다. 이름 그대로 두 값을 비교할 때 비교 기준을 직접 제공할 수 있다.
+
+      public interface Comparator<T> {
+          int collection.compare(T o1, T o2);
+      }
+- 두 인수를 비교해서 결과 값을 반환하면 된다.
+  - 첫 번째 인수가 더 작으면 음수
+  - 두 값이 같으면 0
+  - 첫 번째 인수가 더 크면 양수
+####
+    public class SortMain2 {
+    
+        public static void main(String[] args) {
+            Integer[] array = {3, 2, 1};
+            System.out.println(Arrays.toString(array));
+            System.out.println("Comparator 비교");
+            Arrays.sort(array, new AscComparator());
+            System.out.println("AscComparator: " + Arrays.toString(array));
+    
+            Arrays.sort(array, new DescComparator());
+            System.out.println("DescComparator: " + Arrays.toString(array));
+            Arrays.sort(array, new AscComparator().reversed()); // Asc + reversed 는 Desc 와 같다.
+            System.out.println("AscComparator.reversed: " + Arrays.toString(array));
+        }
+    
+        // Asc 는 오름차순 Desc 는 내림차순
+        static class AscComparator implements Comparator<Integer> {
+            @Override
+            public int collection.compare(Integer o1, Integer o2) {
+                System.out.println("o1: " + o1 + ", o2: " + o2);
+                return (o1 < o2) ? -1 : (o1 == o2) ? 0 : 1; // 3항 연산자
+            }
+        }
+    
+        static class DescComparator implements Comparator<Integer> {
+            @Override
+            public int collection.compare(Integer o1, Integer o2) {
+                System.out.println("o1: " + o1 + ", o2: " + o2);
+                return  ((o1 < o2) ? -1 : (o1 == o2) ? 0 : 1) * -1; // 최종 결과에 -1 을 곱하면 반대로 된다.
+            }
+        }
+    }
+
+####
+    // 실행 결과
+    [3, 2, 1]
+    Comparator 비교
+    o1: 2, o2: 3
+    o1: 1, o2: 2
+    AscComparator: [1, 2, 3]
+    o1: 2, o2: 1
+    o1: 3, o2: 2
+    DescComparator: [3, 2, 1]
+    o1: 3, o2: 2
+    o1: 2, o2: 1
+    AscComparator.reversed: [3, 2, 1]
+- Arrays.sort( )를 사용할 때 비교자를 넘겨주면 알고리즘에서 어떤 값이 더 큰지 두 값을 비교할 때, 비교자를 사용한다.
+- AscComparator 를 사용하면 숫자가 점점 올라가는 오름차순으로 정렬된다.
+- DescComparator 를 사용하면 숫자가 점점 내려가는 내림차순으로 정렬된다.  
+- 왜냐하면 DescComparator 구현의 마지막에 -1을 곱해주었기 때문에 이렇게 하면 양수는 음수로, 음수는 양수로 반환횐다.  
+  쉽게 이야기해서 계산의 결과가 반대로 된다. 따라서 정렬의 결과 반대이다.
+- 비교자 Comparator 를 사용하면 정렬의 기준을 자유롭게 변경할 수 있다.
+
+#### 정렬을 반대로
+    new AscComparator().reversed()
+- 정렬을 반대로하고 싶으면 reversed( ) 메서드를 사용하면 된다. 이렇게 하면 비교의 결과를 반대로 변경한다.  
+  앞서 설명한 -1을 곱한 것과 같은 결과가 나온다.
+
+  
 ### 10-5. 정렬2 - Comparable, Comparator
+- 자바가 기본으로 제공하는 Integer, String 같은 객체를 제외하고 MyUser 와 같은 직접 만든 객체를 정렬하려면 어떻게 해야할까?  
+- 내가 만든 객체이기 때문에 정렬을 할 때 내가 만든 두 객체 중에 어떤 객체가 더 큰지 알려줄 방법이 있어야 한다.
+- 이때는 Comparable 인터페이스를 구현하면 된다. 이 인터페이스는 이름 그대로 비교 가능한, 비교할 수 있는 이라는 뜻으로,  
+  객체에 비교 기능을 추가해준다.
+####
+    public interface Comparable<T> {
+        public int compareTo(T o)
+    }
+- 자기 자신과 인수로 넘어온 객체를 비교해서 반환하면 된다.
+  - 현재 객체가 인수로 주어진 객체보다 더 작으면 음수, 예(-1)
+  - 두 객체의 크기가 같으면 0
+  - 현재 객체가 인수로 주어진 객체보다 더 크면 양수, 예(1)
+####
+    public class MyUser implements Comparable<MyUser> {
+    
+        private String id;
+        private int age;
+    
+        public MyUser(String id, int age) {
+            this.id = id;
+            this.age = age;
+        }
+    
+        public String getId() {
+            return id;
+        }
+    
+        public int getAge() {
+            return age;
+        }
+    
+        // 나와 넘어온 것을 비교
+        @Override
+        public int compareTo(MyUser o) {
+            System.out.println(this + " vs " + o);
+            return this.age < o.age ? -1 : this.age > o.age ? 1 : 0;
+        }
+    
+        @Override
+        public String toString() {
+            return "MyUser{" +
+                    "id='" + id + '\'' +
+                    ", age=" + age +
+                    '}';
+        }
+    }
+- MyUser 가 Comparable 인터페이스를 구현한 것을 확인할 수 있다.
+- compareTo( ) 구현을 보면 여기서는 정렬의 기준을 나이(age)로 정했다.
+- MyUser 클래스의 기본 정렬 방식을 나이 오름차순으로 정한 것이다.
+- Comparable 을 통해 구현한 순서를 자연 순서(Natural Ordering)라 한다.
+####
+    public class SortMain3 {
+    
+        public static void main(String[] args) {
+            MyUser myUser1 = new MyUser("a", 30);
+            MyUser myUser2 = new MyUser("b", 20);
+            MyUser myUser3 = new MyUser("c", 10);
+    
+            MyUser[] array = {myUser1, myUser2, myUser3};
+            System.out.println("기본 데이터");
+            System.out.println(Arrays.toString(array));
+    
+            System.out.println("Comparable 기본 정렬");
+            Arrays.sort(array); // 기존 array 배열이 변경되는 듯
+            System.out.println(Arrays.toString(array));
+        }
+    }
+####
+    // 실행 결과
+    기본 데이터
+    [MyUser{id='a', age=30}, MyUser{id='b', age=20}, MyUser{id='c', age=10}]
+    Comparable 기본 정렬
+    MyUser{id='b', age=20} vs MyUser{id='a', age=30}
+    MyUser{id='c', age=10} vs MyUser{id='b', age=20}
+    [MyUser{id='c', age=10}, MyUser{id='b', age=20}, MyUser{id='a', age=30}]
+
+#### Arrays.sort(array)
+- 기본 정렬을 시도한다. 이때는 객체가 스스로 가지고 있는 Comparable 인터페이스를 사용해서 비교한다.
+- MyUser 가 구현한 대로 나이(age) 오름차순으로 정렬된 것을 확인할 수 있다. MyUser 의 natural ordering 을  사용했다.
+
+#### 다른 방식으로 정렬
+- 만약 객체가 가지고 있는 Comparable 기본 정렬이 아니라 다른 정렬을 사용하고 싶다면 어떻게 해야할까?
+- 기본 정렬이 아닌 다른 정렬 방식을 쓸 때는 우리가 앞서 배운 Comparator 를 쓰면 된다.
+- 나이가 아니라 아이디로 비교하는 예제를 추가로 만들어보자.
+####
+    public class IdComparator implements Comparator<MyUser> {
+    
+        @Override
+        public int collection.compare(MyUser o1, MyUser o2) {
+            return o1.getId().compareTo(o2.getId());    // .compareTo() 자바에서 문자를 비교하기 위해 구현해놓은 메소드
+        }
+    }
+####
+    ...
+    // SortMain3 에 추가
+    System.out.println("IdComparator 정렬");
+    Arrays.sort(array, new IdComparator());
+    System.out.println(Arrays.toString(array));
+
+    System.out.println("IdComparator().reversed() 정렬");
+    Arrays.sort(array, new IdComparator().reversed());
+    System.out.println(Arrays.toString(array));
+#### 
+    // 실행 결과 
+    IdComparator 정렬
+    [MyUser{id='a', age=30}, MyUser{id='b', age=20}, MyUser{id='c', age=10}]
+    IdComparator().reversed() 정렬
+    [MyUser{id='c', age=10}, MyUser{id='b', age=20}, MyUser{id='a', age=30}]
+
+#### Arrays.sort(array, Comparator)
+- 기본 정렬이 아니라 정렬 방식을 지정하고 싶다면 Arrays.sort 의 인수로 비교자를 만들어서 넣어주면 된다.
+- 이렇게 비교자로 전달하면 객체가 기본으로 가지고 있는 Comparable 을 무시하고, 별도로 전달한 비교자를 사용해서 정렬한다.
+- 여기서는 기본으로 나이를 기준으로 정렬하지만, 아이디로 정렬하고 싶다면 IdComparator 를 넘겨주면 된다.
+
+> !주의 - 만약 Comparable 도 구현하지 않고, Comparator 도 제공하지 않으면 런타임 오류가 발생한다.  
+> Comparator 가 없으니, 객체가 가지고 있는 기본 정렬을 사용해야하는데 Comparable 도 없으니 예외가 발생한 것
+
+#### Comparable, Comparator 정리 
+- 객체의 기본 정렬 방법은 객체에 Comparable 을 구현해서 정의한다. 이렇게 하면 객체는 이름 그대로 비교할 수 있는 객체가 된다.
+- 그런데 기본 정렬 외에 다른 정렬 방법을 사용해야 하는 경우 Comparator 를 별도로 구현해서 정렬 메서드에 전달하면 된다.  
+  이 경우 전달한 Comparator 가 항상 우선권을 가진다.
+- 자바가 제공하는 Integer, String 같은 기본 객체들은 대부분 Comparable 을 구현해 두었다.
 
 
 ### 10-6. 정렬3 - Comparable, Comparator
+- **정렬은** 배열 뿐만 아니라 **순서가 있는** List 같은 **자료 구조에도 사용할 수 있다.**
+#### List 와 정렬
+    public class SortMain4 {
+    
+        public static void main(String[] args) {
+            MyUser myUser1 = new MyUser("a", 30);
+            MyUser myUser2 = new MyUser("b", 20);
+            MyUser myUser3 = new MyUser("c", 10);
+    
+            List<MyUser> list = new LinkedList<MyUser>();
+            list.add(myUser1);
+            list.add(myUser2);
+            list.add(myUser3);
+            System.out.println("기본 데이터");
+            System.out.println(list);
+    
+            System.out.println("Comparable 기본 정렬");
+            //Collections.sort(list);   // 이렇게 해도 정렬이된다. 그래도 list.sort() 를 쓰는게 더 낫
+            list.sort(null);    // Comparator 파라미터를 null 로 입력하면 기본 정렬 된다. (자기 자신을 정렬할 거라서 list 는 안넣어도 된다.)
+            System.out.println(list);
+    
+            System.out.println("IdComparator 정렬");
+            //Collections.sort(list, new IdComparator());
+            list.sort(new IdComparator());
+            System.out.println(list);
+    
+            System.out.println("IdComparator().reversed() 정렬");
+            list.sort(new IdComparator().reversed());
+            System.out.println(list);
+        }
+    }
+#### Collections.sort(list)
+- 리스트는 순서가 있는 컬렉션이므로 정렬이 적용된다.
+- 이 메서드를 사용하면 기본 정렬이 적용된다.
+- 하지만 이 방식보다는 객체 스스로 정렬 메서드를 가지고 있는 list.sort( ) 사용을 더 권장한다. 참고로 둘의 결과는 같다.  
+  (객체가 이미 자신의 데이터를 가지고 있기 때문에 내걸 가지고 내가 정렬한다는 게 더 객체지향적이다.)
+
+#### list.sort(null)
+- 별도의 비교자가 없으므로 Comparable 로 비교해서 정렬한다.
+- 자연적인 순서로 비교한다.
+- 자바 1.8 부터 사용
+
+#### Collections.sort(list, new IdComparator())
+- 별도의 비교자로 비교하고 싶다면 다음 인자에 비교자를 넘기면 된다.
+- 하지만 이 방식보다는 객체 스스로 정렬 메서드를 가지고 있는 list.sort() 사용을 더 권장한다. 참고로 둘의 결과는 같다.
+
+#### list.sort(new IdComparator())
+- 전달한 비교자로 비교한다.
+- 자바 1.8 부터 사용
+
+#### Tree 구조와 정렬
+![img_92.png](img_92.png)
+- TreeSet 과 같은 이진 탐색 트리 구조는 데이터를 보관할 때, 데이터를 정렬하면서 보관한다.
+- 따라서 정렬 기준ㅇ르 제공하는 것이 필수다.
+- 이진 탐색 트리는 데이터를 저장할 때 왼쪼 노드에 저장해야할 지, 오른쪽 노드에 저장해야할 지 비교가 필요하다.
+- 따라서 TreeSet, TreeMap 은 Comparable 또는 Comparator 가 필수다.
+
+####
+    public class SortMain5 {
+    
+        public static void main(String[] args) {
+            MyUser myUser1 = new MyUser("a", 30);
+            MyUser myUser2 = new MyUser("b", 20);
+            MyUser myUser3 = new MyUser("c", 10);
+    
+            TreeSet<MyUser> treeSet1 = new TreeSet<>();
+            treeSet1.add(myUser1);
+            treeSet1.add(myUser2);
+            treeSet1.add(myUser3);
+            System.out.println("Comparable 기본 정렬");
+            System.out.println(treeSet1);   // 데이터를 추가할 때 기본 정렬로 정렬되어 추가된다.
+    
+            System.out.println("IdComparator 정렬");
+            TreeSet<MyUser> treeSet2 = new TreeSet<>(new IdComparator());  // TreeSet 생성자에 비교자를 넣으면 정렬 기준이 바뀐다.
+            treeSet2.add(myUser1);
+            treeSet2.add(myUser2);
+            treeSet2.add(myUser3);
+            System.out.println(treeSet2);
+        }
+    }
+- TreeSet 을 사용할 때 별도의 비교자를 제공하지 않으면 객체가 구현한 Comparable 을 사용한다.
+- TreeSet 을 생성할 때 별도의 비교자를 제공하면 Comparable 대신 Comparator 를 사용한다.
+
+> !주의 - 만약 Comparable 도 구현하지 않고 Comparator 도 전달하지 않으면 런타임 오류가 발생한다.
+
+#### 정리
+- 자바의 정렬 알고리즘은 매우 복잡하고 또 거의 완성형에 가깝다.
+- 자바는 개발자가 복잡한 정렬 알고리즘을 신경 쓰지 않으면서 정렬의 기준만 간단히 변경할 수 있도록,  
+  정렬의 기준을 Comparable, Comparator 인터페이스를 통해 추상화해 두었다.
+- 객체의 정렬이 필요한 경우 Comparable 을 통해 기본 자연 순서를 제공하자.
+- 자연 순서 외에 다른 정렬 기준이 추가로 필요하면 Comparator 를 제공하자 
 
 
 ### 10-7. 컬렉션 유틸
+#### 정렬 
+    public class CollectionsSortMain {
+    
+        public static void main(String[] args) {
+            // ArrayList<Object> 는 ArrayList 만 쓸 수 있는걸 사용할 대 선언하고한다. (LinkedList 도 마찬가지)  
+            // List<Object> 는 ArrayList 나 LinkedList 로 쓰다가 다른 List 로 간편하게 바꾸고 싶을 때 선언한다.
+            ArrayList<Integer> list = new ArrayList<>();
+            
+            list.add(1);
+            list.add(2);
+            list.add(3);
+            list.add(4);
+            list.add(5);
+    
+            Integer max = Collections.max(list);
+            Integer min = Collections.min(list);
+    
+            System.out.println("max = " + max);
+            System.out.println("min = " + min);
+    
+            System.out.println("list = " + list);
+            Collections.shuffle(list);  // 랜덤하게 List 에 있는 요소를 섞는다.
+            System.out.println("shuffle list = " + list);
+            Collections.sort(list);
+            System.out.println("sort list = " + list);
+            Collections.reverse(list);
+            System.out.println("reverse list = " + list);
+        }
+    }
+
+#### 편리한 컬렉션 생성
+    public class OfMain {
+    
+        public static void main(String[] args) {
+            // 편리한 불변 컬렉션 생성
+            List<Integer> list = List.of(1, 2, 3);
+            Set<Integer> set = Set.of(1, 2, 3);
+            Map<Integer, String> map = Map.of(1, "one", 2, "two", 3, "three");
+    
+            System.out.println("list = " + list);
+            System.out.println("set = " + set);
+            System.out.println("map = " + map);
+            System.out.println("list class = " + list.getClass());
+    
+            // java.lang.UnsupportedOperationException 예외 발생
+            // list.add(4);
+        }
+    }
+
+#### 
+    // 실행 결과
+    list = [1, 2, 3]
+    set = [3, 2, 1]
+    map = {3=three, 2=two, 1=one}
+    list class = class java.util.ImmutableCollections$ListN
+- List.of(...)를 사용하면 컬렉션을 편리하게 생성할 수 있다. 이때는 가변이 아니라 불변 컬렉션이 생성된다.
+- .getClass( )로 리스트를 찍어보면 ImmutableCollections 라고 나온다. 즉 불변 객체란 뜻이다.  
+  (Set, Map 도 마찬가지다.)
+
+#### 불변 컬렉션과 가변 컬렉션 전환
+    public class ImmutableMain {
+    
+        public static void main(String[] args) {
+            // 불변 리스트 생성
+            List<Integer> list = List.of(1, 2, 3);
+    
+            // 불변 -> 가변
+            ArrayList<Integer> mutableList = new ArrayList<>(list);
+            mutableList.add(4);
+            System.out.println("mutableList = " + mutableList);
+            System.out.println("mutableList.getClass() = " + mutableList.getClass());
+    
+            // 가변 -> 불변
+            List<Integer> unmodifiableList = Collections.unmodifiableList(mutableList);
+            System.out.println("unmodifiableList.getClass() = " + unmodifiableList.getClass());
+    
+            //java.lang.UnsupportedOperationException 예외 발생
+            //unmodifiableList.add(5);
+        }
+    }
+- 불변 리스트를 가변 리스트로 전환하려면 new ArrayList<>( )를 사용하면 된다.
+- 가변 리스트를 불변 리스트로 전환하려면 Collections.unmodifiableList( )를 사용하면 된다.
+  - 물론 다양한 unmodifiableXxx( )가 존재한다.
+
+#### 빈 리스트 생성 
+- Null 을 반환하기 좀 그렇고 List 를 반환하는데 빈 List 반환할 때 사용
+####
+    public class EmptyListMain {
+    
+        public static void main(String[] args) {
+            // 빈 가변 리스트 생성
+            List<Integer> list1 = new ArrayList<>();
+            List<Integer> list2 = new ArrayList<>();
+    
+            // 빈 불변 리스트 생성
+            List<Integer> list3 = Collections.emptyList();  // 자바5
+            List<Integer> list4 = List.of();    // 자바9
+    
+            System.out.println("list3.getClass() = " + list3.getClass());
+            System.out.println("list4.getClass() = " + list4.getClass());
+        }
+    }
+- 빈 가변 리스트는 원하는 컬렉션의 구현체를 직접 생성하면 된다.
+- 빈 불변 리스트는 2가지 방법이 있다.
+  - Collections.emptyList( ): 자바5부터 제공되는 기능이다.
+  - List.of( ): 자바9부터 제공되는 최신 기능이다.
+  - List.of( )가 더 간결하고, List.of(1, 2, 3)도 불변이기 때문에 사용법에 일관성이 있다.  
+    자바9 이상을 사용한다면 이 기능을 권장한다.
+
+#### Arrays.asList( )
+
+
 
 
 ### 10-8. 컬렉션 프레임워크 전체 정리
 
 
-
-<br>
 
 ## 11. 다음으로

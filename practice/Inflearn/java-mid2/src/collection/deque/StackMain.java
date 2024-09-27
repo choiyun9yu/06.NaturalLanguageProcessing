@@ -1,4 +1,4 @@
-package deque;
+package collection.deque;
 
 import java.util.Stack;
 

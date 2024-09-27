@@ -1,4 +1,4 @@
-package iterable;
+package collection.iterable;
 
 import java.util.*;
 
@@ -30,7 +30,7 @@ public class JavaIterableMain {
 
     // Iterable 이 최상위에 있어서 Iterable 객체로 받으면 List, Set 모두 받을 수 있음
     private static void foreach(Iterable<Integer> iterable) {
-        System.out.println("iterable = " + iterable.getClass());
+        System.out.println("collection.iterable = " + iterable.getClass());
         for (Integer i : iterable) {
             System.out.println(i);
         }

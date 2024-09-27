@@ -1,4 +1,4 @@
-package iterable;
+package collection.iterable;
 
 import java.util.Iterator;
 
@@ -14,7 +14,7 @@ public class MyArrayMain {
             System.out.println("value = " + value);
         }
 
-        // 추가, 향상된 for 을 사용하기 위해서는 배열이거나 java.lang.iterable 이어야 한다.
+        // 추가, 향상된 for 을 사용하기 위해서는 배열이거나 java.lang.collection.iterable 이어야 한다.
         System.out.println("for-each 사용");
         for (int value : myArray) {
             System.out.println("value = " + value);
