@@ -1155,8 +1155,51 @@ public class StackMain {
     자바9 이상을 사용한다면 이 기능을 권장한다.
 
 #### Arrays.asList( )
+- Arrays.asList 메서드를 사용해도 다음과 같이 리스트를 생성할 수 있다.
+- 참고로 이 메서드는 자바1.2 부터 존재했다. 자바9를 사용하나면 List.of( )를 권장한다.
 
+      List<Integer> list = Arrays.asList(1, 2, 3);
+      List<Integer> list = List.of(1, 2, 3);
+  - Array.asList( )로 생성된 리스트는 **고정된 크기를 가지지만, 요소들은 변경할 수 있다.**  
+    즉, 리스트의 길이는 변경할 수 없지만, 기존에 위치에 있는 요소들은 다른 요소로 교체할 수 있다.
+    - set( )을 통해 요소를 변경할 수 있다.
+    - add( ).remove( ) 와 같은 메서드를 호출하면 예외가 발생한다. 크기를 변경할 수 없다.
+  - 고정도 가변도 아닌 애매한 리스트이다.
+- 정리하면 일반적으로 List.of( )를 사용하는 것을 권장한다. 다음과 같은 경우 Arrays.asList( )를 선택할 수 있다.
+  - 변경 가능한 요소: 리스트 내부의 요소를 변경해야 하는 경우(단, 리스트의 크기는 변경할 수 없음)
+  - 하위 호환성: Java 9 이전 버전에서 작업해야 하는 경우
+- Arrays.asList(arr)로 배열을 만들면 arr 배열의 참조값을 그대로 가져다 쓴다.  
 
+      Integer[] arr = {1, 2, 3, 4, 5};
+      List<Integer> arrList = Arrays.asList(arr);
+      arrList.set(0, 100);    // 0번 인덱스의 값을 100으로 변경
+      System.out.println("arr = " + Arrays.toString(arr)); // arrList 값을 변경했는데 같이 바뀜
+      System.out.println("arrList = " + arrList);
+- List.of(arr)로 배열을 만들면 arr 배열 값을 하나씩 가져와서 새로운 배열을 만든다.
+- 그래서 어마어마하게 큰 배열을 쓸 때는 Arrays.asList( )의 성능이 조금 더 나을 수 있지만 대체적으로 List.of( )가 더 낫다.
+
+#### 멀티스레드 동기화
+    public class SyncMain {
+    
+        public static void main(String[] args) {
+            ArrayList<Integer> list = new ArrayList<>();
+            list.add(1);
+            list.add(2);
+            list.add(3);
+    
+            System.out.println("list.getClass() = " + list.getClass());
+            List<Integer> synchronizedList = Collections.synchronizedList(list);
+            System.out.println("synchronizedList.getClass() = " + synchronizedList.getClass());
+        }
+    }
+####
+    //  실행 결과
+    list.getClass() = class java.util.ArrayList
+    synchronizedList.getClass() = class java.util.Collections$SynchronizedRandomAccessList
+- 멀티 스레드 상황에서 동시에 하나의 일반 리스트에 접근하면 문제가 될 수 있다.
+- Collections.synchronizedList 를 사용하면 멀티 스레드 상황에서 동기화 문제가 발생하지 않는 안전한 리스트로 바꿀 수 있다.
+- 동기화 작업으로 인해 일반 리스트보다 성능은 더 느리다.
+- 이 부분은 멀티스레드를 학습해야 이해할 수 있으므로 이런 것이 있다 정도만 참고하자.
 
 
 ### 10-8. 컬렉션 프레임워크 전체 정리
