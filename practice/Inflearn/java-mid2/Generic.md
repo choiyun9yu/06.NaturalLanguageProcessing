@@ -12,7 +12,7 @@
 ### MacOS
 - ^T : 인라이 베리어블
 
-![img.png](./img.png)
+![img.png](.img/img.png)
 #### 자료구조의 이해
 - 자바 컬렉션의 기능을 아는 것을 넘어 자료 구조 자체의 기본기를 다지고  
   실무에 필요한 자료 구조를 제대로 활용할 수 있게되는 것이 이 강의 목표이다.
@@ -318,7 +318,7 @@
 
 
 ### 1-6. 제네릭 활용 예제 
-![img_1.png](img_1.png)
+![img_1.png](.img/img_1.png)
 
     public class Animal {
         private String name;

@@ -1,13 +1,13 @@
 ## 9. 컬렉션 프레임워크 - Map, Stack, Queue
 ### 9-1. 컬렉션 프레임워크 - Map 소개1
-![img_72.png](img_72.png)  
+![img_72.png](.img/img_72.png)  
 - Map dms key-value 의 쌍을 저장하는 자료 구조이다.
 - 키는 맵 내에서 유일해야 한다. 그리고 키를 통해 값을 빠르게 검색할 수 있다,
 - 키는 중복될 수 없지만, 값은 중복될 수 있다.
 - Map 은 순서를 유지하지 않는다.
 
 #### 컬렉션 프레임워크 - Map
-![img_73.png](img_73.png)  
+![img_73.png](.img/img_73.png)  
 - 자바는 HashMap, TreeMap, LinkedHashMap 등 다양한 Map 구현체를 제공한다.
 - 이들은 Map 인터페이스의 메서드를 구현하며, 각기 다른 특성과 성능 특징을 가지고 있다.
 
@@ -77,7 +77,7 @@
   - Map 의 키는 중복을 허용하지 않는다. 따라서 Map 의 모든 키 목록을 조회하는 keySet( )을 호출하면,  
     중복을 허용하지 않는 자료 구조인 Set 을 반환한다.
 #### 키와 값 목록 조회  
-![img_74.png](img_74.png)
+![img_74.png](.img/img_74.png)
 - Map 은 키와 값을 보관하는 자료 구조 이다. 따라서 키와 값을 하나로 묶을 수 있는 방법이 필요하다.
 - 이때 Entry 를 사용한다. Entry 는 키-값의 쌍으로 이루어진 간단한 객체이다.
 - Entry 는 Map 내부에서 키와 값을 함께 묶어서 저장할 때 사용한다.
@@ -156,7 +156,7 @@
 - 그리고 Map 은 모든 것이 Key 를 중심으로 동작한다. value 는 단순히 Key 옆에 따라 붙은 것 뿐이다.
 - Key 옆에 value 만 하나 추가해주면 Map 이 되는 것이다. Map 과 Set 은 거의 같다.
 - 단지 옆에 value 를 가지고 있는가 없는가의 차이가 있을 뿐이다.  
-![img_75.png](img_75.png)
+![img_75.png](.img/img_75.png)
 - 이런 이유로 Set 과 Map 의 구현체는 거의 같다.
   - HashSet -> HashMap
   - LinkedHashSet -> LinkedHashMap
@@ -230,7 +230,7 @@
    
         "A",80  "F",80  "G",90  "K",90  
 
-  ![img_76.png](img_76.png)
+  ![img_76.png](.img/img_76.png)
 - 이렇게 해시를 사용해서 키와 값을 저장하는 자료 구조를 일반적으로 해시 테이블이라 한다.
 - 앞서 학습한 HashSet 은 해시 테이블의 주요 원리를 사용하지만,  
   키-값 저장 방식 대신 키만 저장하는 특수한 형태의 해시테이블로 이해하면 된다.
@@ -247,12 +247,12 @@
 
 ### 9-4. 스택 자료 구조
 - 다음과 같이 1, 2, 3 이름표가 붙은 블록이 있다고 가정하자.  
-  ![img_77.png](img_77.png)
+  ![img_77.png](.img/img_77.png)
 - 이 블록을 아래쪽은 막혀있고 위쪽만 열려 있는 통에 넣는다고 생각해보자.   
-  ![img_78.png](img_78.png)
+  ![img_78.png](.img/img_78.png)
 - 위쪽만 열려 있기 때문에 위쪽으로 블록을 넣고, 위쪽으로 블록을 빼야 한다.  
 - 이번에는 넣은 블록을 빼자.  
-  ![img_79.png](img_79.png)
+  ![img_79.png](.img/img_79.png)
 - 정리하면 다음과 같다.
 
       1(넣기) -> 2(넣기) -> 3(넣기) -> 3(빼기) -> 2(빼기) -> 1(빼기)
@@ -302,13 +302,13 @@ public class StackMain {
 #### 선입 선출(FIFO, First In First Out)
 - 후입 선출과 반대로 가장 먼저 넣은 것이 가장 먼저 나오는 것을 선입 선출이라 한다.  
 - 이런 자료 구조를 큐(Queue)라 한다.  
-  ![img_80.png](img_80.png)
+  ![img_80.png](.img/img_80.png)
 - 전통적으로 큐에 값을 넣는 것을 offer 라하고, 큐에서 값을 꺼내는 것을 poll 이라 한다.
 - 정리하면 다음과 같다.
   
       1(넣기) -> 2(넣기) -> 3(넣기) -> 1(빼기) -> 2(빼기) -> 3(빼기)
 ####
-![img_81.png](img_81.png)
+![img_81.png](.img/img_81.png)
 - Queue 인터페이스는 List, Set 과 같이 Collection 의 자식이다.
 - Queue 의 대표적인 구현체는 ArrayDeque, LinkedList 가 있다.
 - 참고로 LinkedList 는 Deque 와 List 인터페이스를 모두 구현한다.
@@ -349,7 +349,7 @@ public class StackMain {
 ### 9-6. Deque 자료 구조
 - Deque 는 Double Ended Queue 의 약자로, 이름에서 알 수 있듯, 양쪽 끝에서 요소를 추가하거나 제거할 수 있다.
 - Deque 는 일반적인 큐와 스택의 기능을 모두 포함하고 있어 매우 유연한 자료 구조이다.  
-  ![img_82.png](img_82.png)
+  ![img_82.png](.img/img_82.png)
   - offerFirst( ): 앞에 추가한다. 
   - offerLast( ): 뒤에 추가한다.
   - pollFirst( ): 앞에서 꺼낸다.
@@ -416,8 +416,8 @@ public class StackMain {
 ### 9-7. Deque 와 Stack, Queue
 - Deque 는 양쪽으로 데이터를 입력하고 출력할 수 있으므로, 스택과 큐의 역할을 모두 수행할 수 있다.
 - Deque 를 Stack 과 Queue 로 사용하기 위한 메서드 이름까지 제공한다.  
-  ![img_82.png](img_82.png)
-  ![img_84.png](img_84.png)
+  ![img_82.png](.img/img_82.png)
+  ![img_84.png](.img/img_84.png)
 #### Deque - Stack
     public class DequeStackMain {
     
@@ -489,7 +489,7 @@ public class StackMain {
 - 순회라는 단어는 여러 곳을 돌아다닌다는 뜻이다.
 - 자료 구조에 순회는 자료 구조에 들어있는 데이터를 차례대로 접근해서 처리하는 것을 순회라 한다.
 - 그런데 다양한 자료 구조가 있고, 각각의 자료 구조마다 데이터를 접근하는 방법이 모두 다르다.
-![img_85.png](img_85.png)
+![img_85.png](.img/img_85.png)
   - 예를 들어 배열 리스트는 index 를 size 까지 차례로 증가하면서 순회해야 한다.
   - 연결 리스트는 node.next 를 사용해서 node 의 끝이 null 일 때 까지 순회해야 한다.
 - 배열 리스트, 연결 리스트, 해시 셋, 연결 해시 셋, 트리 셋 등등 다양한 자료 구조가 있다.
@@ -591,12 +591,12 @@ public class StackMain {
         }
     }
 ####
-![img_86.png](img_86.png)  
+![img_86.png](.img/img_86.png)  
 - MyArray 는 Iterable(반복할 수 있는) 인터페이스를 구현한다. 따라서 MyArray 는 반복할 수 있다는 의미가 된다.
 - Iterable 인터페이스를 구현하면 iterator( )메서드를 구현해야 한다. 
 - 이 메서드는 Iterator 인터페이스를 구현한 반복자를 반환한다. 여기서는 MyArrayIterator 를 생성해서 반환했다.
 ####
-![img_87.png](img_87.png)
+![img_87.png](.img/img_87.png)
 - MyArrayIterator 의 인터페이스를 생성할 대 순회할 대상을 지정해야 한다. 여기서는 MyArray 의 배열을 지정했다.
 - MyArrayIterator 인스턴스는 내부에서 MyArray 의 배열을 참조한다.
 - 이제 MyArrayIterator 를 통해 MyArray 가 가진 내부 데이터를 순회할 수 있다.
@@ -640,7 +640,7 @@ public class StackMain {
 
 
 ### 10-3. 순회3 - 자바가 제공하는 Iterable, Iterator
-![img_88.png](img_88.png)
+![img_88.png](.img/img_88.png)
 - 자바 컬렉션 프레임워크는 배열 리스트, 연결 리스트, 해시 셋, 연결 해시 셋, 트리 셋 등등 다양한 자료 구조를 제공한다.
 - 자바는 컬렉션 프레임워크를 사용하는 개발자가 편리하고 일관된 방법으로 자료 구조를 순회할 수 있도록 Iterable 인터페이스를  
   제공하고, 이미 각각의 구현체에 맞는 Iterator 도 다 구현해두었다.
@@ -736,16 +736,16 @@ public class StackMain {
 - 원래 3, 2, 1 순서로 데이터가 들어있었는데, 정렬 후에는 1, 2, 3의 순서로 데이터가 정렬되는 것을 확인할 수 있다.
 
 #### 정렬 알고리즘
-![img_89.png](img_89.png)  
+![img_89.png](.img/img_89.png)  
 - 먼저 가장 왼쪽에 있는 데이터와 그 다음 데이터를 비교한다.
 - 3과 2를 비교했을 때 3이 더 크기 때문에 둘을 교환한다.
 ####
-![img_90.png](img_90.png)  
+![img_90.png](.img/img_90.png)  
 - 다음 차례의 둘을 비교한다.
 - 3과 1을 비교했을 때 3이 더 크기 때문에 둘을 교환한다.
 - 이렇게 처음부터 끝까지 비교하면 마지막 항목은 가장 큰 값이 된다. 여기서는 3이다.
 ####
-![img_91.png](img_91.png)  
+![img_91.png](.img/img_91.png)  
 - 처음으로 돌아와서 다시 비교를 시작한다.
 - 2와 1을 비교했을 때 2가 더 크기 때문에 둘을 교환한다.
 - 최종적으로 1, 2, 3으로 정렬된다.
@@ -1002,7 +1002,7 @@ public class StackMain {
 - 자바 1.8 부터 사용
 
 #### Tree 구조와 정렬
-![img_92.png](img_92.png)
+![img_92.png](.img/img_92.png)
 - TreeSet 과 같은 이진 탐색 트리 구조는 데이터를 보관할 때, 데이터를 정렬하면서 보관한다.
 - 따라서 정렬 기준ㅇ르 제공하는 것이 필수다.
 - 이진 탐색 트리는 데이터를 저장할 때 왼쪼 노드에 저장해야할 지, 오른쪽 노드에 저장해야할 지 비교가 필요하다.
@@ -1203,7 +1203,7 @@ public class StackMain {
 
 
 ### 10-8. 컬렉션 프레임워크 전체 정리
-![img_93.png](img_93.png) 
+![img_93.png](.img/img_93.png) 
 - 자바 컬렉션 프레임워크는 데이터 그룹을 저장하고 처리하기 위한 통합 아키텍처를 제공한다.
 - 이 프레임워크는 인터페이스, 구현, 알고리즘으로 구성되어 있으며, 다양한 타입을 컬렉션을 효율적으로 처리하게 해준다.
 - 여기서 컬렉션이란 객체의 그룹이나 집합을 의미한다.
